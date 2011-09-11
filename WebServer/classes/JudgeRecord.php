@@ -23,4 +23,27 @@ class JudgeRecord
 	{
 		return "ProblemID {$this->problemID}\nRecordID {$this->recordID}\nLang {$this->lang}\nSubmission {$this->codeBase64}";
 	}
+	
+	public function submit()
+	{
+		if ($this->id)
+		{
+			$this->updateRecord();
+		}
+		else
+		{
+			$this->addRecord();
+		}
+	}
+	
+	private function addRecord()
+	{
+		$DB = Database::Get();
+		$this->id = $DB->lastInsertId();
+	}
+	
+	private function updateRecord()
+	{
+	
+	}
 }

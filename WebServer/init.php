@@ -1,16 +1,12 @@
 <?php
+define('IN_OIOJ', 1);
+define('ROOT',basename(__FILE__).DIRECTORY_SEPARATOR);
 
 function import($package)
 {
-    $slash = '/';
-    if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN')
-    {
-        $slash = '\\';
-    }
+    str_replace('.', DIRECTORY_SEPARATOR, $package);
     
-    str_replace('.', $slash, $package);
-    
-    require_once ROOT . 
+    require_once ROOT . 'classes' . DIRECTORY_SEPARATOR . $package;
 }
 ?>
     
