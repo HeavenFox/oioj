@@ -2,15 +2,24 @@
 
 define('RECORDSTATUS_WAITING', 0);
 define('RECORDSTATUS_DISPATCHED', 1);
-define('RECORDSTATUS_ACCEPTED', 2);
-define('RECORDSTATUS_CE', 3);
-define('RECORDSTATUS_REJECTED', 4);
+define('RECORD', 2);
+define('RECORD', 3);
+define('RECORD', 4);
 
 class JudgeRecord
 {
+	const STATUS_WAITING = 0;
+	const STATUS_DISPATCHED = 1;
+	const STATUS_ACCEPTED = 2;
+	const STATUS_CE = 3;
+	const STATUS_REJECTED = 4;
+	
+	
 	public $problemID;
 	public $recordID;
 	public $lang;
+	
+	private $casesString;
 	
 	private $codeBase64;
 	
@@ -45,5 +54,14 @@ class JudgeRecord
 	private function updateRecord()
 	{
 	
+	}
+	
+	public function parseCallback($general, $cases)
+	{
+		$gen = parseProtocol($general);
+		
+		array_map("parseProtocol", $cases);
+		
+		$this->casesString = serialize($cases);
 	}
 }

@@ -1,8 +1,7 @@
 <?php
 class JudgeServer
 {
-	const STATUS_WAITING = 0;
-	const STATUS_DISPATCHED = 1;
+	
 	
 	public $id;
 	public $serverName;

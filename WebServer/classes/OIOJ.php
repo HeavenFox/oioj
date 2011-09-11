@@ -1,7 +1,7 @@
 <?php
 class OIOJ
 {
-	static $template;
+	public static $template;
 	
 	public static function InitTemplate()
 	{
