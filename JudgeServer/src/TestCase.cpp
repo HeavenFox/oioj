@@ -255,6 +255,7 @@ void TestCase::compare()
 				if (ca != cb)
 				{
 					result = TESTRESULT_WA;
+					score = 0;
 					break;
 				}
 				if (feof(userOutput) && feof(answerData))
