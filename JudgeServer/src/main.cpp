@@ -9,7 +9,6 @@
 #include <iostream>
 #include <sys/types.h>
 #include <sys/socket.h>
-#include <sys/ipc.h>
 #include <sys/msg.h>
 #include <sys/signal.h>
 #include <arpa/inet.h>
@@ -22,11 +21,16 @@
 #include "JudgeRecord.h"
 #include "RunScheduler.h"
 
+#include "constants.h"
+
 using namespace std;
 
 RunScheduler *scheduler;
 
-int notifyFinishPipe[2];
+void evalFinished(int signal, siginfo_t* cpuid, void* dummy)
+{
+	scheduler->removeTask(cpuid->si_value.sival_int);
+}
 
 int main (int argc, const char * argv[])
 {
@@ -35,6 +39,18 @@ int main (int argc, const char * argv[])
     
     Configuration::ReadConfiguration();
     
+    scheduler = new RunScheduler(Configuration::CPUCount, Configuration::ConcurrentJobs, Configuration::WaitlistSize);
+
+
+    // Prepare signal
+    struct sigaction act;
+    act.sa_sigaction = evalFinished;
+    act.sa_flags = SA_SIGINFO;
+
+
+    signal(SIGCHLD, SIG_IGN);
+    sigaction(SIG_EVALFINISH,&act,NULL);
+
     // Create socket
     int sock = socket(AF_INET, SOCK_STREAM, 0);
     
@@ -60,14 +76,11 @@ int main (int argc, const char * argv[])
     
     listen(sock, 5);
     
-    scheduler = new RunScheduler(Configuration::CPUCount, Configuration::ConcurrentJobs, Configuration::WaitlistSize);
-    
-    signal(SIGCHLD, SIG_IGN);
     
     while (true)
     {
         int client_sock = accept(sock, (struct sockaddr*)&client_sock_addr, &client_sock_addr_len);
-        
+
         if (scheduler->serverBusy())
         {
             char failure[20];
@@ -85,12 +98,14 @@ int main (int argc, const char * argv[])
             {
                 buffer[bytes_recv] = '\0';
                 str.append(buffer);
+                cout<<"got some "<<buffer<<endl;
             }
             
+
             JudgeRecord *currentRecord = new JudgeRecord;
 
             currentRecord->prepareProblem(str);
-            int code = scheduler->arrangeTask(currentRecord);
+            scheduler->arrangeTask(currentRecord);
         }
         
         close(client_sock);

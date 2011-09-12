@@ -9,10 +9,11 @@
 #ifndef _RUNSCHEDULER_H_
 #define _RUNSCHEDULER_H_
 
-#include <list>
 #include <queue>
 #include "JudgeRecord.h"
 #include "WebServer.h"
+#include <sys/signal.h>
+#include "constants.h"
 
 using namespace std;
 
@@ -21,7 +22,7 @@ class RunScheduler {
     int concurrency;
     int waitlistCapacity;
     
-    vector<int> cpus;
+    int* cpus;
     queue<JudgeRecord*> waitlist;
     
     int runningJobs;
@@ -35,12 +36,17 @@ public:
         concurrency = _concurrency;
         waitlistCapacity = _waitlistCapacity;
         
-        cpus.resize(nCPU);
+        cpus = new int[nCPU];
         
         runningJobs = 0;
         
     }
     
+    ~RunScheduler()
+    {
+    	delete cpus;
+    }
+
     int arrangeCPU();
     
     int arrangeTask(JudgeRecord* record);
