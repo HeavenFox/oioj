@@ -11,7 +11,7 @@ class OIOJ
 	public static function PrepareDatabase()
 	{
 		import('database.Database');
-		Database::CreateConnection(Config::MySQL);
+		Database::Get(Config::$MySQL);
 	}
 	
 }

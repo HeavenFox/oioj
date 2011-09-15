@@ -12,12 +12,7 @@ class JudgeServer
 	
 	public $cases;
 	
-	public function __construct()
-	{
-		
-	}
-	
-	public function __construct($info)
+	public function __construct($info = NULL)
 	{
 		if (is_int($info))
 		{
@@ -50,7 +45,12 @@ class JudgeServer
 	{
 		$DB = Database::Get();
 		$stmt = $DB->query('SELECT id, name, ip, port, workload, max_workload FROM oj_judgeservers WHERE workload < max_workload ORDER BY workload ASC');
-		return $stmt->fetchAll();
+		$servers = array();
+		foreach ($stmt as $v)
+		{
+			$servers[] = new JudgeServer($v);
+		}
+		return $servers;
 	}
 	
 	public function dispatch($task)

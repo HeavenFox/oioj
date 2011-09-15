@@ -1,24 +1,30 @@
 <?php
 require_once 'init.php';
+import('OIOJ');
 import('JudgeRecord');
 import('JudgeServer');
+
+OIOJ::PrepareDatabase();
 
 $record = new JudgeRecord;
 $record->lang = $_POST['lang'];
 $record->problemID = intval($_POST['pid']);
-$record->setSubmission($_POST['code']);
+$record->code = ($_POST['code']);
 
 $servers = JudgeServer::GetAvailableServers();
 
-$success = false;
+$db = Database::Get();
+
+$record->submit();
 
 while ($server = array_shift($servers))
 {
 	if ($server->dispatch($record))
 	{
-		$success = true;
+		
 		$server->addWorkload();
-		$record->status = JudgeServer::STATUS_DISPATCHED;
+		$record->status = JudgeRecord::STATUS_DISPATCHED;
+		$record->serverID = $server->id;
 		break;
 	}
 }

@@ -1,6 +1,8 @@
 <?php
 define('IN_OIOJ', 1);
-define('ROOT',basename(__FILE__).DIRECTORY_SEPARATOR);
+define('ROOT',dirname(__FILE__).DIRECTORY_SEPARATOR);
+
+require_once ROOT . DIRECTORY_SEPARATOR . 'config.php';
 
 /**
  * Import class
@@ -8,9 +10,9 @@ define('ROOT',basename(__FILE__).DIRECTORY_SEPARATOR);
  */
 function import($package)
 {
-    str_replace('.', DIRECTORY_SEPARATOR, $package);
+    $url = str_replace('.', DIRECTORY_SEPARATOR, $package);
     
-    require_once ROOT . 'classes' . DIRECTORY_SEPARATOR . $package;
+    require_once ROOT . 'classes' . DIRECTORY_SEPARATOR . $url . '.php';
 }
 
 /**
