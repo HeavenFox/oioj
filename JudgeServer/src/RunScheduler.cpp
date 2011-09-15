@@ -37,18 +37,7 @@ int RunScheduler::arrangeTask(JudgeRecord* record)
 void RunScheduler::runTask(JudgeRecord *record)
 {
 	runningJobs++;
-	int minSize = 1<<30;
-	int mini;
-	for (int i=0;i<nCPU;i++)
-	{
-		if (cpus[i] < minSize)
-		{
-			minSize = cpus[i];
-			mini = i;
-		}
-	}
-	cpus[mini]++;
-	record->cpuid = mini;
+
 	pid_t pid = fork();
 	if (pid == 0)
 	{
@@ -56,21 +45,28 @@ void RunScheduler::runTask(JudgeRecord *record)
 		WebServer server;
 		server.pushResult(record);
 		delete record;
-		sigval sig;
-		sig.sival_int = record->cpuid;
-		sigqueue(getppid(),SIG_EVALFINISH,sig);
 		exit(0);
 	}
 	else
 	{
+		int minSize = 1<<30;
+		int mini;
+		for (int i=0;i<cpus.size();i++)
+		{
+			if (cpus.at(i) < minSize)
+			{
+				minSize = cpus.at(i);
+				mini = i;
+			}
+		}
+		cpus[mini]++;
+
 		cpu_set_t cpumask;
 
 		CPU_ZERO(&cpumask);
 		CPU_SET(mini,&cpumask);
 
 		sched_setaffinity(pid,sizeof(cpu_set_t),&cpumask);
-
-		record->cpuid = mini;
 		delete record;
 	}
 }
@@ -79,7 +75,6 @@ void RunScheduler::removeTask(int cpuid)
 {
 	runningJobs--;
 	cpus[cpuid]--;
-	cout<<"removing "<<cpuid<<endl;
 	if (!waitlist.empty())
 	{
 		JudgeRecord *record = waitlist.front();

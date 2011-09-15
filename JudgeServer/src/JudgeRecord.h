@@ -91,8 +91,6 @@ public:
     
     short status;
 
-    int cpuid;
-
     vector<TestCase> cases;
     
     JudgeRecord()
