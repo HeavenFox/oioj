@@ -13,15 +13,22 @@
 #include <queue>
 #include "JudgeRecord.h"
 #include "WebServer.h"
+#include <sys/ipc.h>
+#include <sys/msg.h>
+#include "msgEval.h"
 
 using namespace std;
+
+extern int msgQueue;
+
+
 
 class RunScheduler {
     int nCPU;
     int concurrency;
     int waitlistCapacity;
     
-    vector<int> cpus;
+    int *cpus;
     queue<JudgeRecord*> waitlist;
     
     int runningJobs;
@@ -35,12 +42,17 @@ public:
         concurrency = _concurrency;
         waitlistCapacity = _waitlistCapacity;
         
-        cpus.resize(nCPU);
+        cpus = new int[nCPU];
         
         runningJobs = 0;
         
     }
     
+    ~RunScheduler()
+    {
+    	delete cpus;
+    }
+
     int arrangeCPU();
     
     int arrangeTask(JudgeRecord* record);

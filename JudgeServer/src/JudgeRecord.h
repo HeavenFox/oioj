@@ -91,6 +91,8 @@ public:
     
     short status;
 
+    short cpu;
+
     vector<TestCase> cases;
     
     JudgeRecord()

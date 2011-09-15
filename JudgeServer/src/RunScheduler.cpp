@@ -37,6 +37,19 @@ int RunScheduler::arrangeTask(JudgeRecord* record)
 void RunScheduler::runTask(JudgeRecord *record)
 {
 	runningJobs++;
+	int minSize = 1<<30;
+	short mini;
+	for (int i=0;i<nCPU;i++)
+	{
+		if (cpus[i] < minSize)
+		{
+			minSize = cpus[i];
+			mini = i;
+		}
+	}
+	cpus[mini]++;
+
+	//record->cpu = mini;
 
 	pid_t pid = fork();
 	if (pid == 0)
@@ -44,23 +57,16 @@ void RunScheduler::runTask(JudgeRecord *record)
 		record->judge();
 		WebServer server;
 		server.pushResult(record);
+		struct msgEval msg;
+		msg.mtype = 1;
+		msg.cpuid = mini;
+		msgsnd(msgQueue,&msg,sizeof(msgEval),0);
 		delete record;
+
 		exit(0);
 	}
 	else
 	{
-		int minSize = 1<<30;
-		int mini;
-		for (int i=0;i<cpus.size();i++)
-		{
-			if (cpus.at(i) < minSize)
-			{
-				minSize = cpus.at(i);
-				mini = i;
-			}
-		}
-		cpus[mini]++;
-
 		cpu_set_t cpumask;
 
 		CPU_ZERO(&cpumask);
