@@ -2,6 +2,9 @@
 define('IN_OIOJ', 1);
 define('ROOT',basename(__FILE__).DIRECTORY_SEPARATOR);
 
+define('OIOJ_VERSION', 100);
+define('OIOJ_READABLE_VERSION','v1.0.0');
+
 /**
  * Import class
  * @param string $package Class package to import
