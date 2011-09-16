@@ -1,6 +1,8 @@
 <?php
 define('IN_OIOJ', 1);
-define('ROOT',basename(__FILE__).DIRECTORY_SEPARATOR);
+define('ROOT',dirname(__FILE__).DIRECTORY_SEPARATOR);
+
+require_once ROOT . DIRECTORY_SEPARATOR . 'config.php';
 
 define('OIOJ_VERSION', 100);
 define('OIOJ_READABLE_VERSION','v1.0.0');
@@ -11,9 +13,9 @@ define('OIOJ_READABLE_VERSION','v1.0.0');
  */
 function import($package)
 {
-    str_replace('.', DIRECTORY_SEPARATOR, $package);
+    $url = str_replace('.', DIRECTORY_SEPARATOR, $package);
     
-    require_once ROOT . 'classes' . DIRECTORY_SEPARATOR . $package;
+    require_once ROOT . 'classes' . DIRECTORY_SEPARATOR . $url . '.php';
 }
 
 /**
