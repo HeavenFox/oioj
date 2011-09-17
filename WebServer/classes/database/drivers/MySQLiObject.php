@@ -44,7 +44,7 @@ class MySQLiObject
 	
 	public function exec($q)
 	{
-		$this->conn->query($q);
+		$r = $this->conn->query($q);
 		return $r->affected_rows;
 	}
 	

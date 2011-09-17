@@ -1,4 +1,6 @@
-
+<?php 
+require_once 'init.php';
+?>
 <form method="post" action="judge.php">
     User ID: <input name="uid" />
     Problem ID: <input name="pid" />

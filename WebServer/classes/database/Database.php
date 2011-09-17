@@ -12,11 +12,11 @@ class Database
      *
      * @return object database connection
      */
-    public static function Get()
+    public static function Get($params = NULL)
     {
-        if (self::$connection == null)
+        if (self::$connection == null && $params != NULL)
         {
-            self::$connection = self::CreateConnection(Settings::$DB);
+            self::$connection = self::CreateConnection($params);
         }
         return self::$connection;
     }
@@ -30,7 +30,7 @@ class Database
 			$obj = new PDO('mysql:host='.$params['host'].';dbname='.$params['database'],$params['username'],$params['password']);
 			break;
 		case 'mysqli':
-			require ROOT. 'classes/database/mysqli/MySQLiObject.php';
+			require ROOT. 'classes/database/drivers/MySQLiObject.php';
 			$obj = new MySQLiObject('mysql:host='.$params['host'].';dbname='.$params['database'],$params['username'],$params['password']);
 			break;
         default:

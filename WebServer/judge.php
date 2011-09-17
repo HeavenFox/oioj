@@ -1,23 +1,34 @@
 <?php
-require_once 'classes/JudgeRecord.php';
+require_once 'init.php';
+import('OIOJ');
+import('JudgeRecord');
+import('JudgeServer');
+
+OIOJ::PrepareDatabase();
 
 $record = new JudgeRecord;
 $record->lang = $_POST['lang'];
 $record->problemID = intval($_POST['pid']);
-$record->recordID = 1;
-$record->setSubmission($_POST['code']);
+$record->code = ($_POST['code']);
 
-define('SOCKET_ADDRESS', 'tcp://192.168.1.102:9458');
+$servers = JudgeServer::GetAvailableServers();
 
-$fp = stream_socket_client(SOCKET_ADDRESS, $errono, $errorstr, 30);
+$db = Database::Get();
 
-if (!$fp)
+$record->submit();
+
+while ($server = array_shift($servers))
 {
-    die("Error ". $errorstr);
+	if ($server->dispatch($record))
+	{
+		
+		$server->addWorkload();
+		$record->status = JudgeRecord::STATUS_DISPATCHED;
+		$record->serverID = $server->id;
+		break;
+	}
 }
 
-echo strval($record);
+$record->submit();
 
-fwrite($fp, strval($record));
-fclose($fp);
 ?>
