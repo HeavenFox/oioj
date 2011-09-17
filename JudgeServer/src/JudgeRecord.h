@@ -73,7 +73,7 @@ public:
     
     string language;
     
-    string comparison;
+    string compare;
     vector<Dependency> dependencies;
     
     string workingDirectory;

@@ -7,7 +7,15 @@
 //
 #include "TestCase.h"
 
-#include <iostream>
+bool iswhite(char c)
+{
+	return c==' ' || c==EOF || c=='\n';
+}
+
+bool isenter(char c)
+{
+	return c=='\n' || c==EOF;
+}
 
 void TestCase::run()
 {
@@ -233,7 +241,9 @@ void TestCase::compare()
 		char answerPath[256];
 		strcpy(answerPath, record->dataDirectory.c_str());
 		strcat(answerPath, answer.c_str());
-		if (record->comparison.compare(COMPARE_FULLTEXT) == 0)
+		bool fulltext = record->compare.compare(COMPARE_FULLTEXT) == 0;
+
+		if (fulltext || record->compare.compare(COMPARE_OMITSPACE) == 0)
 		{
 			FILE *userOutput = fopen(outputDataPath,"r");
 			FILE *answerData = fopen(answerPath,"r");
@@ -254,9 +264,37 @@ void TestCase::compare()
 
 				if (ca != cb)
 				{
-					result = TESTRESULT_WA;
-					score = 0;
-					break;
+					if (fulltext)
+					{
+						result = TESTRESULT_WA;
+						score = 0;
+						break;
+					}
+					else
+					{
+						if (!(iswhite(ca)&&iswhite(cb)))
+						{
+							result = TESTRESULT_WA;
+							score = 0;
+							break;
+						}
+						while (ca == ' ')
+						{
+							ca = fgetc(userOutput);
+						}
+						while (cb == ' ')
+						{
+							ca = fgetc(userOutput);
+						}
+
+						if (!(isenter(ca) && isenter(cb)))
+						{
+							result = TESTRESULT_WA;
+							score = 0;
+							break;
+						}
+					}
+
 				}
 				if (feof(userOutput) && feof(answerData))
 				{
@@ -267,13 +305,32 @@ void TestCase::compare()
 			fclose(userOutput);
 			fclose(answerData);
 		}
-		else if (record->comparison.compare(COMPARE_OMITSPACE) == 0)
-		{
-			// TODO comp method
-		}
 		else
 		{
+			// Prepare special judge path
+			char specialJudge[512];
+			strcpy(specialJudge,Configuration::DataDirPrefix.c_str());
+			strcat(specialJudge, record->compare.c_str());
+			char specialJudgeBin[128];
+			strcpy(specialJudgeBin, record->compare.c_str());
+			char scorePath[512];
+			strcpy(scorePath,record->workingDirectory.c_str());
+			strcat(scorePath, "score.log");
+			unlink(scorePath);
+
 			// TODO Special judge
+			if (vfork() == 0)
+			{
+				// Run file
+				execl(specialJudge,specialJudgeBin,NULL);
+			}
+			else
+			{
+				wait(NULL);
+
+				// Load score
+
+			}
 		}
 
 	}

@@ -15,6 +15,7 @@
 #include <sys/signal.h>
 #include "JudgeRecord.h"
 #include <cmath>
+#include <cstring>
 
 using namespace std;
 
@@ -51,6 +52,10 @@ public:
     void run();
     
     void compare();
+
+    void loadSchema();
+
+    void addSchema();
 
     void cleanup();
 

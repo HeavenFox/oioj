@@ -150,7 +150,7 @@ void JudgeRecord::loadProblemSchema()
     sqlite3_bind_int(stmt, 1, problemID);
     sqlite3_step(stmt);
     type = sqlite3_column_int(stmt, 0);
-    comparison = string((const char*)sqlite3_column_text(stmt, 1));
+    compare = string((const char*)sqlite3_column_text(stmt, 1));
     input = string((const char*)sqlite3_column_text(stmt, 2));
     output = string((const char*)sqlite3_column_text(stmt, 3));
 	sqlite3_finalize(stmt);
