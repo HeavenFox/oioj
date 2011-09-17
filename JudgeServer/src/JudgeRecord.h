@@ -26,7 +26,9 @@
 #include "Configuration.h"
 #include "Compiler_C.h"
 #include "Compiler_CPP.h"
+#include "Compiler_PAS.h"
 #include "TestCase.h"
+#include "fileop.h"
 
 using namespace std;
 

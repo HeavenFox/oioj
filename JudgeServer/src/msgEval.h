@@ -1,12 +1,12 @@
 /*
- * msgQueue.h
+ * msgEval.h
  *
  *  Created on: Sep 15, 2011
  *      Author: zhujingsi
  */
 
-#ifndef _MSGQUEUE_H_
-#define _MSGQUEUE_H_
+#ifndef _MSGEVAL_H_
+#define _MSGEVAL_H_
 
 struct msgEval
 {

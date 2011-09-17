@@ -98,6 +98,20 @@ void JudgeRecord::deduceVariable()
 
 void JudgeRecord::compile()
 {
+	// Prepare dependencies
+	for (vector<Dependency>::iterator it = dependencies.begin();it != dependencies.end();it++)
+	{
+		char source[512];
+		char dest[512];
+		strcpy(source,dataDirectory.c_str());
+		strcat(source,(*it).filename.c_str());
+
+		strcpy(dest,workingDirectory.c_str());
+		strcat(dest,(*it).filename.c_str());
+
+		cp(source,dest);
+	}
+
     if (language.compare("cpp") == 0)
     {
         compiler = dynamic_cast<Compiler*>(new Compiler_CPP);
@@ -105,6 +119,10 @@ void JudgeRecord::compile()
     else if (language.compare("c") == 0)
     {
         compiler = dynamic_cast<Compiler*>(new Compiler_C);
+    }
+    else if (language.compare("pas") == 0)
+    {
+        compiler = dynamic_cast<Compiler*>(new Compiler_PAS);
     }else
     {
         throw 1;

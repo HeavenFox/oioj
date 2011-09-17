@@ -16,6 +16,7 @@
 #include "JudgeRecord.h"
 #include <cmath>
 #include <cstring>
+#include "fileop.h"
 
 using namespace std;
 

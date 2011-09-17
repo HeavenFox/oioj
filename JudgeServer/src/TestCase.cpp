@@ -17,6 +17,8 @@ bool isenter(char c)
 	return c=='\n' || c==EOF;
 }
 
+
+
 void TestCase::run()
 {
 	initCallAllowance();
@@ -44,10 +46,7 @@ void TestCase::run()
 		strcat(outputDataPath, record->output.c_str());
 	}
 
-	symlink(inputDataOldPath,inputDataPath);
-
-	// Prepare dependencies
-	// TODO prepare dependencies
+	cp(inputDataOldPath,inputDataPath);
 
 	// Prepare pipe for IPC
 	int pd[2];
@@ -116,7 +115,7 @@ void TestCase::run()
 
 				time_passed = rinfo.ru_utime;
 
-				timeUsed = time_passed.tv_sec * 1000 + time_passed.tv_usec / 1000;
+				timeUsed = (double)time_passed.tv_sec + (double)time_passed.tv_usec / 1000000.0;
 
 				//Record the maximum of memory usage
 				if (mem_cur > memoryUsed)
@@ -318,18 +317,24 @@ void TestCase::compare()
 			strcat(scorePath, "score.log");
 			unlink(scorePath);
 
-			// TODO Special judge
+			char scorestr[4];
+			sprintf(scorestr,"%d",score);
+
 			if (vfork() == 0)
 			{
 				// Run file
-				execl(specialJudge,specialJudgeBin,NULL);
+				execl(specialJudge,specialJudgeBin,scorestr,answerPath,NULL);
 			}
 			else
 			{
 				wait(NULL);
 
 				// Load score
+				FILE *scoreFile = fopen(scorePath, "r");
+				fscanf(scoreFile,"%d",&score);
+				fclose(scoreFile);
 
+				// TODO Log feature
 			}
 		}
 
