@@ -8,15 +8,7 @@
 
 #include "JudgeRecord.h"
 
-inline char JudgeRecord::base64chr(char c)
-{
-    if (c == '+')return 62;
-    if (c == '/')return 63;
-    if (c >= 'A' && c <= 'Z')return c-'A';
-    if (c >= 'a' && c <= 'z')return 26+c-'a';
-    if (c >= '0' && c <= '9')return 52+c-'0';
-    return -1;
-}
+
 
 void JudgeRecord::prepareProblem(string s)
 {
@@ -59,16 +51,9 @@ void JudgeRecord::prepareProblem(string s)
         {
         	deduceVariable();
 
-            FILE *out = fopen(submissionPath.c_str(), "w");
-            for (unsigned int i=0;i<param.size();i+=4)
-            {
-                putc((base64chr(param.at(i))<<2)+((base64chr(param.at(i+1))&0x30)>>4), out);
-                if (base64chr(param.at(i+2)) >= 0)
-                    putc(((base64chr(param.at(i+1))&0x0F)<<4)+((base64chr(param.at(i+2))&0x3C)>>2), out);
-                if (base64chr(param.at(i+3)) >= 0)
-                    putc(((base64chr(param.at(i+2))&0x03)<<6)+base64chr(param.at(i+3)), out);
-            }
-            fclose(out);
+        	writeBase64(submissionPath,param);
+
+
         }
     }
 }
@@ -98,6 +83,20 @@ void JudgeRecord::deduceVariable()
 
 void JudgeRecord::compile()
 {
+	// Prepare dependencies
+	for (vector<Dependency>::iterator it = dependencies.begin();it != dependencies.end();it++)
+	{
+		char source[512];
+		char dest[512];
+		strcpy(source,dataDirectory.c_str());
+		strcat(source,(*it).filename.c_str());
+
+		strcpy(dest,workingDirectory.c_str());
+		strcat(dest,(*it).filename.c_str());
+
+		cp(source,dest);
+	}
+
     if (language.compare("cpp") == 0)
     {
         compiler = dynamic_cast<Compiler*>(new Compiler_CPP);
@@ -105,6 +104,10 @@ void JudgeRecord::compile()
     else if (language.compare("c") == 0)
     {
         compiler = dynamic_cast<Compiler*>(new Compiler_C);
+    }
+    else if (language.compare("pas") == 0)
+    {
+        compiler = dynamic_cast<Compiler*>(new Compiler_PAS);
     }else
     {
         throw 1;
@@ -150,7 +153,7 @@ void JudgeRecord::loadProblemSchema()
     sqlite3_bind_int(stmt, 1, problemID);
     sqlite3_step(stmt);
     type = sqlite3_column_int(stmt, 0);
-    comparison = string((const char*)sqlite3_column_text(stmt, 1));
+    compare = string((const char*)sqlite3_column_text(stmt, 1));
     input = string((const char*)sqlite3_column_text(stmt, 2));
     output = string((const char*)sqlite3_column_text(stmt, 3));
 	sqlite3_finalize(stmt);
@@ -172,7 +175,7 @@ void JudgeRecord::loadProblemSchema()
     sqlite3_finalize(depStmt);
     
     sqlite3_stmt *caseStmt;
-    char caseQuery[] = "SELECT cid,input,output,time_limit,memory_limit,score FROM testcases WHERE pid = ?";
+    char caseQuery[] = "SELECT cid,input,answer,time_limit,memory_limit,score FROM testcases WHERE pid = ?";
     sqlite3_prepare_v2(schemaDB, caseQuery, sizeof(caseQuery), &caseStmt, NULL);
     sqlite3_bind_int(caseStmt, 1, problemID);
     while (sqlite3_step(caseStmt) == SQLITE_ROW)

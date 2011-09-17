@@ -31,11 +31,13 @@ public:
     	char buffer[250];
     	while (!feof(mes))
     	{
-    		success = false;
     		fgets(buffer,250,mes);
     		message.append(buffer);
     	}
-    	fclose(mes);
+    	if (pclose(mes)/256)
+    	{
+    		success = false;
+    	}
     }
 private:
     virtual string generateCommand(const string &input, const string &output) = 0;

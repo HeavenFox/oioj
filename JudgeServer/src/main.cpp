@@ -21,12 +21,13 @@
 #include "Configuration.h"
 #include "JudgeRecord.h"
 #include "RunScheduler.h"
+#include "msgEval.h"
 
 using namespace std;
 
 RunScheduler *scheduler;
 
-int notifyFinishPipe[2];
+int msgQueue;
 
 int main (int argc, const char * argv[])
 {
@@ -35,6 +36,8 @@ int main (int argc, const char * argv[])
     
     Configuration::ReadConfiguration();
     
+    msgQueue = msgget(IPC_PRIVATE, 0700);
+
     // Create socket
     int sock = socket(AF_INET, SOCK_STREAM, 0);
     
@@ -43,6 +46,8 @@ int main (int argc, const char * argv[])
         perror("Create");
     }
     
+    fcntl(sock,F_SETFL,O_NONBLOCK);
+
     sockaddr_in sock_address, client_sock_addr;
     socklen_t client_sock_addr_len;
     memset((void*)&sock_address, 0, sizeof(sockaddr_in));
@@ -66,8 +71,16 @@ int main (int argc, const char * argv[])
     
     while (true)
     {
-        int client_sock = accept(sock, (struct sockaddr*)&client_sock_addr, &client_sock_addr_len);
-        
+    	int client_sock;
+    	struct msgEval msg;
+    	while ((client_sock = accept(sock, (struct sockaddr*)&client_sock_addr, &client_sock_addr_len)) < 0)
+    	{
+    		// Check message queue
+    		while (msgrcv(msgQueue,&msg,sizeof(msg),0,IPC_NOWAIT) >= 0)
+    		{
+    			scheduler->removeTask(msg.cpuid);
+    		}
+    	}
         if (scheduler->serverBusy())
         {
             char failure[20];
@@ -91,6 +104,7 @@ int main (int argc, const char * argv[])
 
             currentRecord->prepareProblem(str);
             int code = scheduler->arrangeTask(currentRecord);
+            cout<<"arranged"<<endl;
         }
         
         close(client_sock);

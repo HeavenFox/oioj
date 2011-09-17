@@ -15,6 +15,8 @@
 #include <sys/signal.h>
 #include "JudgeRecord.h"
 #include <cmath>
+#include <cstring>
+#include "fileop.h"
 
 using namespace std;
 
@@ -39,6 +41,7 @@ public:
     double timeLimit,actualTime;
     int memoryLimit;
     int bytesActualMemory;
+    int problemID;
     
     string input;
     string answer;
@@ -51,6 +54,10 @@ public:
     void run();
     
     void compare();
+
+    void loadSchema();
+
+    void addSchema(sqlite3* db);
 
     void cleanup();
 

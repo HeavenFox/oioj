@@ -7,7 +7,17 @@
 //
 #include "TestCase.h"
 
-#include <iostream>
+bool iswhite(char c)
+{
+	return c==' ' || c==EOF || c=='\n';
+}
+
+bool isenter(char c)
+{
+	return c=='\n' || c==EOF;
+}
+
+
 
 void TestCase::run()
 {
@@ -36,10 +46,7 @@ void TestCase::run()
 		strcat(outputDataPath, record->output.c_str());
 	}
 
-	symlink(inputDataOldPath,inputDataPath);
-
-	// Prepare dependencies
-	// TODO prepare dependencies
+	cp(inputDataOldPath,inputDataPath);
 
 	// Prepare pipe for IPC
 	int pd[2];
@@ -108,7 +115,7 @@ void TestCase::run()
 
 				time_passed = rinfo.ru_utime;
 
-				timeUsed = time_passed.tv_sec * 1000 + time_passed.tv_usec / 1000;
+				timeUsed = (double)time_passed.tv_sec + (double)time_passed.tv_usec / 1000000.0;
 
 				//Record the maximum of memory usage
 				if (mem_cur > memoryUsed)
@@ -233,7 +240,9 @@ void TestCase::compare()
 		char answerPath[256];
 		strcpy(answerPath, record->dataDirectory.c_str());
 		strcat(answerPath, answer.c_str());
-		if (record->comparison.compare(COMPARE_FULLTEXT) == 0)
+		bool fulltext = record->compare.compare(COMPARE_FULLTEXT) == 0;
+
+		if (fulltext || record->compare.compare(COMPARE_OMITSPACE) == 0)
 		{
 			FILE *userOutput = fopen(outputDataPath,"r");
 			FILE *answerData = fopen(answerPath,"r");
@@ -254,8 +263,37 @@ void TestCase::compare()
 
 				if (ca != cb)
 				{
-					result = TESTRESULT_WA;
-					break;
+					if (fulltext)
+					{
+						result = TESTRESULT_WA;
+						score = 0;
+						break;
+					}
+					else
+					{
+						if (!(iswhite(ca)&&iswhite(cb)))
+						{
+							result = TESTRESULT_WA;
+							score = 0;
+							break;
+						}
+						while (ca == ' ')
+						{
+							ca = fgetc(userOutput);
+						}
+						while (cb == ' ')
+						{
+							ca = fgetc(userOutput);
+						}
+
+						if (!(isenter(ca) && isenter(cb)))
+						{
+							result = TESTRESULT_WA;
+							score = 0;
+							break;
+						}
+					}
+
 				}
 				if (feof(userOutput) && feof(answerData))
 				{
@@ -266,13 +304,38 @@ void TestCase::compare()
 			fclose(userOutput);
 			fclose(answerData);
 		}
-		else if (record->comparison.compare(COMPARE_OMITSPACE) == 0)
-		{
-			// TODO comp method
-		}
 		else
 		{
-			// TODO Special judge
+			// Prepare special judge path
+			char specialJudge[512];
+			strcpy(specialJudge,Configuration::DataDirPrefix.c_str());
+			strcat(specialJudge, record->compare.c_str());
+			char specialJudgeBin[128];
+			strcpy(specialJudgeBin, record->compare.c_str());
+			char scorePath[512];
+			strcpy(scorePath,record->workingDirectory.c_str());
+			strcat(scorePath, "score.log");
+			unlink(scorePath);
+
+			char scorestr[4];
+			sprintf(scorestr,"%d",score);
+
+			if (vfork() == 0)
+			{
+				// Run file
+				execl(specialJudge,specialJudgeBin,scorestr,answerPath,NULL);
+			}
+			else
+			{
+				wait(NULL);
+
+				// Load score
+				FILE *scoreFile = fopen(scorePath, "r");
+				fscanf(scoreFile,"%d",&score);
+				fclose(scoreFile);
+
+				// TODO Log feature
+			}
 		}
 
 	}
@@ -391,4 +454,23 @@ void TestCase::initCallAllowance()
     callAllowance[SYS_waitpid]=0;
     #endif
 	callAllowance[SYS_execve] = 1;
+}
+
+void TestCase::addSchema(sqlite3 *db)
+{
+	char query[] = "INSERT INTO `testcases` (pid,cid,input,answer,time_limit,memory_limit,score) VALUES (?,?,?,?,?,?,?)";
+
+	sqlite3_stmt *stmt;
+	sqlite3_prepare_v2(db,query,sizeof(query),&stmt,NULL);
+	sqlite3_bind_int(stmt,1,problemID);
+	sqlite3_bind_int(stmt,2,caseID);
+	sqlite3_bind_text(stmt,3,input.c_str(),input.size(),NULL);
+	sqlite3_bind_text(stmt,4,answer.c_str(),answer.size(),NULL);
+	sqlite3_bind_double(stmt,5,timeLimit);
+	sqlite3_bind_double(stmt,6,memoryLimit);
+	sqlite3_bind_int(stmt,7,score);
+	sqlite3_step(stmt);
+	sqlite3_finalize(stmt);
+
+
 }

@@ -26,7 +26,10 @@
 #include "Configuration.h"
 #include "Compiler_C.h"
 #include "Compiler_CPP.h"
+#include "Compiler_PAS.h"
 #include "TestCase.h"
+#include "fileop.h"
+#include "Dependency.h"
 
 using namespace std;
 
@@ -47,10 +50,6 @@ using namespace std;
 
 class TestCase;
 
-struct Dependency {
-    string filename;
-    int type;
-};
 
 class JudgeRecord
 {
@@ -73,7 +72,7 @@ public:
     
     string language;
     
-    string comparison;
+    string compare;
     vector<Dependency> dependencies;
     
     string workingDirectory;
@@ -90,6 +89,8 @@ public:
     int type;
     
     short status;
+
+    short cpu;
 
     vector<TestCase> cases;
     
