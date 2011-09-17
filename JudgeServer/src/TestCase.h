@@ -41,6 +41,7 @@ public:
     double timeLimit,actualTime;
     int memoryLimit;
     int bytesActualMemory;
+    int problemID;
     
     string input;
     string answer;
@@ -56,7 +57,7 @@ public:
 
     void loadSchema();
 
-    void addSchema();
+    void addSchema(sqlite3* db);
 
     void cleanup();
 

@@ -455,3 +455,22 @@ void TestCase::initCallAllowance()
     #endif
 	callAllowance[SYS_execve] = 1;
 }
+
+void TestCase::addSchema(sqlite3 *db)
+{
+	char query[] = "INSERT INTO `testcases` (pid,cid,input,answer,time_limit,memory_limit,score) VALUES (?,?,?,?,?,?,?)";
+
+	sqlite3_stmt *stmt;
+	sqlite3_prepare_v2(db,query,sizeof(query),&stmt,NULL);
+	sqlite3_bind_int(stmt,1,problemID);
+	sqlite3_bind_int(stmt,2,caseID);
+	sqlite3_bind_text(stmt,3,input.c_str(),input.size(),NULL);
+	sqlite3_bind_text(stmt,4,answer.c_str(),answer.size(),NULL);
+	sqlite3_bind_double(stmt,5,timeLimit);
+	sqlite3_bind_double(stmt,6,memoryLimit);
+	sqlite3_bind_int(stmt,7,score);
+	sqlite3_step(stmt);
+	sqlite3_finalize(stmt);
+
+
+}

@@ -29,6 +29,7 @@
 #include "Compiler_PAS.h"
 #include "TestCase.h"
 #include "fileop.h"
+#include "Dependency.h"
 
 using namespace std;
 
@@ -49,10 +50,6 @@ using namespace std;
 
 class TestCase;
 
-struct Dependency {
-    string filename;
-    int type;
-};
 
 class JudgeRecord
 {

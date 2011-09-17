@@ -26,7 +26,7 @@ public:
 	string compare;
 
 	void loadSchema();
-	void addSchema();
+	void addSchema(sqlite3 *db);
 
 private:
 	sqlite3 *sqlite;

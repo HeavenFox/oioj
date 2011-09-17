@@ -81,7 +81,6 @@ int main (int argc, const char * argv[])
     			scheduler->removeTask(msg.cpuid);
     		}
     	}
-        cout<<"got one"<<endl;
         if (scheduler->serverBusy())
         {
             char failure[20];
