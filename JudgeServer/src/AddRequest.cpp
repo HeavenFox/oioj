@@ -32,10 +32,14 @@ void AddRequest::processRequest(string &s)
 		sin>>ndep;
 		for (int i=0;i<ndep;i++)
 		{
-
+			Dependency dep;
+			sin>>dep.filename>>dep.type;
+			dep.addSchema(db,p.id);
 		}
 		sqlite3_close(db);
 		// Process files
+		// Deprecated. use ftp instead
+		/*
 		int nfiles;
 		sin>>nfiles;
 		for (int i=0;i<nfiles;i++)
@@ -48,6 +52,7 @@ void AddRequest::processRequest(string &s)
 			dir<<Configuration::DataDirPrefix<<p.id<<'/'<<filename;
 			writeBase64(dir.str(),file);
 		}
+		*/
 		exit(0);
 	}
 
