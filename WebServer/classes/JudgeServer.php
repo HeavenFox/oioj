@@ -1,8 +1,6 @@
 <?php
 class JudgeServer
 {
-	
-	
 	public $id;
 	public $serverName;
 	public $workload;
@@ -66,11 +64,11 @@ class JudgeServer
 		return true;
 	}
 	
-	public function addWorkload()
+	public function addWorkload($val = 1)
 	{
 		$DB = Database::Get();
 		
-		$stmt = $DB->prepare('UPDATE `oj_judgeservers` SET `workload` = `workload` + 1 WHERE `id` = ?');
+		$stmt = $DB->prepare("UPDATE `oj_judgeservers` SET `workload` = `workload` + ({$val}) WHERE `id` = ?");
 		$stmt->execute(array($this->id));
 	}
 }

@@ -10,7 +10,7 @@ class JudgeRecord
 	
 	
 	public $problemID = 0;
-	public $recordID = 0;
+	public $id = 0;
 	public $lang;
 	
 	public $userID = 1;
@@ -24,6 +24,8 @@ class JudgeRecord
 	private $casesString = '';
 	
 	public $code = '';
+	
+	public $token;
 	
 	public function __construct($info = NULL)
 	{
@@ -39,7 +41,7 @@ class JudgeRecord
 	
 	public function constructFromRow($row)
 	{
-		if (isset($row['id'])) $this->recordID = $row['id'];
+		if (isset($row['id'])) $this->id = $row['id'];
 		if (isset($row['pid'])) $this->problemID = $row['pid'];
 		if (isset($row['status'])) $this->status = $row['status'];
 		if (isset($row['server'])) $this->serverID = $row['server'];
@@ -51,7 +53,7 @@ class JudgeRecord
 	
 	public function constructFromID($id)
 	{
-		$this->recordID = $id;
+		$this->id = $id;
 		$DB = Database::Get();
 		$stmt = $DB->prepare('SELECT pid,status,server,lang,uid,code,cases,timestamp FROM `oj_records` WHERE `id` = ?');
 		$stmt->execute(array($id));
@@ -61,13 +63,12 @@ class JudgeRecord
 	public function __toString()
 	{
 		$codeBase64 = base64_encode($this->code);
-		echo "ProblemID {$this->problemID}\nRecordID {$this->recordID}\nLang {$this->lang}\nSubmission {$codeBase64}";
-		return "ProblemID {$this->problemID}\nRecordID {$this->recordID}\nLang {$this->lang}\nSubmission {$codeBase64}";
+		return "JUDGE\nProblemID {$this->problemID}\nRecordID {$this->id}\nLang {$this->lang}\nSubmission {$codeBase64}";
 	}
 	
 	public function submit()
 	{
-		if ($this->recordID)
+		if ($this->id)
 		{
 			$this->updateRecord();
 		}
@@ -82,25 +83,37 @@ class JudgeRecord
 		$DB = Database::Get();
 		$stmt = $DB->prepare('INSERT INTO `oj_records` (pid,status,server,lang,uid,code,cases,timestamp) VALUES (?,?,?,?,?,?,?,?)');
 		$stmt->execute(array($this->problemID, $this->status, $this->serverID, $this->lang, $this->userID, $this->code, $this->casesString, time()));
-		$this->recordID = $DB->lastInsertId();
-		echo $this->recordID;
+		$this->id = $DB->lastInsertId();
+		echo $this->id;
 	}
 	
 	private function updateRecord()
 	{
 		$DB = Database::Get();
 		$stmt = $DB->prepare('UPDATE `oj_records` SET status = ?, cases = ?, server = ? WHERE `id` = ?');
-		$stmt->execute(array($this->status, $this->casesString, $this->serverID, $this->recordID));
+		$stmt->execute(array($this->status, $this->casesString, $this->serverID, $this->id));
 	}
 	
 	public function parseCallback($general, $cases)
 	{
 		$gen = parseProtocol($general);
+		
+		if ($gen['Token'] != $this->token)
+		{
+			throw new Exception('Token check failed');
+		}
+		
 		$this->constructFromID($gen['RecordID']);
 		$this->status = $gen['Status'];
 		
 		array_map("parseProtocol", $cases);
 		
 		$this->casesString = serialize($cases);
+		
+		import('JudgeServer');
+		
+		$server = new JudgeServer();
+		$server->id = $this->serverID;
+		$server->addWorkload(-1);
 	}
 }

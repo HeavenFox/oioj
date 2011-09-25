@@ -1,10 +1,10 @@
 <?php 
 require_once 'init.php';
+
+import('OIOJ');
+
+OIOJ::InitTemplate();
+
+OIOJ::$template->display('index.tpl');
+
 ?>
-<form method="post" action="judge.php">
-    User ID: <input name="uid" />
-    Problem ID: <input name="pid" />
-    Language: <input name="lang" />
-    Code: <textarea name="code">Hello World</textarea>
-    <input type="submit" value="Submit" />
-</form>
