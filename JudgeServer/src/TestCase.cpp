@@ -17,8 +17,6 @@ bool isenter(char c)
 	return c=='\n' || c==EOF;
 }
 
-
-
 void TestCase::run()
 {
 	initCallAllowance();
@@ -75,14 +73,14 @@ void TestCase::run()
 
 		char binaryName[128];
 		sprintf(binaryName, "%d", record->recordID);
-
+		double convertedTimeLimit = timeLimit * Configuration::TimeMultipler;
 		pid_t pid = fork();
 		if (pid == 0)
 		{
 			struct rlimit rl_time_limit,rl_output_limit;
 
 			//Set CPU Time Limit
-			rl_time_limit.rlim_cur = int(ceil(timeLimit));
+			rl_time_limit.rlim_cur = int(ceil(convertedTimeLimit));
 			setrlimit(RLIMIT_CPU,&rl_time_limit);
 
 			//Set Output File Size Limit
@@ -107,7 +105,8 @@ void TestCase::run()
 
 			for (;;)
 			{
-				//Suspend the child process to check its state
+
+				// Suspend the child process to check its state
 				wait4(pid,&runstat,0,&rinfo);
 
 				//Get current memory usage and time
@@ -117,12 +116,12 @@ void TestCase::run()
 
 				timeUsed = (double)time_passed.tv_sec + (double)time_passed.tv_usec / 1000000.0;
 
-				//Record the maximum of memory usage
+				// Record the maximum of memory usage
 				if (mem_cur > memoryUsed)
 					memoryUsed = mem_cur;
 
-				//Time limit exceed
-				if (timeUsed > timeLimit)
+				// Time limit exceed
+				if (timeUsed > convertedTimeLimit)
 				{
 					ptrace(PT_KILL,pid,NULL,NULL);
 					resultCode = TESTRESULT_TLE;

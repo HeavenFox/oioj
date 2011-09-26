@@ -18,12 +18,17 @@
 
 #include "ExecutionServer.cpp"
 
+#include "AddRequest.h"
+
 #include "Configuration.h"
 #include "JudgeRecord.h"
 #include "RunScheduler.h"
 #include "msgEval.h"
 
 using namespace std;
+
+#define REQUEST_EVAL 1
+#define REQUEST_ADD 2
 
 RunScheduler *scheduler;
 
@@ -90,6 +95,27 @@ int main (int argc, const char * argv[])
         else
         {
             const int buffer_size = 500;
+            const int command_size = 6;
+            char actioncmd[command_size+1];
+            int len = recv(client_sock, actioncmd, command_size, 0);
+            actioncmd[len] = '\0';
+            int action;
+            if (strcmp(actioncmd,"JUDGE\n") == 0)
+            {
+            	action = REQUEST_EVAL;
+            }
+            else if (strcmp(actioncmd,"ADDPB\n") == 0)
+            {
+            	action = REQUEST_ADD;
+            }
+            else
+            {
+            	cerr<<"unrecognized command: "<<actioncmd<<endl;
+            	close(client_sock);
+            	continue;
+            }
+
+
             char buffer[buffer_size+1];
             
             string str;
@@ -100,11 +126,23 @@ int main (int argc, const char * argv[])
                 str.append(buffer);
             }
             
-            JudgeRecord *currentRecord = new JudgeRecord;
+            if (action == REQUEST_EVAL)
+            {
+            	JudgeRecord *currentRecord = new JudgeRecord;
+            	try
+            	{
+            		currentRecord->prepareProblem(str);
+            		int code = scheduler->arrangeTask(currentRecord);
+            	}catch(int e)
+            	{
 
-            currentRecord->prepareProblem(str);
-            int code = scheduler->arrangeTask(currentRecord);
-            cout<<"arranged"<<endl;
+            	}
+
+            } else if (action == REQUEST_ADD)
+            {
+            	AddRequest req;
+            	req.processRequest(str);
+            }
         }
         
         close(client_sock);

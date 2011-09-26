@@ -21,11 +21,14 @@ public:
     static int ConcurrentJobs;
     static int CPUCount;
     static double CompilerTimeLimit;
+    static double TimeMultipler;
     static int WaitlistSize;
     static string WorkingDirPrefix;
     static string DataDirPrefix;
     static string ProblemSchemaDB;
     
+    static string Token;
+
     static string WebServer;
     static string WebServerCallbackScript;
 

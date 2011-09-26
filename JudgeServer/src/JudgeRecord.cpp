@@ -34,6 +34,15 @@ void JudgeRecord::prepareProblem(string s)
         }
         string param;
         getline(lin, param);
+
+        if (op.compare("Token") == 0)
+        {
+        	if (param.compare(Configuration::Token))
+        	{
+        		throw 1;
+        	}
+        	continue;
+        }
         if (op.compare("Lang") == 0)
         {
             language = param;
@@ -52,7 +61,6 @@ void JudgeRecord::prepareProblem(string s)
         	deduceVariable();
 
         	writeBase64(submissionPath,param);
-
 
         }
     }
