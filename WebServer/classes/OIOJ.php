@@ -5,10 +5,11 @@ class OIOJ
 	
 	public static function InitTemplate()
 	{
+		import('template.Template');
 		return self::$template = new Template();
 	}
 	
-	public static function PrepareDatabase()
+	public static function InitDatabase()
 	{
 		import('database.Database');
 		Database::Get(Config::$MySQL);

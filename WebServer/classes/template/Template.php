@@ -7,9 +7,9 @@ class Template extends Smarty
 	{
 		parent::__construct();
 		$this->template_dir = ROOT . 'templates' . DIRECTORY_SEPARATOR;
-		$this->compile_dir = ROOT. 'templates' . DIRECTORY_SEPARATOR . 'compile' ¡£ DIRECTORY_SEPARATOR;
-		$this->cache_dir = ROOT. 'templates' . DIRECTORY_SEPARATOR ¡£ 'cache' . DIRECTORY_SEPARATOR;
-		$this->config_dir = ROOT . 'templates' . DIRECTORY_SEPARATOR ¡£ 'configs' . DIRECTORY_SEPARATOR;
+		$this->compile_dir = ROOT. 'templates' . DIRECTORY_SEPARATOR . 'compile'. DIRECTORY_SEPARATOR;
+		$this->cache_dir = ROOT. 'templates' . DIRECTORY_SEPARATOR.'cache'.DIRECTORY_SEPARATOR;
+		$this->config_dir = ROOT . 'templates' . DIRECTORY_SEPARATOR.'configs'.DIRECTORY_SEPARATOR;
 		$this->caching = Smarty::CACHING_LIFETIME_CURRENT;
 	}
 }

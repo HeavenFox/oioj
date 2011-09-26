@@ -1,14 +1,23 @@
 <?php
+// Security check
 substr($_SERVER['HTTP_USER_AGENT'],0,15) == 'OIOJJudgeServer' || die('Unauthorized access');
+
 require_once 'init.php';
 
 import('OIOJ');
 
-OIOJ::PrepareDatabase();
+OIOJ::InitDatabase();
 
 import('JudgeRecord');
 
 $record = new JudgeRecord();
-$record->parseCallback($_POST['general'],$_POST['cases']);
-$record->submit();
+$record->token = Config::$Token;
+
+try {
+	$record->parseCallback($_POST['general'],$_POST['cases']);
+	$record->submit();
+} catch (Exception $e)
+{
+	die('Unauthorized access')
+}
 ?>
