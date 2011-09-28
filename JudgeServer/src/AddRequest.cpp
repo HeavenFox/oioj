@@ -53,7 +53,13 @@ void AddRequest::processRequest(string &s)
 			writeBase64(dir.str(),file);
 		}
 		*/
-		exit(0);
+		string format,filename;
+		sin>>format>>filename;
+		string path = Configuration::DataDirPrefix + filename;
+		ostringstream outputdir(Configuration::DataDirPrefix);
+		outputdir<<p.id<<'/';
+
+		execl("tar","tar","-xzf",path.c_str(),outputdir.str().c_str(),NULL);
 	}
 
 }

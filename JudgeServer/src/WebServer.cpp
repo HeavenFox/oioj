@@ -38,7 +38,7 @@ void WebServer::pushResult(JudgeRecord *record)
 	int status = RECORDSTATUS_ACCEPTED;
 
 	char generalState[256];
-	sprintf(generalState, "RecordID %d\nStatus %d\n", recordID, status);
+	sprintf(generalState, "RecordID %d\nStatus %d\nToken %s\n", recordID, status, Configuration::Token.c_str());
 
 	string postString("general=");
 	postString.append(urlencode(generalState));
@@ -87,7 +87,4 @@ void WebServer::pushResult(JudgeRecord *record)
 
 	send(sock,finalRequest,strlen(finalRequest),0);
 	close(sock);
-
-
-
 }

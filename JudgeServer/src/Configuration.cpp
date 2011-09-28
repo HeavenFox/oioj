@@ -13,10 +13,12 @@ int Configuration::AgentUID;
 int Configuration::ConcurrentJobs;
 int Configuration::CPUCount;
 double Configuration::CompilerTimeLimit;
+double Configuration::TimeMultipler;
 int Configuration::WaitlistSize;
 string Configuration::WorkingDirPrefix;
 string Configuration::DataDirPrefix;
 string Configuration::ProblemSchemaDB;
+string Configuration::Token;
 string Configuration::WebServer;
 string Configuration::WebServerCallbackScript;
 
@@ -61,6 +63,11 @@ void Configuration::ReadConfiguration()
                 sin>>CompilerTimeLimit;
                 continue;
             }
+            if (op.compare("TimeMultipler") == 0)
+            {
+            	sin>>TimeMultipler;
+            	continue;
+            }
             if (op.compare("WaitlistSize") == 0)
             {
                 sin>>WaitlistSize;
@@ -82,6 +89,11 @@ void Configuration::ReadConfiguration()
             {
                 ProblemSchemaDB = param;
                 continue;
+            }
+            if (op.compare("Token") == 0)
+            {
+            	Token = param;
+            	continue;
             }
             if (op.compare("WebServer") == 0)
             {
