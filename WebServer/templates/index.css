@@ -1,0 +1,82 @@
+#body h2
+{
+	font-weight: normal;
+	font-size: 22px;
+	font-family: 'Segoe UI Light','Segoe UI','Lucida Grande',Verdana,Arial,Helvetica,sans-serif;
+}
+#blocknav
+{
+	height: 250px;
+}
+#blocknav li
+{
+	display: block;
+	float: left;
+	width: 300px;
+	
+	height: 230px;
+	text-align: center;
+}
+
+#blocknav h3 a
+{
+text-decoration: none;
+color: white;
+font-weight: normal;
+	font-size: 20px;
+	font-family: 'Segoe UI','Lucida Grande',Verdana,Arial,Helvetica,sans-serif;
+
+}
+
+#blocknav h3 a:hover
+{
+	text-decoration: underline;
+}
+
+#blocknav li img
+{
+	vertical-align: middle;
+}
+
+#learn
+{
+	background-color: #9f9aff;
+}
+
+#solve
+{
+background-color: #82ff60;
+margin-left: 30px;
+margin-right: 30px;
+}
+
+#compete
+{
+	background-color: blue;
+}
+
+
+
+#login_panel
+{
+	background-color: #ebeaff;
+	padding: 3px;
+	width: 350px;
+	float: left;
+}
+
+#register_panel
+{
+	width: 600px;
+	float: right;
+}
+
+#vertical_separator
+{
+	float: left;
+}
+
+#quicksubmit
+{
+	clear: both;
+}
