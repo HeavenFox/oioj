@@ -1,19 +1,80 @@
 @CHARSET "UTF-8";
 
+body
+{
+	font-family: Tahoma, Verdana, Lucida Grande, sans-serif;
+	font-size: 12px;
+}
+
 #container
 {
-	width: auto;
-	margin: 0 40px 0 40px;
+	width: 960px;
+	margin: 0 auto 0 auto;
 }
 
 #header
 {
-	height: 200px;
+	width: 100%;
+	height: 95px;
+	background-image: url('./images/header_tile.gif');
+}
+
+#header #logo
+{
+	float: left;
+	margin-left: 5px;
+}
+
+#header #navbar
+{
+
+	float: right;
+	color: white;
+	height: 90px;
+	font-size: 18px;
+	font-family: Tahoma, Verdana, sans-serif;
+}
+
+#header #navbar ul
+{
+	height: 100%;
+}
+
+#navbar li
+{
+	height: 100%;
+	line-height: 90px;
+	padding-left: 17px;
+	padding-right: 14px;
+	display: block;
+	float: left;
+	background: url('./images/header_vbar.gif') top left repeat-y;
+}
+
+#infobar
+{
+	margin-top: 3px;
+	height: 15px;
+}
+
+#infobar #breadcrumb
+{
+	float: left;
+}
+
+#infobar #userinfo
+{
+	float: right;
 }
 
 #footer
 {
+	width: 100%;
 	font-family: Verdana, Tahoma;
 	text-align: center;
 	font-size: 10px;
+	margin-top: 5px;
+	padding: 5px 0 5px 0;
+	background-color: #eeeeee;
 }
+

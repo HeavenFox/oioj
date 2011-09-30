@@ -7,23 +7,26 @@ class ActiveRecord
 	
 	protected $_propertiesClass = array();
 	
-	protected $_composites = array();
+	protected $_hasMany = array();
+	protected $_hasOne = array();
 	
 	protected $_cross = array();
 	
-	protected $propValues = array();
+	protected $_propValues = array();
 	
 	protected $_propUpdated = array();
 	
 	protected $_rowIDProperty = '';
-	protected $_rowIDColumn = '';
 	
 	protected $_columnProperty = array();
 	
-	public function createTable()
+	protected $_db;
+	
+	public function __construct()
 	{
-		
+		$this->_db = Database::Get();
 	}
+	
 	
 	public function submit()
 	{
@@ -44,7 +47,6 @@ class ActiveRecord
 	{
 		if (count($this->_propUpdated) > 0)
 		{
-			$db = Database::Get();
 			$queryStr = "UPDATE {$this->_tableName} SET ";
 			foreach ($this->_propUpdated as $k => $v)
 			{
@@ -54,7 +56,12 @@ class ActiveRecord
 		}
 	}
 	
-	public function fetch($id)
+	public function fetch($condition)
+	{
+		
+	}
+	
+	public function fetchByQuery($query, $parameters, $properties, $composites)
 	{
 		
 	}
@@ -65,35 +72,43 @@ class ActiveRecord
 		return $this->$prop;
 	}
 	
-	public function fillRow($row)
+	public function _fillRow($row)
 	{
 		
 	}
 	
-	protected function columnToProperty($column)
+	
+	protected function _columnToProperty($column)
 	{
 		
 	}
 	
-	public static function find()
+	public static function find($properties, $composites, $suffix)
 	{
 		
 	}
 	
-	public function remove()
+	public function remove($composites = null)
 	{
-		
+		$this->_db->query("");
+		if (is_array($composites))
+		{
+			foreach($composites as $composite)
+			{
+				$
+			}
+		}
 	}
 	
 	public function __get($param)
 	{
-		return $this->propValues[$param];
+		return $this->_propValues[$param];
 	}
 	
 	public function __set($param, $value)
 	{
 		$this->_propUpdated[$param] = true;
-		$this->propValues[$param] = $value;
+		$this->_propValues[$param] = $value;
 	}
 }
 ?>
