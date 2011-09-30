@@ -32,7 +32,9 @@ void Configuration::ReadConfiguration()
     {
 
         if (s.size() > 1 && s.at(0) != '#'){
-        	s.resize(s.size()-1);
+        	if (s.at(s.size()-1) == '\n')
+        		s.resize(s.size()-1);
+
             istringstream sin(s);
             string op,param;
             sin>>op>>ws;
