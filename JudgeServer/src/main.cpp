@@ -40,7 +40,7 @@ int main (int argc, const char * argv[])
     cout<<"Reading configuration... "<<endl;
     
     Configuration::ReadConfiguration();
-    
+
     msgQueue = msgget(IPC_PRIVATE, 0700);
 
     // Create socket
@@ -86,6 +86,7 @@ int main (int argc, const char * argv[])
     			scheduler->removeTask(msg.cpuid);
     		}
     	}
+    	cout<<"Received request"<<endl;
         if (scheduler->serverBusy())
         {
             char failure[20];
@@ -129,13 +130,13 @@ int main (int argc, const char * argv[])
             if (action == REQUEST_EVAL)
             {
             	JudgeRecord *currentRecord = new JudgeRecord;
-            	try
-            	{
-            		currentRecord->prepareProblem(str);
-            		int code = scheduler->arrangeTask(currentRecord);
-            	}catch(int e)
-            	{
 
+            	if (!currentRecord->prepareProblem(str))
+            	{
+            		delete currentRecord;
+            	} else
+            	{
+            		int code = scheduler->arrangeTask(currentRecord);
             	}
 
             } else if (action == REQUEST_ADD)

@@ -8,9 +8,7 @@
 
 #include "JudgeRecord.h"
 
-
-
-void JudgeRecord::prepareProblem(string s)
+bool JudgeRecord::prepareProblem(string s)
 {
     istringstream sin(s);
     string line;
@@ -39,7 +37,7 @@ void JudgeRecord::prepareProblem(string s)
         {
         	if (param.compare(Configuration::Token))
         	{
-        		throw 1;
+        		return false;
         	}
         	continue;
         }
@@ -64,6 +62,7 @@ void JudgeRecord::prepareProblem(string s)
 
         }
     }
+    return true;
 }
 
 void JudgeRecord::deduceVariable()
