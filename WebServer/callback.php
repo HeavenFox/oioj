@@ -2,6 +2,7 @@
 // Security check
 substr($_SERVER['HTTP_USER_AGENT'],0,15) == 'OIOJJudgeServer' || die('Unauthorized access');
 
+
 require_once 'init.php';
 
 import('OIOJ');
@@ -18,6 +19,8 @@ try {
 	$record->submit();
 } catch (Exception $e)
 {
-	die('Unauthorized access')
+	file_put_contents("log.txt","unauthorized ".strval($e));
+	die('Unauthorized access');
 }
+
 ?>

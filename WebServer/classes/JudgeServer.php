@@ -42,7 +42,7 @@ class JudgeServer
 	public static function GetAvailableServers()
 	{
 		$DB = Database::Get();
-		$stmt = $DB->query('SELECT id, name, ip, port, workload, max_workload FROM oj_judgeservers WHERE workload < max_workload ORDER BY workload ASC');
+		$stmt = $DB->query('SELECT id, name, ip, port, workload, maxWorkload FROM oj_judgeservers WHERE workload < maxWorkload ORDER BY workload ASC');
 		$servers = array();
 		foreach ($stmt as $v)
 		{

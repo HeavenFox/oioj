@@ -4,7 +4,7 @@ require_once 'init.php';
 import('OIOJ');
 
 // These modules are legimate
-$availableModules = array('user' => 'UserModule', 'records' => 'RecordsModule', 'submit' => 'SubmitModule', 'judge' => 'JudgeModule');
+$availableModules = array('user' => 'UserModule', 'records' => 'RecordsModule', 'submit' => 'SubmitModule', 'judge' => 'JudgeModule', 'problemlist' => 'ProblemListModule');
 
 // These modules should be autoloaded
 $autoloadModules = array('UserModule');
@@ -20,7 +20,9 @@ foreach ($autoloadModules as $module)
 
 if (isset($_GET['mod']) && isset($availableModules[$_GET['mod']]))
 {
+	require_once MODULE_DIR . $availableModules[$_GET['mod']] . '.php';
 	$module = new $availableModules[$_GET['mod']];
+	$module->run();
 }
 else
 {

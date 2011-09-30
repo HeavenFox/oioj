@@ -3,22 +3,13 @@ class ActiveRecord
 {
 	protected $_tableName = '';
 	
-	protected $_properties = array();
-	
-	protected $_propertiesClass = array();
-	
-	protected $_hasMany = array();
-	protected $_hasOne = array();
-	
-	protected $_cross = array();
+	protected $_schema = array();
 	
 	protected $_propValues = array();
 	
 	protected $_propUpdated = array();
 	
 	protected $_rowIDProperty = '';
-	
-	protected $_columnProperty = array();
 	
 	protected $_db;
 	
@@ -50,10 +41,58 @@ class ActiveRecord
 			$queryStr = "UPDATE {$this->_tableName} SET ";
 			foreach ($this->_propUpdated as $k => $v)
 			{
-				$this->$k
 			}
 			$queryStr .= " WHERE `{$this->_rowIDColumn}` = {}";
 		}
+	}
+	
+	protected static function _makeQueryString($properties, $composites, $suffix)
+	{
+		$queryStr = 'SELECT ';
+		$first = true;
+		foreach ($properties as $prop)
+		{
+			if ($first){
+				$first = false;
+			}else
+			{
+				$queryStr .= ',';
+			}
+			$queryStr .= "`{self::$tableName}`.`{$prop}`";
+		}
+		
+		$queryStr .= " FROM `{self::$tableName}` ";
+		$queryStr .= $suffix;
+		
+		return $queryStr;
+	}
+	
+	/**
+	 * Find records matching specific criteria
+	 * @param array $properties
+	 * @param array $composites
+	 * @param string $suffix
+	 * @todo finish composite function
+	 */
+	public static function find($properties, $composites, $suffix)
+	{
+		$queryStr = self::_makeQueryString($properties, $composites, $suffix);
+		$resultSet = array();
+		foreach(Database::Get()->query($queryStr) as $row)
+		{
+			$obj = new self;
+			for ($i = 0; $i < count($properties); $i++)
+			{
+				$obj->_propValues[$properties[$i]] = $row[$i];
+			}
+			$resultSet[] = $obj;
+		}
+		return $resultSet;
+	}
+	
+	public static function first()
+	{
+		
 	}
 	
 	public function fetch($condition)
@@ -61,32 +100,24 @@ class ActiveRecord
 		
 	}
 	
-	public function fetchByQuery($query, $parameters, $properties, $composites)
+	public function findByQuery($query, $properties, $composites)
 	{
 		
 	}
 	
-	public function getRowID()
-	{
-		$prop = $this->_rowIDProperty;
-		return $this->$prop;
-	}
 	
 	public function _fillRow($row)
 	{
-		
+		foreach ($row as $k => $v)
+		{
+			if (is_string($k))
+			{
+				$this->_propValues[$k] = $v;
+			}
+		}
 	}
 	
 	
-	protected function _columnToProperty($column)
-	{
-		
-	}
-	
-	public static function find($properties, $composites, $suffix)
-	{
-		
-	}
 	
 	public function remove($composites = null)
 	{
@@ -95,7 +126,7 @@ class ActiveRecord
 		{
 			foreach($composites as $composite)
 			{
-				$
+				
 			}
 		}
 	}

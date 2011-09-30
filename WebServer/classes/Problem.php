@@ -3,12 +3,34 @@ import('ActiveRecord');
 
 class Problem extends ActiveRecord
 {
+	public static $schema = array(
+			'id' => array('class' => 'int'),
+			'title' => array('class' => 'string'),
+			'body' => array('class' => 'text'),
+			'type' => array('class' => 'int'),
+			'input' => array('class' => 'string'),
+			'output' => array('class' => 'string'),
+			'compare' => array('class' => 'string'),
+			'submission' => array('class' => 'int'),
+			'listing' => array('class' => 'bool')
+		);
+	public static $tableName = 'oj_problems';
 	public function __construct()
 	{
 		parent::__construct();
 		$this->_tableName = 'oj_problems';
-		$this->_properties = array('id' => 'id', 'title' => 'title', 'body' => 'body', 'type' => 'type', 'input' => 'input', 'output' => 'output', 'compare' => 'compare', 'submission' => 'submission', 'accepted' => 'accepted', 'listing' => 'listing');
-		$this->_propertiesClass = array('')
+		
+		$this->_schema = array(
+			'id' => array('class' => 'int'),
+			'title' => array('class' => 'string'),
+			'body' => array('class' => 'text'),
+			'type' => array('class' => 'int'),
+			'input' => array('class' => 'string'),
+			'output' => array('class' => 'string'),
+			'compare' => array('class' => 'string'),
+			'submission' => array('class' => 'int'),
+			'listing' => array('class' => 'bool')
+		);
 	}
 }
 ?>

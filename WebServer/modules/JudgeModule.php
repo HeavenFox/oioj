@@ -23,6 +23,8 @@ class JudgeModule
 		
 		$record->submit();
 		
+		$server=null;
+		
 		while ($server = array_shift($servers))
 		{
 			if ($server->dispatch($record))
@@ -36,5 +38,7 @@ class JudgeModule
 		
 		
 		$record->submit();
+		
+		echo "Your request has been processed. Record ID is ". $record->id." and task was dispatched to server " . $server->serverName;
 	}
 }

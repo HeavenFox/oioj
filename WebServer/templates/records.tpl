@@ -1,7 +1,11 @@
 {extends file="base.tpl"}
+{block name="extra_header"}
+<script type="text/javascript" src="scripts/records.js"></script>
+<link rel="stylesheet" href="templates/records.css" />
+{/block}
 {block name="body"}
 <table id='records'>
-<thead><tr><td>ID</td><td>Problem</td><td>Status</td><td>Score</td><td>Language</td><td>Author</td><td>Time</td></tr></thead>
+<thead><tr><td width="20px">ID</td><td>Problem</td><td width="40px">Status</td><td width="40px">Score</td><td width="20px">Language</td><td width="100px">Author</td><td width="100px">Time</td></tr></thead>
 <tbody>
 {foreach $records as $record}
 <tr class='{cycle values="odd,even"}'>
@@ -23,8 +27,4 @@
 {/foreach}
 </tbody>
 </table>
-{/block}
-{block name="extra_header"}
-<script type="text/javascript" src="scripts/records.js"></script>
-<link rel="stylesheet" href="templates/records.css" />
 {/block}

@@ -100,7 +100,7 @@ class JudgeRecord
 		
 		if ($gen['Token'] != $this->token)
 		{
-			throw new Exception('Token check failed');
+			throw new Exception('Token check failed. Met '.$gen['Token'].' but expect '.$this->token);
 		}
 		
 		$this->constructFromID($gen['RecordID']);

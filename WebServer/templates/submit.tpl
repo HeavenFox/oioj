@@ -1,6 +1,6 @@
 {extends file="base.tpl"}
 {block name="body"}
-<form method="post" action="judge.php">
+<form method="post" action="index.php?mod=judge">
 <table>
 <tr>
     <td>User ID:</td><td><input name="uid" /></td>
