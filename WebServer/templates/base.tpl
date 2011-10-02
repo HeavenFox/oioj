@@ -11,7 +11,7 @@
 <body>
 <div id="header">
 <div id="logo"><img src='templates/images/header.png' /></div>
-<div id="navbar"><ul><li>Library</li><li>Practice</li><li>Arena</li></ul></div>
+<div id="navbar"><ul><li>Learning Center</li><li>Problems</li><li>Records</li><li>Arena</li></ul></div>
 </div>
 <div id="infobar"><div id="breadcrumb">Home</div><div id="userinfo">Welcome, Profile - Log out</div></div>
 <div id="container"><div id="body">{block name="body"}<!-- DEFAULT CONTENT -->{/block}</div>

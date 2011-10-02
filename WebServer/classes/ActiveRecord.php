@@ -1,21 +1,24 @@
 <?php
+import('database.Database');
 class ActiveRecord
 {
+	/*
 	protected $_tableName = '';
 	
 	protected $_schema = array();
-	
+	*/
 	protected $_propValues = array();
 	
 	protected $_propUpdated = array();
 	
+	/*
 	protected $_rowIDProperty = '';
 	
-	protected $_db;
+	protected static $_db;
+	*/
 	
 	public function __construct()
 	{
-		$this->_db = Database::Get();
 	}
 	
 	
@@ -32,6 +35,11 @@ class ActiveRecord
 	public function add()
 	{
 		
+	}
+	
+	public function propertyExists($prop)
+	{
+		return isset($this->_propValues[$prop]);
 	}
 	
 	public function update()
@@ -58,10 +66,10 @@ class ActiveRecord
 			{
 				$queryStr .= ',';
 			}
-			$queryStr .= "`{self::$tableName}`.`{$prop}`";
+			$queryStr .= "`".static::$tableName."`.`{$prop}`";
 		}
 		
-		$queryStr .= " FROM `{self::$tableName}` ";
+		$queryStr .= " FROM `".static::$tableName."` ";
 		$queryStr .= $suffix;
 		
 		return $queryStr;
@@ -69,6 +77,7 @@ class ActiveRecord
 	
 	/**
 	 * Find records matching specific criteria
+	 * 
 	 * @param array $properties
 	 * @param array $composites
 	 * @param string $suffix
@@ -78,13 +87,16 @@ class ActiveRecord
 	{
 		$queryStr = self::_makeQueryString($properties, $composites, $suffix);
 		$resultSet = array();
-		foreach(Database::Get()->query($queryStr) as $row)
+		$stmt = Database::Get()->query($queryStr);
+		foreach($stmt as $row)
 		{
-			$obj = new self;
+			$obj = new static;
+			/*
 			for ($i = 0; $i < count($properties); $i++)
 			{
 				$obj->_propValues[$properties[$i]] = $row[$i];
-			}
+			}*/
+			$obj->_fillRow($row,$properties, $composites);
 			$resultSet[] = $obj;
 		}
 		return $resultSet;
@@ -105,14 +117,26 @@ class ActiveRecord
 		
 	}
 	
-	
-	public function _fillRow($row)
+	public function _setProp($prop, $val)
 	{
-		foreach ($row as $k => $v)
+		$this->_propValues[$prop] = $val;
+	}
+	
+	
+	public function _fillRow($row, $properties, $composites)
+	{
+		$i = 0;
+		foreach ($properties as $v)
 		{
-			if (is_string($k))
+			$this->_propValues[$v] = $row[$i];
+			$i++;
+		}
+		foreach ($composites as $prop => $comp)
+		{
+			foreach ($comp as $v)
 			{
-				$this->_propValues[$k] = $v;
+				$this->_propValues[$prop]->_setProp($v,$row[$i]);
+				$i++;
 			}
 		}
 	}

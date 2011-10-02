@@ -8,7 +8,6 @@ require_once ROOT . DIRECTORY_SEPARATOR . 'config.php';
 define('OIOJ_VERSION', 100);
 define('OIOJ_READABLE_VERSION','v1.0.0');
 
-
 /**
  * Import class
  * @param string $package Class package to import
@@ -36,5 +35,10 @@ function parseProtocol($str)
 	}
 	return $t;
 }
+
+// Add fallback mechanism
+spl_autoload_register(function($className){
+	import($className);
+});
 ?>
     
