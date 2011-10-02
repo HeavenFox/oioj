@@ -12,12 +12,16 @@ class Problem extends ActiveRecord
 			'output' => array('class' => 'string'),
 			'compare' => array('class' => 'string'),
 			'submission' => array('class' => 'int'),
-			'listing' => array('class' => 'bool')
+			'listing' => array('class' => 'bool'),
+			'user' => array('class' => 'User', 'num' => 'one', 'column' => 'uid')
 		);
 	public static $tableName = 'oj_problems';
+	public static $keyProperty = 'id';
+	/*
 	public function __construct()
 	{
 		parent::__construct();
+		
 		$this->_tableName = 'oj_problems';
 		
 		$this->_schema = array(
@@ -31,6 +35,6 @@ class Problem extends ActiveRecord
 			'submission' => array('class' => 'int'),
 			'listing' => array('class' => 'bool')
 		);
-	}
+	}*/
 }
 ?>

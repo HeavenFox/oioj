@@ -2,6 +2,7 @@
 class OIOJ
 {
 	public static $template;
+	public static $User;
 	
 	public static function InitTemplate()
 	{
@@ -15,5 +16,12 @@ class OIOJ
 		Database::Get(Config::$MySQL);
 	}
 	
+	public static function InitUser()
+	{
+		if (!self::$User)
+		{
+			self::$User = User::
+		}
+	}
 }
 ?>
