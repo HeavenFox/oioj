@@ -28,6 +28,11 @@ class User extends ActiveRecord
 		return null;
 	}
 	
+	public function create()
+	{
+		
+	}
+	
 	private static function ReadSession()
 	{
 		

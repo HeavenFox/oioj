@@ -102,8 +102,20 @@ class ActiveRecord
 		return $resultSet;
 	}
 	
-	public static function first()
+	public static function first($properties, $composites, $suffix)
 	{
+		$queryStr = self::_makeQueryString($properties, $composites, $suffix);
+		
+		$row = Database::Get()->query($queryStr)->fetch(PDO::FETCH_NUM);
+		
+		if ($row) {
+		
+			$obj = new static;
+			$obj->_fillRow($row, $properties, $composites);
+			return $obj;
+		} else {
+			return null;
+		}
 		
 	}
 	
@@ -131,17 +143,23 @@ class ActiveRecord
 	public function _fillRow($row, $properties, $composites)
 	{
 		$i = 0;
-		foreach ($properties as $v)
+		if (is_array($properties))
 		{
-			$this->_propValues[$v] = $row[$i];
-			$i++;
-		}
-		foreach ($composites as $prop => $comp)
-		{
-			foreach ($comp as $v)
+			foreach ($properties as $v)
 			{
-				$this->_propValues[$prop]->_setProp($v,$row[$i]);
+				$this->_propValues[$v] = $row[$i];
 				$i++;
+			}
+		}
+		if (is_array($composites))
+		{
+			foreach ($composites as $prop => $comp)
+			{
+				foreach ($comp as $v)
+				{
+					$this->_propValues[$prop]->_setProp($v,$row[$i]);
+					$i++;
+				}
 			}
 		}
 	}

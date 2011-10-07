@@ -6,7 +6,7 @@ class Config
 		'driver' => 'pdo_mysql',
 		'host' => 'localhost',
 		'username' => 'root',
-		'password' => '',
+		'password' => 'root',
 		'database' => 'oioj'
 	);
 	

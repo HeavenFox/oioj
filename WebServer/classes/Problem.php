@@ -13,7 +13,7 @@ class Problem extends ActiveRecord
 			'compare' => array('class' => 'string'),
 			'submission' => array('class' => 'int'),
 			'listing' => array('class' => 'bool'),
-			'user' => array('class' => 'User', 'count' => 'one', 'column' => 'uid')
+			'user' => array('class' => 'User', 'type' => 'one', 'column' => 'uid')
 		);
 	public static $tableName = 'oj_problems';
 	public static $keyProperty = 'id';

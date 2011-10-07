@@ -2,9 +2,10 @@
 require_once 'init.php';
 
 import('OIOJ');
+import('IO');
 
 // These modules are legimate
-$availableModules = array('user' => 'UserModule', 'records' => 'RecordsModule', 'submit' => 'SubmitModule', 'judge' => 'JudgeModule', 'problemlist' => 'ProblemListModule');
+$availableModules = array('user' => 'UserModule', 'records' => 'RecordsModule', 'submit' => 'SubmitModule', 'judge' => 'JudgeModule', 'problemlist' => 'ProblemListModule', 'problem' => 'ProblemModule');
 
 // These modules should be autoloaded
 $autoloadModules = array('UserModule');
