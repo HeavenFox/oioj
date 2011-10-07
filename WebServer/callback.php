@@ -2,7 +2,6 @@
 // Security check
 substr($_SERVER['HTTP_USER_AGENT'],0,15) == 'OIOJJudgeServer' || die('Unauthorized access');
 
-
 require_once 'init.php';
 
 import('OIOJ');

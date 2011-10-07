@@ -112,7 +112,12 @@ class ActiveRecord
 		
 	}
 	
-	public function findByQuery($query, $properties, $composites)
+	public static function findByQuery($query, $properties, $composites)
+	{
+		
+	}
+	
+	public function fetchByQuery($query, $properties, $composites)
 	{
 		
 	}
@@ -141,11 +146,15 @@ class ActiveRecord
 		}
 	}
 	
-	
-	
+	/**
+	 * Remove current record
+	 * Enter description here ...
+	 * @param array $composites list of composites that need to be deleted
+	 */
 	public function remove($composites = null)
 	{
-		$this->_db->query("");
+		$kp = static::$keyProperty;
+		$this->_db->query('DELETE FROM `'.self::$tableName.'` WHERE `'.$kp.'` = '.$this->$kp);
 		if (is_array($composites))
 		{
 			foreach($composites as $composite)
@@ -164,6 +173,11 @@ class ActiveRecord
 	{
 		$this->_propUpdated[$param] = true;
 		$this->_propValues[$param] = $value;
+	}
+	
+	public function __sleep()
+	{
+		return array('_propValues');
 	}
 }
 ?>

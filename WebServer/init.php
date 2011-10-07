@@ -37,8 +37,9 @@ function parseProtocol($str)
 }
 
 // Add fallback mechanism
+/*
+define('SMARTY_SPL_AUTOLOAD',1);
 spl_autoload_register(function($className){
 	import($className);
-});
+});*/
 ?>
-    

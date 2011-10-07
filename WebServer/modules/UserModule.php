@@ -7,6 +7,8 @@ class UserModule
 	{
 		// Begin session
 		session_start();
+		
+		
 	}
 	
 	public function run()

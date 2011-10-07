@@ -1,13 +1,6 @@
 <?php
 class User extends ActiveRecord
 {
-	public $id;
-	public $name;
-	public $email;
-	public $tags;
-	
-	public $submission;
-	public $acceptance;
 	
 	private static $currentUser = null;
 	
@@ -30,19 +23,28 @@ class User extends ActiveRecord
 			// Log in automatically
 		}
 		
+		
+		
 		return null;
+	}
+	
+	private static function ReadSession()
+	{
+		
 	}
 	
 	public function getACL()
 	{
-		'SELECT  `key` , SUM( `permission`) FROM (
+		$str = 'SELECT  `key` , SUM( `permission`) 
+FROM (
+
 SELECT  `key` ,  `permission` 
 FROM  `oj_users_acl` 
 UNION ALL 
 SELECT  `key` ,  `permission` 
 FROM  `oj_tags_acl`
 )
-GROUP BY  `key`'
+GROUP BY  `key`';
 	}
 	
 	public function checkPermission($key)
@@ -51,7 +53,7 @@ GROUP BY  `key`'
 		{
 			return true;
 		}
-		return isset($this->acl[$key]) && $this->acl[$key] > 0
+		return isset($this->acl[$key]) && $this->acl[$key] > 0;
 	}
 }
 ?>
