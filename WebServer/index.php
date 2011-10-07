@@ -23,7 +23,15 @@ if (isset($_GET['mod']) && isset($availableModules[$_GET['mod']]))
 {
 	require_once MODULE_DIR . $availableModules[$_GET['mod']] . '.php';
 	$module = new $availableModules[$_GET['mod']];
-	$module->run();
+	try
+	{
+		$module->run();
+	}catch (Exception $e)
+	{
+		// Catch-all
+		OIOJ::$template->assign('message', $e->getMessage());
+		OIOJ::$template->display('error.tpl');
+	}
 }
 else
 {

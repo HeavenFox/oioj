@@ -14,6 +14,7 @@ class ProblemModule
 			OIOJ::InitDatabase();
 			$obj = Problem::first(array('title','body'),null,'WHERE `id` = '.$probID);
 			if ($obj) {
+				OIOJ::$template->assign('pid', $probID);
 				OIOJ::$template->assign('problem', $obj);
 			} else {
 				throw new Exception('Problem does not exist', 404);
