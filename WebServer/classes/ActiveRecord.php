@@ -11,6 +11,10 @@ class ActiveRecord
 	
 	protected $_propUpdated = array();
 	
+	public static $schema;
+	public static $tableName;
+	public static $keyProperty = 'id';
+	
 	/*
 	protected $_rowIDProperty = '';
 	
@@ -119,9 +123,10 @@ class ActiveRecord
 		
 	}
 	
-	public function fetch($condition)
+	public static function fetch($query, $properties, $id)
 	{
-		
+		if (is_string($id))$id = addslashes($id);
+		return static::first($query, $properties, 'WHERE `'.static::$keyProperty . "` = '{$id}'");
 	}
 	
 	public static function findByQuery($query, $properties, $composites)

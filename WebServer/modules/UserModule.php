@@ -13,7 +13,26 @@ class UserModule
 	
 	public function run()
 	{
+		switch (IO::GET('act'))
+		{
+		case 'login':
+			$this->doLogin();
+			break;
+		case 'getcaptcha':
+			$this->getCAPTCHA();
+			break;
+		}
+	}
+	
+	public function doLogin()
+	{
 		
+	}
+	
+	public function getCAPTCHA()
+	{
+		require_once LIB_DIR . 'recaptchalib.php';
+		echo recaptcha_get_html(Config::$CAPTCHA_Public);
 	}
 }
 ?>

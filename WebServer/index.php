@@ -5,7 +5,9 @@ import('OIOJ');
 import('IO');
 
 // These modules are legimate
-$availableModules = array('user' => 'UserModule', 'records' => 'RecordsModule', 'submit' => 'SubmitModule', 'judge' => 'JudgeModule', 'problemlist' => 'ProblemListModule', 'problem' => 'ProblemModule');
+$availableModules = array('user' => 'UserModule', 'records' => 'RecordsModule', 'submit' => 'SubmitModule', 'judge' => 'JudgeModule', 'problemlist' => 'ProblemListModule', 'problem' => 'ProblemModule',
+'admin_problem' => 'AdminManageProblemModule'
+);
 
 // These modules should be autoloaded
 $autoloadModules = array('UserModule');

@@ -2,6 +2,7 @@
 define('IN_OIOJ', 1);
 define('ROOT',dirname(__FILE__).DIRECTORY_SEPARATOR);
 define('MODULE_DIR',ROOT.'modules'.DIRECTORY_SEPARATOR);
+define('LIB_DIR',ROOT.'lib'.DIRECTORY_SEPARATOR);
 
 require_once ROOT . DIRECTORY_SEPARATOR . 'config.php';
 
