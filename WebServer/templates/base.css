@@ -69,6 +69,7 @@ body
 
 #footer
 {
+	clear: both;
 	width: 100%;
 	font-family: Verdana, Tahoma;
 	text-align: center;

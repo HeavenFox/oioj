@@ -20,7 +20,7 @@ class OIOJ
 	{
 		if (!self::$User)
 		{
-			self::$User = User::
+			self::$User = User::GetCurrentUser();
 		}
 	}
 }

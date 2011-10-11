@@ -1,0 +1,1 @@
+{extends file="two-column.tpl"}

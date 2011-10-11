@@ -1,5 +1,5 @@
 <?php
-class AdminAddProblem
+class AdminManageProblemModule
 {
 	
 	/*
@@ -12,6 +12,12 @@ class AdminAddProblem
 	
 	public function run()
 	{
+		OIOJ::$template->display('admin_addproblem.tpl');
+	}
+	
+	public function addedProblem()
+	{
+		
 	}
 }
 ?>

@@ -1,9 +1,11 @@
 #column-left
 {
 	float: left;
+	width: 600px;
 }
 
 #column-right
 {
 	float: right;
+	width: 300px;
 }

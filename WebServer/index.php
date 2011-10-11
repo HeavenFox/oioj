@@ -2,9 +2,12 @@
 require_once 'init.php';
 
 import('OIOJ');
+import('IO');
 
 // These modules are legimate
-$availableModules = array('user' => 'UserModule', 'records' => 'RecordsModule', 'submit' => 'SubmitModule', 'judge' => 'JudgeModule', 'problemlist' => 'ProblemListModule');
+$availableModules = array('user' => 'UserModule', 'records' => 'RecordsModule', 'submit' => 'SubmitModule', 'judge' => 'JudgeModule', 'problemlist' => 'ProblemListModule', 'problem' => 'ProblemModule',
+'admin_problem' => 'AdminManageProblemModule'
+);
 
 // These modules should be autoloaded
 $autoloadModules = array('UserModule');
@@ -22,7 +25,15 @@ if (isset($_GET['mod']) && isset($availableModules[$_GET['mod']]))
 {
 	require_once MODULE_DIR . $availableModules[$_GET['mod']] . '.php';
 	$module = new $availableModules[$_GET['mod']];
-	$module->run();
+	try
+	{
+		$module->run();
+	}catch (Exception $e)
+	{
+		// Catch-all
+		OIOJ::$template->assign('message', $e->getMessage());
+		OIOJ::$template->display('error.tpl');
+	}
 }
 else
 {

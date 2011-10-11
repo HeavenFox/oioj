@@ -1,5 +1,6 @@
 {extends file="base.tpl"}
 {block name="extra_header"}
+<script type="text/javascript" src="scripts/index.js"></script>
 <link rel='stylesheet' href='templates/index.css' />
 {/block}
 {block name="body"}
@@ -15,9 +16,10 @@
 <div id="login_traditional">
 <p>Use OIOJ account | <a href="javascript:;" >Use OpenID (Google, Yahoo, etc)</a></p>
 <table>
-<form action="">
+<form action="index.php?mod=user&act=login">
 <tr><td>Username</td><td><input name="username" /></td></tr>
 <tr><td>Password</td><td><input name="password" /></td></tr>
+<tr><td>Remember?</td><td><input type="checkbox" name="remember" /></td></tr>
 <tr><td colspan="2"><input type='submit' value='Submit' /></td></tr>
 </form>
 </table>
@@ -32,11 +34,11 @@
 <p>If you have any OpenID (eg. Google Account, Yahoo account, etc), you do not need to register.</p>
 <table>
 <form action="">
-<tr><td>Username</td><td><input name="username" /></td></tr>
+<tr><td>Username</td><td><input name="username" onclick="showCAPTCHA()" /></td></tr>
 <tr><td>Password</td><td><input name="password" /></td></tr>
 <tr><td>Confirm</td><td><input name="password_confirm" /></td></tr>
 <tr><td>Email</td><td><input name="email" /></td></tr>
-<tr><td>Code</td><td></td></tr>
+<tr><td>Code</td><td><div id="captcha"></div></td></tr>
 <tr><td colspan="2"><input type='submit' value='Submit' /></td></tr>
 </form>
 </table>

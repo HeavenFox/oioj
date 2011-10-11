@@ -2,39 +2,78 @@
 import('database.Database');
 class ActiveRecord
 {
-	/*
-	protected $_tableName = '';
-	
-	protected $_schema = array();
-	*/
 	protected $_propValues = array();
 	
 	protected $_propUpdated = array();
 	
-	/*
-	protected $_rowIDProperty = '';
+	public static $schema;
+	public static $tableName;
+	public static $keyProperty = 'id';
 	
-	protected static $_db;
-	*/
-	
-	public function __construct()
+	public function __construct($id = null)
 	{
+		if ($id) {
+			$this->_propValues[static::$keyProperty] = $id;
+		}
 	}
 	
 	
 	public function submit()
 	{
-		
+		if (isset($this->_propValues[static::$keyProperty])) {
+			$this->update();
+		} else {
+			$this->add();
+		}
 	}
 	
-	protected function _getComposites()
+	protected function getComposite($composites)
 	{
-		
+		foreach ($composites as $k => $v)
+		{
+			$className = static::$schema[$k]['class'];
+			switch (static::$schema[$k]['comp']) {
+			case 'many':
+				$this->_propValues[$k] = $className::find($v,null,'WHERE `'. static::$schema[$k]['column'] .'` = '.$this->_propValues[static::$keyProperty]);
+				break;
+			case 'one':
+				
+				break;
+			case 'junction':
+				
+				break;
+			}
+		}
 	}
 	
 	public function add()
 	{
+		$queryStr = 'INSERT INTO `';
+		$queryStr .= static::$tableName;
+		$queryStr .= '` (';
+		$first = true;
+		foreach ($this->_propUpdated as $k => $v)
+		{
+			if ($first) {$first = false;} else {$queryStr .= ',';}
+			$queryStr .= "`{$k}`";
+		}
+		$queryStr .= ') VALUES (';
+		$arr = array();
+		$first = true;
+		foreach ($this->_propUpdated as $k => $v)
+		{
+			if ($first) {
+				$first = false;
+			} else {
+				$queryStr .= ',';
+			}
+			$queryStr .= '?';
+			$arr[] = $this->_propValues[$k];
+		}
+		$queryStr .= ')';
+		$stmt = Database::Get()->prepare($queryStr);
 		
+		$stmt->execute($arr);
 	}
 	
 	public function propertyExists($prop)
@@ -47,11 +86,25 @@ class ActiveRecord
 		if (count($this->_propUpdated) > 0)
 		{
 			$queryStr = "UPDATE {$this->_tableName} SET ";
+			$arr = array();
+			$first = true;
 			foreach ($this->_propUpdated as $k => $v)
 			{
+				if ($first)
+					$first = false;
+				else
+					$queryStr .= ',';
+				
+				$queryStr .= $k;
+				$queryStr .= ' = ?';
+				$arr[] = $this->_propValues[$k];
 			}
-			$queryStr .= " WHERE `{$this->_rowIDColumn}` = {}";
+			$queryStr .= " WHERE `".static::$keyProperty."` = ".$this->_propValues[static::$keyProperty];
 		}
+		
+		$stmt = Database::Get()->prepare($queryStr);
+		
+		$stmt->execute($arr);
 	}
 	
 	protected static function _makeQueryString($properties, $composites, $suffix)
@@ -70,6 +123,18 @@ class ActiveRecord
 		}
 		
 		$queryStr .= " FROM `".static::$tableName."` ";
+		
+		foreach ($composites as $k => $v)
+		{
+			if ($className = static::$schema[$k]['comp'] == 'one')
+			{
+				$className = static::$schema[$k]['class'];
+			
+				$queryStr.='LEFT JOIN `'.$className::$tableName.'` ON `'.$className::$tableName.'`.`'.$className::$keyProperty.'`=`'.static::$tableName.'`.`'.static::$schema[$k]['column'].'` ';
+				
+			}
+		}
+		
 		$queryStr .= $suffix;
 		
 		return $queryStr;
@@ -102,17 +167,33 @@ class ActiveRecord
 		return $resultSet;
 	}
 	
-	public static function first()
+	public static function first($properties, $composites, $suffix)
 	{
+		$queryStr = self::_makeQueryString($properties, $composites, $suffix);
+		
+		$row = Database::Get()->query($queryStr)->fetch(PDO::FETCH_NUM);
+		
+		if ($row) {
+			$obj = new static;
+			$obj->_fillRow($row, $properties, $composites);
+			return $obj;
+		} else {
+			return null;
+		}
 		
 	}
 	
-	public function fetch($condition)
+	public static function fetch($query, $properties, $id)
 	{
-		
+		if (is_string($id))$id = addslashes($id);
+		return static::first($query, $properties, 'WHERE `'.static::$keyProperty . "` = '{$id}'");
 	}
 	
-	public function findByQuery($query, $properties, $composites)
+	public static function findByQuery($query, $properties, $composites)
+	{
+	}
+	
+	public function fetchByQuery($query, $properties, $composites)
 	{
 		
 	}
@@ -126,33 +207,43 @@ class ActiveRecord
 	public function _fillRow($row, $properties, $composites)
 	{
 		$i = 0;
-		foreach ($properties as $v)
+		if (is_array($properties))
 		{
-			$this->_propValues[$v] = $row[$i];
-			$i++;
-		}
-		foreach ($composites as $prop => $comp)
-		{
-			foreach ($comp as $v)
+			foreach ($properties as $v)
 			{
-				$this->_propValues[$prop]->_setProp($v,$row[$i]);
+				$this->_propValues[$v] = $row[$i];
 				$i++;
+			}
+		}
+		if (is_array($composites))
+		{
+			foreach ($composites as $prop => $comp)
+			{
+				foreach ($comp as $v)
+				{
+					$this->_propValues[$prop]->_setProp($v,$row[$i]);
+					$i++;
+				}
 			}
 		}
 	}
 	
-	
-	
+	/**
+	 * Remove current record
+	 * Enter description here ...
+	 * @param array $composites list of composites that need to be deleted
+	 */
 	public function remove($composites = null)
 	{
-		$this->_db->query("");
-		if (is_array($composites))
+		$kp = static::$keyProperty;
+		$this->_db->query('DELETE FROM `'.self::$tableName.'` WHERE `'.$kp.'` = '.$this->$kp);
+		/*if (is_array($composites))
 		{
 			foreach($composites as $composite)
 			{
 				
 			}
-		}
+		}*/
 	}
 	
 	public function __get($param)
@@ -162,8 +253,18 @@ class ActiveRecord
 	
 	public function __set($param, $value)
 	{
+		if (isset(static::$schema[$param]['comp']) && !($value instanceof ActiveRecord))
+		{
+			$className = static::$schema[$param];
+			$value = new $className($value);
+		}
 		$this->_propUpdated[$param] = true;
 		$this->_propValues[$param] = $value;
+	}
+	
+	public function __sleep()
+	{
+		return array('_propValues');
 	}
 }
 ?>
