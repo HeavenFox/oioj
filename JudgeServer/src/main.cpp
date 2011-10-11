@@ -81,10 +81,12 @@ int main (int argc, const char * argv[])
     	while ((client_sock = accept(sock, (struct sockaddr*)&client_sock_addr, &client_sock_addr_len)) < 0)
     	{
     		// Check message queue
+
     		while (msgrcv(msgQueue,&msg,sizeof(msg),0,IPC_NOWAIT) >= 0)
     		{
     			scheduler->removeTask(msg.cpuid);
     		}
+    		usleep(50000);
     	}
     	cout<<"Received request"<<endl;
         if (scheduler->serverBusy())

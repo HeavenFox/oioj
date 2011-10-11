@@ -15,6 +15,7 @@ bool JudgeRecord::prepareProblem(string s)
     while (getline(sin,line))
     {
         if (line.size() == 0)continue;
+        trim(line);
         istringstream lin(line);
         string op;
         lin>>op>>ws;
@@ -127,7 +128,9 @@ void JudgeRecord::compile()
 
 void JudgeRecord::judge()
 {
+
 	loadProblemSchema();
+
     compile();
     if (compiler->success)
     {
@@ -152,52 +155,60 @@ void JudgeRecord::judge()
 
 void JudgeRecord::loadProblemSchema()
 {
-    sqlite3 *schemaDB;
-    sqlite3_open(Configuration::ProblemSchemaDB.c_str(), &schemaDB);
-    sqlite3_stmt *stmt;
-    char query[] = "SELECT type,compare,input,output FROM problems WHERE id = ?";
-    sqlite3_prepare_v2(schemaDB, query, sizeof(query), &stmt, NULL);
-    sqlite3_bind_int(stmt, 1, problemID);
-    sqlite3_step(stmt);
-    type = sqlite3_column_int(stmt, 0);
-    compare = string((const char*)sqlite3_column_text(stmt, 1));
-    input = string((const char*)sqlite3_column_text(stmt, 2));
-    output = string((const char*)sqlite3_column_text(stmt, 3));
-	sqlite3_finalize(stmt);
-    
-    // Fetch dependencies
-    sqlite3_stmt *depStmt;
-    char depQuery[] = "SELECT filename,type FROM dependencies WHERE pid = ?";
-    sqlite3_prepare_v2(schemaDB, depQuery, sizeof(depQuery), &depStmt, NULL);
-    sqlite3_bind_int(depStmt, 1, problemID);
-    
-    while (sqlite3_step(depStmt) == SQLITE_ROW)
-    {
-        Dependency dep;
-        dep.filename = string((const char*)sqlite3_column_text(depStmt, 0));
-        dep.type = sqlite3_column_int(depStmt, 1);
-        dependencies.push_back(dep);
-    }
-    
-    sqlite3_finalize(depStmt);
-    
-    sqlite3_stmt *caseStmt;
-    char caseQuery[] = "SELECT cid,input,answer,time_limit,memory_limit,score FROM testcases WHERE pid = ?";
-    sqlite3_prepare_v2(schemaDB, caseQuery, sizeof(caseQuery), &caseStmt, NULL);
-    sqlite3_bind_int(caseStmt, 1, problemID);
-    while (sqlite3_step(caseStmt) == SQLITE_ROW)
-    {
-        TestCase curCase;
-        curCase.record = this;
-        curCase.caseID = sqlite3_column_int(caseStmt, 0);
-        curCase.input = string((const char*)sqlite3_column_text(caseStmt, 1));
-        curCase.answer = string((const char*)sqlite3_column_text(caseStmt, 2));
-        curCase.timeLimit = sqlite3_column_double(caseStmt, 3);
-        curCase.memoryLimit = sqlite3_column_int(caseStmt, 4);
-        curCase.score = sqlite3_column_int(caseStmt, 5);
-        cases.push_back(curCase);
-    }
-    
-    sqlite3_finalize(caseStmt);
-    sqlite3_close(schemaDB);
+	sqlite3 *schemaDB;
+	sqlite3_open(Configuration::ProblemSchemaDB.c_str(), &schemaDB);
+	sqlite3_stmt *stmt;
+	char query[] = "SELECT type,compare,input,output FROM problems WHERE `id` = ?";
+	sqlite3_prepare_v2(schemaDB, query, sizeof(query), &stmt, NULL);
+	sqlite3_bind_int(stmt, 1, problemID);
+	if (sqlite3_step(stmt) == SQLITE_ROW)
+	{
+		type = sqlite3_column_int(stmt, 0);
+		compare = string((const char*)sqlite3_column_text(stmt, 1));
+		input = string((const char*)sqlite3_column_text(stmt, 2));
+		output = string((const char*)sqlite3_column_text(stmt, 3));
+		sqlite3_finalize(stmt);
+
+
+		// Fetch dependencies
+		sqlite3_stmt *depStmt;
+		char depQuery[] = "SELECT filename,type FROM dependencies WHERE pid = ?";
+		sqlite3_prepare_v2(schemaDB, depQuery, sizeof(depQuery), &depStmt, NULL);
+		sqlite3_bind_int(depStmt, 1, problemID);
+
+		while (sqlite3_step(depStmt) == SQLITE_ROW)
+		{
+			Dependency dep;
+			dep.filename = string((const char*)sqlite3_column_text(depStmt, 0));
+			dep.type = sqlite3_column_int(depStmt, 1);
+			dependencies.push_back(dep);
+		}
+
+		sqlite3_finalize(depStmt);
+
+		sqlite3_stmt *caseStmt;
+		char caseQuery[] = "SELECT cid,input,answer,time_limit,memory_limit,score FROM testcases WHERE pid = ?";
+		sqlite3_prepare_v2(schemaDB, caseQuery, sizeof(caseQuery), &caseStmt, NULL);
+		sqlite3_bind_int(caseStmt, 1, problemID);
+		while (sqlite3_step(caseStmt) == SQLITE_ROW)
+		{
+			TestCase curCase;
+			curCase.record = this;
+			curCase.caseID = sqlite3_column_int(caseStmt, 0);
+			curCase.input = string((const char*)sqlite3_column_text(caseStmt, 1));
+			curCase.answer = string((const char*)sqlite3_column_text(caseStmt, 2));
+			curCase.timeLimit = sqlite3_column_double(caseStmt, 3);
+			curCase.memoryLimit = sqlite3_column_int(caseStmt, 4);
+			curCase.score = sqlite3_column_int(caseStmt, 5);
+			cases.push_back(curCase);
+		}
+
+		sqlite3_finalize(caseStmt);
+
+	}
+	else
+	{
+		cerr<<"Unable to fetch schema. "<<endl;
+	}
+	sqlite3_close(schemaDB);
 }

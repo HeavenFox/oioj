@@ -27,9 +27,6 @@ public:
 
 	void loadSchema();
 	void addSchema(sqlite3 *db);
-
-private:
-	sqlite3 *sqlite;
 };
 
 
