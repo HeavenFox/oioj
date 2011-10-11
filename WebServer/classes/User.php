@@ -33,7 +33,8 @@ class User extends ActiveRecord
 	
 	public function create()
 	{
-		
+		$this->salt = md5(rand());
+		$this->password = $this->password
 	}
 	
 	public function getACL()
