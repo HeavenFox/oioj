@@ -51,7 +51,7 @@ int main (int argc, const char * argv[])
         perror("Create");
     }
     
-    fcntl(sock,F_SETFL,O_NONBLOCK);
+    //fcntl(sock,F_SETFL,O_NONBLOCK);
 
     sockaddr_in sock_address, client_sock_addr;
     socklen_t client_sock_addr_len;
@@ -61,6 +61,8 @@ int main (int argc, const char * argv[])
     sock_address.sin_addr.s_addr = INADDR_ANY;
     sock_address.sin_port = htons(Configuration::PortNumber);
     
+
+
     if (bind(sock, (struct sockaddr*)&sock_address, sizeof(sockaddr_in)) < 0)
     {
         perror("Error: bind");
@@ -72,22 +74,41 @@ int main (int argc, const char * argv[])
     
     scheduler = new RunScheduler(Configuration::CPUCount, Configuration::ConcurrentJobs, Configuration::WaitlistSize);
     
+    timeval timeout;
+
+    fd_set fds;
+
     signal(SIGCHLD, SIG_IGN);
     
     while (true)
     {
+    	FD_ZERO(&fds);
+    	FD_SET(sock,&fds);
+    	timeout.tv_sec = 5;
+    	timeout.tv_usec = 0;
     	int client_sock;
     	struct msgEval msg;
-    	while ((client_sock = accept(sock, (struct sockaddr*)&client_sock_addr, &client_sock_addr_len)) < 0)
+
+    	int selResult = select(sock+1,&fds,&fds,NULL,&timeout);
+
+    	if (selResult == -1)
+    	{
+    		perror("select");
+    		continue;
+    	}
+
+    	if (selResult == 0)
     	{
     		// Check message queue
-
     		while (msgrcv(msgQueue,&msg,sizeof(msg),0,IPC_NOWAIT) >= 0)
     		{
     			scheduler->removeTask(msg.cpuid);
     		}
-    		usleep(50000);
+    		continue;
     	}
+
+    	client_sock = accept(sock, (struct sockaddr*)&client_sock_addr, &client_sock_addr_len);
+
     	cout<<"Received request"<<endl;
         if (scheduler->serverBusy())
         {
@@ -147,7 +168,7 @@ int main (int argc, const char * argv[])
             	req.processRequest(str);
             }
         }
-        
+        cout<<"session finished"<<endl;
         close(client_sock);
     }
     
