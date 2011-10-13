@@ -18,4 +18,6 @@ void cp(const char* old, const char* target);
 
 void writeBase64(string path,string &content);
 
+void trim(string& s);
+
 #endif /* FILEOP_H_ */

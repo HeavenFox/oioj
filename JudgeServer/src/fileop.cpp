@@ -35,3 +35,9 @@ void writeBase64(string path,string &content)
 	}
 	fclose(out);
 }
+
+void trim(string& s)
+{
+	while (s.at(s.size()-1) == '\n' || s.at(s.size()-1) == '\r')
+		s.resize(s.size()-1);
+}

@@ -30,10 +30,8 @@ void Configuration::ReadConfiguration()
     
     while (getline(fin,s))
     {
-
         if (s.size() > 1 && s.at(0) != '#'){
-        	if (s.at(s.size()-1) == '\n')
-        		s.resize(s.size()-1);
+        	trim(s);
 
             istringstream sin(s);
             string op,param;

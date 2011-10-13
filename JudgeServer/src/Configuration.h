@@ -11,6 +11,7 @@
 
 #include <fstream>
 #include <sstream>
+#include "fileop.h"
 
 using namespace std;
 
