@@ -12,12 +12,26 @@ class AdminManageProblemModule
 	
 	public function run()
 	{
-		OIOJ::$template->display('admin_addproblem.tpl');
+		switch (IO::GET('act'))
+		{
+		case 'add':
+			if (IO::GET('submit'))
+			{
+				$this->addProblemSubmit();
+			}
+			else
+			{
+				OIOJ::$template->display('admin_addproblem.tpl');
+			}
+			
+			break;
+		}
+		
 	}
 	
-	public function addedProblem()
+	public function addProblemSubmit()
 	{
-		
+		var_dump($_POST);
 	}
 }
 ?>

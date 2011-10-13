@@ -38,7 +38,7 @@
 <tr><td>Password</td><td><input name="password" /></td></tr>
 <tr><td>Confirm</td><td><input name="password_confirm" /></td></tr>
 <tr><td>Email</td><td><input name="email" /></td></tr>
-<tr><td>Code</td><td><div id="captcha"></div></td></tr>
+<tr><td>Invitation</td><td><input name="invitation" /></td></tr>
 <tr><td colspan="2"><input type='submit' value='Submit' /></td></tr>
 </form>
 </table>

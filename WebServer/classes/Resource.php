@@ -5,8 +5,9 @@ class Resource extends ActiveRecord
 	
 	static $schema = array(
 		'id' => array('class' => 'int'),
-		'title' => array(),
-		'description' => array()
+		'title' => array('class' => 'string'),
+		'description' => array('class' => 'text'),
+		'tags' => array('class' => 'Tag', 'comp' => 'junction', 'column' => array('rid','tid'))
 	);
 }
 ?>

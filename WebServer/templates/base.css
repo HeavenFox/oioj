@@ -4,6 +4,7 @@ body
 {
 	font-family: Tahoma, Verdana, Lucida Grande, sans-serif;
 	font-size: 12px;
+	background-color: #787878;
 }
 
 #container
@@ -79,3 +80,7 @@ body
 	background-color: #eeeeee;
 }
 
+.hidden
+{
+	display: none;
+}

@@ -27,7 +27,7 @@ class ActiveRecord
 		}
 	}
 	
-	protected function getComposite($composites)
+	public function getComposite($composites)
 	{
 		foreach ($composites as $k => $v)
 		{
@@ -37,7 +37,7 @@ class ActiveRecord
 				$this->_propValues[$k] = $className::find($v,null,'WHERE `'. static::$schema[$k]['column'] .'` = '.$this->_propValues[static::$keyProperty]);
 				break;
 			case 'one':
-				
+				$this->_propValues[$k] = $className::first($v,null,'WHERE `'. static::$schema[$k]['column'] .'` = '.$this->_propValues[static::$keyProperty]);
 				break;
 			case 'junction':
 				

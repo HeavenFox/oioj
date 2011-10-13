@@ -12,7 +12,7 @@ function removeCase(i)
 
 function addCase(input,answer,tl,ml,score)
 {
-	$("#testcases").append("<tr><td><input type='text' value='"+input+"' /></td><td><input type='text' value='"+answer+"' /></td><td><input type='text' value='"+tl+"' /></td><td><input type='text' value='"+ml+"' /></td><td><input type='text' value='"+score+"' /></td></tr>");
+	$("#testcases").append("<tr><td><input type='text' name='case-in[]' value='"+input+"' size='8' /></td><td><input type='text' name='case-out[]' value='"+answer+"' size='8' /></td><td><input type='text' name='case-tl[]' value='"+tl+"' size='4' /></td><td><input type='text' name='case-ml[]' value='"+ml+"' size='4' /></td><td><input type='text' name='case-score[]' value='"+score+"' size='4' /></td></tr>");
 }
 
 function manualAddCase()

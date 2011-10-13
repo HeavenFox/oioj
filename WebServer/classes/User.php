@@ -31,10 +31,17 @@ class User extends ActiveRecord
 		return null;
 	}
 	
+	public function createSession()
+	{
+		IO::SetSession('user',serialize($this));
+	}
+	
 	public function create()
 	{
 		$this->salt = md5(rand());
-		$this->password = $this->password
+		$this->password = sha1($this->password.$this->salt);
+		
+		parent::add();
 	}
 	
 	public function getACL()
