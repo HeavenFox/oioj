@@ -2,7 +2,6 @@
 class OIOJ
 {
 	public static $template;
-	public static $User;
 	
 	public static function InitTemplate()
 	{
@@ -16,12 +15,16 @@ class OIOJ
 		Database::Get(Config::$MySQL);
 	}
 	
-	public static function InitUser()
+	public static function Redirect($message, $redirect = null)
 	{
-		if (!self::$User)
+		if (!$redirect)
 		{
-			self::$User = User::GetCurrentUser();
+			$redirect = $_SERVER['HTTP_REFERER'];
 		}
+		
+		self::$template->assign('message',$message);
+		self::$template->assign('redirect',$redirect);
+		self::$template->display('redirect.tpl');
 	}
 }
 ?>

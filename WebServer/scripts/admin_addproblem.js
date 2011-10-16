@@ -65,6 +65,7 @@ function batchAddCase()
 	{
 		addCase(files.input[i],files.answer[i],$("#bat-tl").val(),$("#bat-ml").val(),$("#bat-score").val());
 	}
+	$.fancybox.close();
 }
 
 function comp(obj)
@@ -82,3 +83,8 @@ function toggleScreen(obj,box)
 		$(box).show().value("");
 	}
 }
+$(document).ready(function() {
+	$("a#batch_box_link").fancybox({'transitionIn'	:	'elastic',
+		'transitionOut'	:	'elastic',
+	'scrolling':'no'});
+});

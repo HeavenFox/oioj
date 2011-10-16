@@ -8,7 +8,7 @@ class IO
 	
 	public static function POST($prop, $defaultValue = null, $san = null)
 	{
-		return self::GetArrayElement($_GET, $prop, $defaultValue, $san);
+		return self::GetArrayElement($_POST, $prop, $defaultValue, $san);
 	}
 	
 	public static function Session($prop, $defaultValue = null, $san = null)
@@ -21,9 +21,22 @@ class IO
 		return self::GetArrayElement($_GET, $prop, $defaultValue, $san);
 	}
 	
-	public static function SetCookie($prop, $val)
+	public static function SetCookie($prop, $val, $expire)
 	{
-		$_COOKIE[$prop] = $val;
+		setcookie($prop,$val,time()+$expire);
+	}
+	
+	public static function DestroySession($prop = null)
+	{
+		if ($prop)
+		{
+			unset($_SESSION[$prop]);
+		}
+		else
+		{
+			session_destroy();
+			unset($_SESSION);
+		}
 	}
 	
 	public static function SetSession($prop, $val)
@@ -42,9 +55,6 @@ class IO
 		} else {
 			return $ar[$prop];
 		}
-		
 	}
-	
-	
 }
 ?>

@@ -1,4 +1,5 @@
 <?php
+import('Problem');
 class AdminManageProblemModule
 {
 	
@@ -31,7 +32,8 @@ class AdminManageProblemModule
 	
 	public function addProblemSubmit()
 	{
-		var_dump($_POST);
+		
+		$prob = new Problem();
 	}
 }
 ?>

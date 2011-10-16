@@ -9,6 +9,7 @@ body
 
 #container
 {
+	background-color: white;
 	width: 960px;
 	margin: 0 auto 0 auto;
 }
@@ -28,7 +29,6 @@ body
 
 #header #navbar
 {
-
 	float: right;
 	color: white;
 	height: 90px;
@@ -50,6 +50,18 @@ body
 	display: block;
 	float: left;
 	background: url('./images/header_vbar.gif') top left repeat-y;
+}
+
+#navbar li a
+{
+	color: white;
+	text-decoration: none;
+}
+
+#navbar li a:hover
+{
+	color: white;
+	text-decoration: underline;
 }
 
 #infobar

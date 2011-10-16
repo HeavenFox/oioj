@@ -3,13 +3,15 @@ import('ActiveRecord');
 
 class User extends ActiveRecord
 {
+	static $tableName = 'oj_users';
+	
 	private static $currentUser = null;
 	
 	private $acl = null;
 	
 	const ACL_OMNIPOTENT = 'omnipotent';
 	
-	public static function GetCurrentUser()
+	public static function GetCurrent()
 	{
 		if (self::$currentUser)
 		{
@@ -24,24 +26,37 @@ class User extends ActiveRecord
 		if (IO::Cookie('uid'))
 		{
 			// Log in automatically
-			$obj = self::fetch(array('id','username','password'),null,IO::Cookie('uid',0,'intval'));
-			return self::$currentUser = $obj;
+			$obj = self::fetch(array('id','username','password'),null,'WHERE `id` = '.IO::Cookie('uid',0,'intval'));
+			if (IO::Cookie('password') == $obj->password)
+			{
+				return self::$currentUser = $obj;
+			}
 		}
 		
-		return null;
+		return new GuestUser();
+	}
+	
+	public static function destroySession()
+	{
+		IO::DestroySession('user');
+		self::$currentUser = new GuestUser();
 	}
 	
 	public function createSession()
 	{
+		self::$currentUser = $this;
 		IO::SetSession('user',serialize($this));
 	}
 	
-	public function create()
+	
+	public function add()
 	{
 		$this->salt = md5(rand());
 		$this->password = sha1($this->password.$this->salt);
 		
 		parent::add();
+		
+		$this->createSession();
 	}
 	
 	public function getACL()

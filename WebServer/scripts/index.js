@@ -6,7 +6,7 @@ function showCAPTCHA()
 	{
 		captchaShown = true;
 		$.get("index.php?mod=user&act=getcaptcha",function(data){
-			alert(data);
+			
 			$("#captcha").append(data);
 		});
 	}

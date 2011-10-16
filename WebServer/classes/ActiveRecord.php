@@ -46,6 +46,12 @@ class ActiveRecord
 		}
 	}
 	
+	private function handleError($stmt)
+	{
+		//if ($stmt->errorCode())
+		//	var_dump( $stmt->errorInfo());
+	}
+	
 	public function add()
 	{
 		$queryStr = 'INSERT INTO `';
@@ -68,12 +74,14 @@ class ActiveRecord
 				$queryStr .= ',';
 			}
 			$queryStr .= '?';
-			$arr[] = $this->_propValues[$k];
+			$arr[] = $this->getDatabaseRepresentation($k);
 		}
 		$queryStr .= ')';
 		$stmt = Database::Get()->prepare($queryStr);
 		
 		$stmt->execute($arr);
+		
+		$this->_propValues[static::$keyProperty] = Database::Get()->lastInsertId();
 	}
 	
 	public function propertyExists($prop)
@@ -81,11 +89,25 @@ class ActiveRecord
 		return isset($this->_propValues[$prop]);
 	}
 	
+	private function getDatabaseRepresentation($k)
+	{
+		if (isset(static::$schema[$k]['comp']))
+		{
+			$className = static::$schema[$k]['class'];
+			$idprop = $className::$keyProperty;
+			return $this->_propValues[$k]->$idprop;
+		}
+		else
+		{
+			return $this->_propValues[$k];
+		}
+	}
+	
 	public function update()
 	{
 		if (count($this->_propUpdated) > 0)
 		{
-			$queryStr = "UPDATE {$this->_tableName} SET ";
+			$queryStr = "UPDATE `".static::$tableName."` SET ";
 			$arr = array();
 			$first = true;
 			foreach ($this->_propUpdated as $k => $v)
@@ -97,14 +119,14 @@ class ActiveRecord
 				
 				$queryStr .= $k;
 				$queryStr .= ' = ?';
-				$arr[] = $this->_propValues[$k];
+				$arr[] = $this->getDatabaseRepresentation($k);
 			}
 			$queryStr .= " WHERE `".static::$keyProperty."` = ".$this->_propValues[static::$keyProperty];
 		}
-		
 		$stmt = Database::Get()->prepare($queryStr);
 		
 		$stmt->execute($arr);
+		$this->handleError($stmt);
 	}
 	
 	protected static function _makeQueryString($properties, $composites, $suffix)
@@ -124,14 +146,17 @@ class ActiveRecord
 		
 		$queryStr .= " FROM `".static::$tableName."` ";
 		
-		foreach ($composites as $k => $v)
+		if ($composites)
 		{
-			if ($className = static::$schema[$k]['comp'] == 'one')
+			foreach ($composites as $k => $v)
 			{
-				$className = static::$schema[$k]['class'];
-			
-				$queryStr.='LEFT JOIN `'.$className::$tableName.'` ON `'.$className::$tableName.'`.`'.$className::$keyProperty.'`=`'.static::$tableName.'`.`'.static::$schema[$k]['column'].'` ';
+				if ($className = static::$schema[$k]['comp'] == 'one')
+				{
+					$className = static::$schema[$k]['class'];
 				
+					$queryStr.='LEFT JOIN `'.$className::$tableName.'` ON `'.$className::$tableName.'`.`'.$className::$keyProperty.'`=`'.static::$tableName.'`.`'.static::$schema[$k]['column'].'` ';
+					
+				}
 			}
 		}
 		
@@ -148,11 +173,13 @@ class ActiveRecord
 	 * @param string $suffix
 	 * @todo finish composite function
 	 */
-	public static function find($properties, $composites, $suffix)
+	public static function find($properties, $composites, $suffix = '', $data = array())
 	{
 		$queryStr = self::_makeQueryString($properties, $composites, $suffix);
 		$resultSet = array();
-		$stmt = Database::Get()->query($queryStr);
+		$stmt = Database::Get()->prepare($queryStr);
+		$stmt->execute($data);
+		
 		foreach($stmt as $row)
 		{
 			$obj = new static;
@@ -167,11 +194,13 @@ class ActiveRecord
 		return $resultSet;
 	}
 	
-	public static function first($properties, $composites, $suffix)
+	public static function first($properties, $composites, $suffix = '', $data = array())
 	{
 		$queryStr = self::_makeQueryString($properties, $composites, $suffix);
 		
-		$row = Database::Get()->query($queryStr)->fetch(PDO::FETCH_NUM);
+		$stmt = Database::Get()->prepare($queryStr);
+		$stmt->execute($data);
+		$row = $stmt->fetch(PDO::FETCH_NUM);
 		
 		if ($row) {
 			$obj = new static;

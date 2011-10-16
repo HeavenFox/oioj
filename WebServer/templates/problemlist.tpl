@@ -8,7 +8,7 @@
 <tbody>
 {foreach $problems as $problem}
 <tr>
-<td>{$problem->id}</td><td>{$problem->title}</td><td>{$problem->submission}</td><td>{$problem->accepted}</td>
+<td>{$problem->id}</td><td><a href="index.php?mod=problem&id={$problem->id}">{$problem->title}</a></td><td>{$problem->submission}</td><td>{$problem->accepted}</td>
 </tr>
 {/foreach}
 </tbody>

@@ -44,14 +44,16 @@
 <tr><td><input type="text" id="man-input" size="8" /></td><td><input type="text" id="man-answer" size="8" /></td><td><input type="text" id="man-tl" size="4" /></td><td><input type="text" id="man-ml" size="4" /></td><td><input type="text" id="man-score" size="4" /></td><td><a href="javascript:;" onclick="manualAddCase();return false;">[+]</a></td></tr>
 </tfoot>
 </table>
+<a id='batch_box_link' href='#batch_box'>Batch Add</a>
 </td></tr>
 <tr><td><input type='submit' /></td></tr>
 </table>
 </form>
-<div id="batch_box" class="hidden"><h3>Batch Add Test Cases</h3><p>Use (*) to represent serial number</p>
+<div class="hidden">
+<div id="batch_box"><h3>Batch Add Test Cases</h3><p>Use (*) to represent serial number</p>
 <p>Input: <input id="bat-input" value="data(*).in" onkeyup='caseShowPreview()' /> Answer: <input id="bat-answer" value="data(*).out" onkeyup='caseShowPreview()' /> Time Limit: <input id="bat-tl" value="1" /> Memory Limit: <input id="bat-ml" value="128" /> Score: <input id="bat-score" value="10" /></p>
 <p>From: <input id="bat-from" value="1" size="6" maxlength="3" onkeyup='caseShowPreview()' /> To: <input id="bat-to" value="10" size="6" maxlength="3" onkeyup='caseShowPreview()' /> Length: <input id="bat-len" value="2" size="3" maxlength="2" onkeyup='caseShowPreview()' /></p><p><input type='button' value='Batch Add' onclick='batchAddCase()' /></p>
-<p>Examples</p><ul id='bat-examples'></ul></div>
+<p>Examples</p><ul id='bat-examples'></ul></div></div>
 {/block}
 {block name="column-right"}
 {include file="admin_sidebar.tpl"}
