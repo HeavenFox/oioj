@@ -28,6 +28,7 @@ class Database
         {
 		case 'pdo_mysql':
 			$obj = new PDO('mysql:host='.$params['host'].';dbname='.$params['database'],$params['username'],$params['password']);
+			$obj->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING);
 			break;
 		case 'mysqli':
 			require ROOT. 'classes/database/drivers/MySQLiObject.php';

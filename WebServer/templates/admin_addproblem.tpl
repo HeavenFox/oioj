@@ -6,7 +6,7 @@
 <link rel="stylesheet" href="scripts/fancybox/jquery.fancybox-1.3.4.css" type="text/css" media="screen" />
 {/block}
 {block name="column-left"}
-<form method="post" action="index.php?mod=admin_problem&act=add&submit=1" enctype="multipart/form-data">
+<form method="post" action="index.php?mod=admin_problem&act=add&submit=1" enctype="multipart/form-data" target="console">
 <table>
 <tr><td><label for="title">Title</label></td><td>
   <input type="text" name="title" id="title" /></td></tr>
@@ -46,9 +46,11 @@
 </table>
 <a id='batch_box_link' href='#batch_box'>Batch Add</a>
 </td></tr>
-<tr><td><input type='submit' /></td></tr>
+<tr><td>Data Archive</td><td><input type="file" name="archive" /></td></tr>
+<tr><td colspan="2"><input type='submit' /></td></tr>
 </table>
 </form>
+<iframe src="about:blank" id="console" name="console"></iframe>
 <div class="hidden">
 <div id="batch_box"><h3>Batch Add Test Cases</h3><p>Use (*) to represent serial number</p>
 <p>Input: <input id="bat-input" value="data(*).in" onkeyup='caseShowPreview()' /> Answer: <input id="bat-answer" value="data(*).out" onkeyup='caseShowPreview()' /> Time Limit: <input id="bat-tl" value="1" /> Memory Limit: <input id="bat-ml" value="128" /> Score: <input id="bat-score" value="10" /></p>

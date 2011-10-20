@@ -1,5 +1,7 @@
 var testCases = new Array();
 
+var sn = 0;
+
 function stringAddOne(s)
 {
 	
@@ -7,12 +9,13 @@ function stringAddOne(s)
 
 function removeCase(i)
 {
-	$("#testcases").remove("#testcase-"+i);
+	$("#testcase-"+i).remove();
 }
 
 function addCase(input,answer,tl,ml,score)
 {
-	$("#testcases").append("<tr><td><input type='text' name='case-in[]' value='"+input+"' size='8' /></td><td><input type='text' name='case-out[]' value='"+answer+"' size='8' /></td><td><input type='text' name='case-tl[]' value='"+tl+"' size='4' /></td><td><input type='text' name='case-ml[]' value='"+ml+"' size='4' /></td><td><input type='text' name='case-score[]' value='"+score+"' size='4' /></td></tr>");
+	$("#testcases").append("<tr id='testcase-"+sn+"'><td><input type='text' name='case-in[]' value='"+input+"' size='8' /></td><td><input type='text' name='case-out[]' value='"+answer+"' size='8' /></td><td><input type='text' name='case-tl[]' value='"+tl+"' size='4' /></td><td><input type='text' name='case-ml[]' value='"+ml+"' size='4' /></td><td><input type='text' name='case-score[]' value='"+score+"' size='4' /></td><td><a href='javascript:;' onclick='removeCase("+sn+");return false;'>[-]</a></td></tr>");
+	sn++;
 }
 
 function manualAddCase()

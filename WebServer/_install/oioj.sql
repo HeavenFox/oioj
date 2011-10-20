@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Oct 02, 2011 at 12:16 PM
+-- Generation Time: Oct 20, 2011 at 03:59 AM
 -- Server version: 5.5.8
 -- PHP Version: 5.3.5
 
@@ -54,6 +54,25 @@ CREATE TABLE IF NOT EXISTS `oj_articles_tags` (
 
 --
 -- Dumping data for table `oj_articles_tags`
+--
+
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `oj_configs`
+--
+
+CREATE TABLE IF NOT EXISTS `oj_configs` (
+  `id` int(11) NOT NULL,
+  `key` varchar(32) NOT NULL,
+  `value` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `key` (`key`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `oj_configs`
 --
 
 
@@ -123,6 +142,21 @@ CREATE TABLE IF NOT EXISTS `oj_dependencies` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `oj_invitations`
+--
+
+CREATE TABLE IF NOT EXISTS `oj_invitations` (
+  `id` int(11) NOT NULL,
+  `code` char(32) NOT NULL,
+  `sender` int(11) NOT NULL,
+  `user` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `code` (`code`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `oj_judgeservers`
 --
 
@@ -133,6 +167,8 @@ CREATE TABLE IF NOT EXISTS `oj_judgeservers` (
   `port` int(11) NOT NULL,
   `workload` int(11) NOT NULL DEFAULT '0',
   `maxWorkload` int(11) NOT NULL,
+  `ftp_username` varchar(32) NOT NULL,
+  `ftp_password` varchar(64) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
 
@@ -140,8 +176,8 @@ CREATE TABLE IF NOT EXISTS `oj_judgeservers` (
 -- Dumping data for table `oj_judgeservers`
 --
 
-INSERT INTO `oj_judgeservers` (`id`, `name`, `ip`, `port`, `workload`, `maxWorkload`) VALUES
-(1, 'VBox', '192.168.1.104', 9458, 18, 1500);
+INSERT INTO `oj_judgeservers` (`id`, `name`, `ip`, `port`, `workload`, `maxWorkload`, `ftp_username`, `ftp_password`) VALUES
+(1, 'local', '127.0.0.1', 9458, 18, 1500, '', '');
 
 -- --------------------------------------------------------
 
@@ -172,7 +208,7 @@ CREATE TABLE IF NOT EXISTS `oj_problems` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `title` varchar(255) NOT NULL,
   `body` text NOT NULL,
-  `uid` int(11) NOT NULL,
+  `uid` int(11) DEFAULT NULL,
   `type` smallint(6) NOT NULL,
   `input` varchar(64) NOT NULL,
   `output` varchar(64) NOT NULL,
@@ -182,15 +218,14 @@ CREATE TABLE IF NOT EXISTS `oj_problems` (
   `listing` tinyint(4) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`),
   KEY `uid` (`uid`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=5 ;
 
 --
 -- Dumping data for table `oj_problems`
 --
 
 INSERT INTO `oj_problems` (`id`, `title`, `body`, `uid`, `type`, `input`, `output`, `compare`, `submission`, `accepted`, `listing`) VALUES
-(1, 'A+B Problem', '<h3>Description</h3>\r\nWrite a problem that outputs A+B\r\n\r\n<h3>Input</h3>\r\n<p>input file: ab.in</p>\r\n<p>first line consists of two integers, a and b.</p>\r\n<h3>Output</h3>\r\n<p>outputfile: ab.out</p>\r\n<p>one line, a single integer: the sum</p>', 1, 1, 'ab.in', 'ab.out', '/FULLTEXT/', 0, 0, 1);
-
+(1, 'A+B Problem', 'calc a+b', 1, 1, 'ab.in', 'ab.out', '/FULLTEXT/', 0, 0, 1);
 -- --------------------------------------------------------
 
 --
@@ -226,12 +261,14 @@ CREATE TABLE IF NOT EXISTS `oj_records` (
   `cases` varchar(1024) NOT NULL,
   `timestamp` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
 
 --
 -- Dumping data for table `oj_records`
 --
 
+INSERT INTO `oj_records` (`id`, `pid`, `status`, `server`, `lang`, `uid`, `code`, `cases`, `timestamp`) VALUES
+(1, 1, 1, 1, 'cpp', 1, '#include', '', 1318770663);
 
 -- --------------------------------------------------------
 
@@ -242,10 +279,12 @@ CREATE TABLE IF NOT EXISTS `oj_records` (
 CREATE TABLE IF NOT EXISTS `oj_resources` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `title` varchar(256) NOT NULL,
+  `uid` int(11) DEFAULT NULL,
   `description` text NOT NULL,
   `filename` varchar(128) NOT NULL,
   `url` varchar(128) NOT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `uid` (`uid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 --
@@ -302,7 +341,8 @@ CREATE TABLE IF NOT EXISTS `oj_tags_acl` (
   `tid` int(11) NOT NULL,
   `key` varchar(32) NOT NULL,
   `permission` tinyint(4) NOT NULL,
-  KEY `tid` (`tid`)
+  KEY `tid` (`tid`),
+  KEY `key` (`key`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -311,7 +351,9 @@ CREATE TABLE IF NOT EXISTS `oj_tags_acl` (
 
 INSERT INTO `oj_tags_acl` (`tid`, `key`, `permission`) VALUES
 (1, 'submit_solution', 1),
-(2, 'admin_cp', 1);
+(2, 'admin_cp', 1),
+(3, 'add_problem', 1),
+(2, 'add_problem', 1);
 
 -- --------------------------------------------------------
 
@@ -326,16 +368,10 @@ CREATE TABLE IF NOT EXISTS `oj_testcases` (
   `answer` varchar(64) NOT NULL,
   `timelimit` float NOT NULL,
   `memorylimit` int(11) NOT NULL,
+  `score` int(11) NOT NULL,
   KEY `pid` (`pid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
---
--- Dumping data for table `oj_testcases`
---
-
-INSERT INTO `oj_testcases` (`pid`, `cid`, `input`, `answer`, `timelimit`, `memorylimit`) VALUES
-(1, 1, 'ab1.in', 'ab1.out', 1, 128),
-(1, 1, 'ab2.in', 'ab2.out', 1, 128);
 
 -- --------------------------------------------------------
 
@@ -345,20 +381,20 @@ INSERT INTO `oj_testcases` (`pid`, `cid`, `input`, `answer`, `timelimit`, `memor
 
 CREATE TABLE IF NOT EXISTS `oj_users` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(128) NOT NULL,
+  `username` varchar(128) NOT NULL,
   `email` varchar(128) NOT NULL,
-  `password` char(20) NOT NULL,
-  `salt` char(128) NOT NULL,
+  `password` char(40) NOT NULL,
+  `salt` varchar(128) NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `name` (`name`)
+  KEY `username` (`username`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
 
 --
 -- Dumping data for table `oj_users`
 --
 
-INSERT INTO `oj_users` (`id`, `name`, `email`, `password`, `salt`) VALUES
-(1, 'HeavenFox', 'heavenfox@heavenfox.org', '', '');
+INSERT INTO `oj_users` (`id`, `username`, `email`, `password`, `salt`) VALUES
+(1, 'HeavenFox', 'heavenfox@heavenfox.org', 'ac259b3949a3046aa731da51413775fd5f44fb4b', '78e3b5ca79e1d3688b73c13540b5c261');
 
 -- --------------------------------------------------------
 
@@ -378,8 +414,6 @@ CREATE TABLE IF NOT EXISTS `oj_users_acl` (
 -- Dumping data for table `oj_users_acl`
 --
 
-INSERT INTO `oj_users_acl` (`uid`, `key`, `permission`) VALUES
-(1, 'admin_cp', 1);
 
 -- --------------------------------------------------------
 
@@ -430,28 +464,34 @@ ALTER TABLE `oj_dependencies`
 -- Constraints for table `oj_participants`
 --
 ALTER TABLE `oj_participants`
-  ADD CONSTRAINT `oj_participants_ibfk_2` FOREIGN KEY (`uid`) REFERENCES `oj_users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `oj_participants_ibfk_1` FOREIGN KEY (`cid`) REFERENCES `oj_contests` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `oj_participants_ibfk_1` FOREIGN KEY (`cid`) REFERENCES `oj_contests` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `oj_participants_ibfk_2` FOREIGN KEY (`uid`) REFERENCES `oj_users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `oj_problems`
 --
 ALTER TABLE `oj_problems`
-  ADD CONSTRAINT `oj_problems_ibfk_1` FOREIGN KEY (`uid`) REFERENCES `oj_users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `oj_problems_ibfk_1` FOREIGN KEY (`uid`) REFERENCES `oj_users` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 --
 -- Constraints for table `oj_problems_tags`
 --
 ALTER TABLE `oj_problems_tags`
-  ADD CONSTRAINT `oj_problems_tags_ibfk_2` FOREIGN KEY (`tid`) REFERENCES `oj_tags` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `oj_problems_tags_ibfk_1` FOREIGN KEY (`pid`) REFERENCES `oj_problems` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `oj_problems_tags_ibfk_1` FOREIGN KEY (`pid`) REFERENCES `oj_problems` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `oj_problems_tags_ibfk_2` FOREIGN KEY (`tid`) REFERENCES `oj_tags` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `oj_resources`
+--
+ALTER TABLE `oj_resources`
+  ADD CONSTRAINT `oj_resources_ibfk_1` FOREIGN KEY (`uid`) REFERENCES `oj_users` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 --
 -- Constraints for table `oj_resources_tags`
 --
 ALTER TABLE `oj_resources_tags`
-  ADD CONSTRAINT `oj_resources_tags_ibfk_2` FOREIGN KEY (`tid`) REFERENCES `oj_tags` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `oj_resources_tags_ibfk_1` FOREIGN KEY (`rid`) REFERENCES `oj_resources` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `oj_resources_tags_ibfk_1` FOREIGN KEY (`rid`) REFERENCES `oj_resources` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `oj_resources_tags_ibfk_2` FOREIGN KEY (`tid`) REFERENCES `oj_tags` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `oj_tags_acl`

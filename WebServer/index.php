@@ -13,6 +13,7 @@ $availableModules = array('user' => 'UserModule', 'records' => 'RecordsModule', 
 $autoloadModules = array('UserModule');
 
 OIOJ::InitTemplate();
+OIOJ::InitDatabase();
 
 foreach ($autoloadModules as $module)
 {

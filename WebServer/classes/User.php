@@ -27,13 +27,13 @@ class User extends ActiveRecord
 		{
 			// Log in automatically
 			$obj = self::fetch(array('id','username','password'),null,'WHERE `id` = '.IO::Cookie('uid',0,'intval'));
-			if (IO::Cookie('password') == $obj->password)
+			if ($obj && IO::Cookie('password') == $obj->password)
 			{
 				return self::$currentUser = $obj;
 			}
 		}
 		
-		return new GuestUser();
+		return self::$currentUser = new GuestUser();
 	}
 	
 	public static function destroySession()
@@ -61,6 +61,8 @@ class User extends ActiveRecord
 	
 	public function getACL()
 	{
+		$this->acl = array();
+		
 		$str = 'SELECT  `key` , SUM( `permission`) FROM (
 SELECT  `key` ,  `permission` 
 FROM  `oj_users_acl` WHERE `uid` = ?
@@ -71,7 +73,7 @@ FROM  `oj_tags_acl` LEFT JOIN `oj_users_tags` USING (tid) WHERE `oj_users_tags`.
 GROUP BY  `key`';
 		$db = Database::Get();
 		$stmt = $db->prepare($str);
-		$stmt->execute($this->id,$this->id);
+		$stmt->execute(array($this->id,$this->id));
 		foreach ($stmt as $v)
 		{
 			$this->acl[$v[0]] = $v[1];
@@ -80,11 +82,23 @@ GROUP BY  `key`';
 	
 	public function ableTo($key)
 	{
+		if ($this->acl === null)
+		{
+			$this->getACL();
+			$this->createSession();
+		}
 		if (isset($this->acl[self::ACL_OMNIPOTENT]) && $this->acl[self::ACL_OMNIPOTENT] > 0)
 		{
 			return true;
 		}
 		return isset($this->acl[$key]) && $this->acl[$key] > 0;
+	}
+	
+	public function __sleep()
+	{
+		$r = parent::__sleep();
+		$r[] = 'acl';
+		return $r;
 	}
 }
 ?>

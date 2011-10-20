@@ -61,7 +61,7 @@ class ActiveRecord
 		foreach ($this->_propUpdated as $k => $v)
 		{
 			if ($first) {$first = false;} else {$queryStr .= ',';}
-			$queryStr .= "`{$k}`";
+			$queryStr .= "`".$this->getDatabaseColumn($k)."`";
 		}
 		$queryStr .= ') VALUES (';
 		$arr = array();
@@ -87,6 +87,15 @@ class ActiveRecord
 	public function propertyExists($prop)
 	{
 		return isset($this->_propValues[$prop]);
+	}
+	
+	private function getDatabaseColumn($k)
+	{
+		if (isset(static::$schema[$k]['column']))
+		{
+			return static::$schema[$k]['column'];
+		}
+		return $k;
 	}
 	
 	private function getDatabaseRepresentation($k)
@@ -117,7 +126,7 @@ class ActiveRecord
 				else
 					$queryStr .= ',';
 				
-				$queryStr .= $k;
+				$queryStr .= $this->getDatabaseColumn($k);
 				$queryStr .= ' = ?';
 				$arr[] = $this->getDatabaseRepresentation($k);
 			}
