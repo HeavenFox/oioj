@@ -65,7 +65,7 @@ class SubmitModule
 			{
 				$server->addWorkload();
 				$record->status = JudgeRecord::STATUS_DISPATCHED;
-				$record->serverID = $server->id;
+				$record->server = $server;
 				break;
 			}
 		}

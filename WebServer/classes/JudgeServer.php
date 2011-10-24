@@ -1,54 +1,26 @@
 <?php
-class JudgeServer
+import('ActiveRecord');
+class JudgeServer extends ActiveRecord
 {
-	public $id;
-	public $serverName;
-	public $workload;
-	public $maxWorkload;
-	public $ip;
-	public $port;
+	static $tableName = 'oj_judgeservers';
+	
+	static $schema = array(
+		'id' => array('class' => 'int'),
+		'name' => array('class' => 'string'),
+		'workload' => array('class' => 'int'),
+		'maxWorkload' => array('class' => 'int'),
+		'ip' => array('class' => 'string'),
+		'port' => array('class' => 'int'),
+		'ftpUsername' => array('class' => 'string', 'column' => 'ftp_username'),
+		'ftpPassword' => array('class' => 'string', 'column' => 'ftp_password')
+	);
+	static $keyProperty = 'id';
 	
 	public $cases;
 	
-	public function __construct($info = NULL)
-	{
-		if (is_int($info))
-		{
-			$this->constructFromID($info);
-		}
-		else if (is_array($info))
-		{
-			$this->constructFromRow($info);
-		}
-	}
-	
-	public function constructFromRow($row)
-	{
-		$this->id = $row['id'];
-		$this->serverName = $row['name'];
-		$this->ip = $row['ip'];
-		$this->port = $row['port'];
-	}
-	
-	public function constructFromID($id)
-	{
-		$this->id = $id;
-		$DB = Database::Get();
-		$stmt = $DB->prepare('SELECT name, ip, port, workload, max_workload FROM `oj_judgeservers` WHERE `id` = ?');
-		$stmt->execute(array($id));
-		$this->constructFromRow($stmt->fetch());
-	}
-	
 	public static function GetAvailableServers()
 	{
-		$DB = Database::Get();
-		$stmt = $DB->query('SELECT id, name, ip, port, workload, maxWorkload FROM oj_judgeservers WHERE workload < maxWorkload ORDER BY workload ASC');
-		$servers = array();
-		foreach ($stmt as $v)
-		{
-			$servers[] = new JudgeServer($v);
-		}
-		return $servers;
+		return self::find(array('id','name','ip','port','workload','maxWorkload'),null,'WHERE workload < maxWorkload ORDER BY workload ASC');
 	}
 	
 	public function dispatch($task)
@@ -70,6 +42,11 @@ class JudgeServer
 		
 		$stmt = $DB->prepare("UPDATE `oj_judgeservers` SET `workload` = `workload` + ({$val}) WHERE `id` = ?");
 		$stmt->execute(array($this->id));
+	}
+	
+	public function isLocal()
+	{
+		return $this->ip == '127.0.0.1';
 	}
 }
 ?>

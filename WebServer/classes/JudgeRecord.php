@@ -1,6 +1,8 @@
 <?php
-
-class JudgeRecord
+import('ActiveRecord');
+import('Problem');
+import('User');
+class JudgeRecord extends ActiveRecord
 {
 	const STATUS_WAITING = 0;
 	const STATUS_DISPATCHED = 1;
@@ -9,6 +11,23 @@ class JudgeRecord
 	const STATUS_REJECTED = 4;
 	
 	
+	static $tableName = 'oj_records';
+	
+	static $schema = array(
+		'id' => array('class' => 'int'),
+		'problem' => array('class' => 'Problem', 'comp' => 'one', 'column' => 'pid'),
+		'status' => array('class' => 'int'),
+		'server' => array('class' => 'JudgeServer', 'comp' => 'one', 'column' => 'server'),
+		'lang' => array('class' => 'string'),
+		'user' => array('class' => 'User', 'comp' => 'one', 'column' => 'uid'),
+		'cases' => array('class' => 'string', 'setter' => 'serialize', 'getter' => 'unserialize'),
+		'code' => array('class' => 'text'),
+		'timestamp' => array('class' => 'int')
+	);
+		
+	static $keyProperty = 'id';
+	
+	/*
 	public $problemID = 0;
 	public $id = 0;
 	public $lang;
@@ -78,6 +97,7 @@ class JudgeRecord
 		}
 	}
 	
+	/*
 	private function addRecord()
 	{
 		$DB = Database::Get();
@@ -93,6 +113,7 @@ class JudgeRecord
 		$stmt = $DB->prepare('UPDATE `oj_records` SET status = ?, cases = ?, server = ? WHERE `id` = ?');
 		$stmt->execute(array($this->status, $this->casesString, $this->serverID, $this->id));
 	}
+	*/
 	
 	public function parseCallback($general, $cases)
 	{
@@ -100,7 +121,7 @@ class JudgeRecord
 		
 		if ($gen['Token'] != $this->token)
 		{
-			throw new Exception('Token check failed. Met '.$gen['Token'].' but expect '.$this->token);
+			throw new Exception('Unauthorized access.');
 		}
 		
 		$this->constructFromID($gen['RecordID']);

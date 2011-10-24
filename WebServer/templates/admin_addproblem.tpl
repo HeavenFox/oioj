@@ -6,7 +6,7 @@
 <link rel="stylesheet" href="scripts/fancybox/jquery.fancybox-1.3.4.css" type="text/css" media="screen" />
 {/block}
 {block name="column-left"}
-<form method="post" action="index.php?mod=admin_problem&act=add&submit=1" enctype="multipart/form-data" target="console">
+<form method="post" action="index.php?mod=admin_problem&act=add&submit=1" enctype="multipart/form-data" target="console" id="add_form">
 <table>
 <tr><td><label for="title">Title</label></td><td>
   <input type="text" name="title" id="title" /></td></tr>

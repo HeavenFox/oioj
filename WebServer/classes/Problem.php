@@ -1,6 +1,7 @@
 <?php
 import('ActiveRecord');
 import('TestCase');
+import('JudgeServer');
 class Problem extends ActiveRecord
 {
 	public static $schema = array(
@@ -59,6 +60,57 @@ class Problem extends ActiveRecord
 			return true;
 		}
 		return false;
+	}
+	
+	public function dispatch($server)
+	{
+		if (!$this->archiveLocation)
+		{
+			throw new Exception('Archive not created');
+		}
+		if ($server->isLocal())
+		{
+			copy($this->archiveLocation,Config::$LocalJudgeServerDataDir.$this->id.'.zip');
+			//$this->archiveLocation = null;
+		}
+		else
+		{
+			// FTP
+			$ftp = ftp_connect($server->ip);
+			
+			
+			if (!$ftp || !ftp_login($ftp,$server->ftpUsername,$server->ftpPassword))
+			{
+				throw new Exception('Unable to connect');
+			}
+			
+			ftp_fput($ftp,$this->id.'.zip',$this->archiveLocation,FTP_BINARY);
+			
+			ftp_close($ftp);
+			
+		}
+		
+		$server->dispatch($this->generateDispatchString());
+		
+	}
+	
+	public function purge()
+	{
+		unlink($this->archiveLocation);
+	}
+	
+	private function generateDispatchString()
+	{
+		$str = "1\n{$this->id} {$this->type} {$this->compare} {$this->input} {$this->output}\n";
+		$str .= strval(count($this->testCases)) . "\n";
+		foreach ($this->testCases as $c)
+		{
+			$str .= "{$c->cid} {$c->input} {$c->answer} {$c->timelimit} {$c->memorylimit} {$c->score}\n";
+		}
+		// TODO add dependency support
+		$str .= "0\n";
+		
+		return $str;
 	}
 	
 	public function add()

@@ -9,17 +9,17 @@
 <tbody>
 {foreach $records as $record}
 <tr class='{cycle values="odd,even"}'>
-  <td>{$record.id}</td>
-  <td>{$record.prob_title}</td>
-  <td class='{$record.status_class}'><a href='javascript:showCaseInfo({$record.id});'>{$record.status}</a></td>
-  <td>{$record.score}</td>
-  <td>{$record.lang}</td>
-  <td><a href="user.php?uid={$record.uid}">{$record.username}</a></td>
-  <td>{$record.timestamp|date_format}</td>
+  <td>{$record->id}</td>
+  <td>{$record->title}</td>
+  <td class='{$record->statusClass}'><a href='javascript:showCaseInfo({$record->id});'>{$record->status}</a></td>
+  <td>{$record->score}</td>
+  <td>{$record->lang}</td>
+  <td><a href="user.php?uid={$record->user->id}">{$record->user->username}</a></td>
+  <td>{$record->timestamp|date_format}</td>
 </tr>
-<tr class="caseinfo" id="caseinfo-{$record.id}"><td colspan="7">
+<tr class="caseinfo" id="caseinfo-{$record->id}"><td colspan="7">
 <ul>
-{foreach $record.cases as $list}
+{foreach $record->cases as $list}
 <li>{$list}</li>
 {/foreach}
 </ul>
