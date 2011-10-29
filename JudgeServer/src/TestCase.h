@@ -17,6 +17,7 @@
 #include <cmath>
 #include <cstring>
 #include "fileop.h"
+#include "sqlite3.h"
 
 using namespace std;
 
