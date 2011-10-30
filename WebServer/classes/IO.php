@@ -18,7 +18,7 @@ class IO
 	
 	public static function Cookie($prop, $defaultValue = null, $san = null)
 	{
-		return self::GetArrayElement($_GET, $prop, $defaultValue, $san);
+		return self::GetArrayElement($_COOKIE, $prop, $defaultValue, $san);
 	}
 	
 	public static function SetCookie($prop, $val, $expire)

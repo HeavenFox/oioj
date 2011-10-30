@@ -18,7 +18,6 @@ try {
 	$record->submit();
 } catch (Exception $e)
 {
-	file_put_contents("log.txt","unauthorized ".strval($e));
 	die('Unauthorized access');
 }
 

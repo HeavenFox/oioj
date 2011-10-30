@@ -3,13 +3,7 @@ import('Problem');
 class AdminManageProblemModule
 {
 	
-	/*
-	 * Check for administration privilege
-	 */
-	public function authenticate()
-	{
-		
-	}
+	
 	
 	public function run()
 	{
@@ -22,6 +16,10 @@ class AdminManageProblemModule
 			}
 			else
 			{
+				if (!User::GetCurrent()->ableTo('add_problem'))
+				{
+					throw new Exception('denied');
+				}
 				OIOJ::$template->display('admin_addproblem.tpl');
 			}
 			

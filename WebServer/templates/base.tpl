@@ -13,7 +13,13 @@
 <div id="logo"><a href="index.php"><img src='templates/images/header.png' /></a></div>
 <div id="navbar"><ul><li><a href="index.php?mod=learning">Learning Center</a></li><li><a href="index.php?mod=problemlist">Problems</a></li><li><a href="index.php?mod=records">Records</a></li><li><a href="index.php?mod=contestlist">Arena</a></li></ul></div>
 </div>
-<div id="container"><div id="infobar"><div id="breadcrumb">Home</div><div id="userinfo">Welcome, {$user->username} Profile - Log out</div></div><div id="body">{block name="body"}<!-- DEFAULT CONTENT -->{/block}</div>
+<div id="container"><div id="infobar"><div id="breadcrumb">Home</div><div id="userinfo">Welcome, {$user->username}
+{if $user->id != 0}
+ <a href='index.php?mod=user&act=editprofile'>User Center</a> - <a href='index.php?mod=user&act=logout'>Log out</a>
+{/if}
+</div></div>
+
+<div id="body">{block name="body"}<!-- DEFAULT CONTENT -->{/block}</div>
 <div id="footer">OIOJ Instructional Online Judge (c){$smarty.now|date_format:"%Y"} Zhu Jingsi. All Rights Reserved.</div></div>
 </body>
 </html>

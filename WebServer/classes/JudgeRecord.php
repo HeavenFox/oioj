@@ -27,6 +27,8 @@ class JudgeRecord extends ActiveRecord
 		
 	static $keyProperty = 'id';
 	
+	public $token;
+	
 	/*
 	public $problemID = 0;
 	public $id = 0;
@@ -79,11 +81,7 @@ class JudgeRecord extends ActiveRecord
 		$this->constructFromRow($stmt->fetch());
 	}
 	
-	public function __toString()
-	{
-		$codeBase64 = base64_encode($this->code);
-		return "JUDGE\nProblemID {$this->problemID}\nRecordID {$this->id}\nLang {$this->lang}\nSubmission {$codeBase64}";
-	}
+	
 	
 	public function submit()
 	{
@@ -115,6 +113,12 @@ class JudgeRecord extends ActiveRecord
 	}
 	*/
 	
+	public function add()
+	{
+		$this->timestamp = time();
+		parent::add();
+	}
+	
 	public function parseCallback($general, $cases)
 	{
 		$gen = parseProtocol($general);
@@ -136,5 +140,11 @@ class JudgeRecord extends ActiveRecord
 		$server = new JudgeServer();
 		$server->id = $this->serverID;
 		$server->addWorkload(-1);
+	}
+	
+	public function __toString()
+	{
+		$codeBase64 = base64_encode($this->code);
+		return "JUDGE\nProblemID {$this->problemID}\nRecordID {$this->id}\nLang {$this->lang}\nSubmission {$codeBase64}";
 	}
 }

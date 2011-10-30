@@ -16,12 +16,20 @@ $(function(){
 <link rel='stylesheet' href='scripts/fancybox/jquery.fancybox-1.3.4.css' />
 {/block}
 {block name="body"}
-<div id="blocknav"><ul>
-  <li id="learn"><img src="templates/images/index/learn.gif" /><h3><a href="learning.php">Learn</a></h3></li>
-  <li id="solve"><img src="templates/images/index/learn.gif" /><h3><a href="problems.php">Solve</a></h3></li>
-  <li id="compete"><img src="templates/images/index/learn.gif" /><h3><a href="contests.php">Compete</a></h3></li>
-</ul>
+<div id="blocknav">
+<div id="bn_banners">
+<p><img src='templates/images/index/learn_banner.png' /></p>
+<p><img src='templates/images/index/solve_banner.png' /></p>
+<p><img src='templates/images/index/compete_banner.png' /></p>
 </div>
+<div id="bn_links">
+<p><a href='#' onclick='moveBannerTo("-0")'><img src='templates/images/index/learn_tn.png' /></a></p>
+<p><a href='#' onclick='moveBannerTo("-360px")'><img src='templates/images/index/solve_tn.png' /></a></p>
+<p><img src='templates/images/index/compete_tn.png' /></p>
+</div>
+
+</div>
+{if $user->id == 0}
 <div id="user_panel">
    <div id="login_panel"><h2>Log in</h2>
 
@@ -56,6 +64,7 @@ $(function(){
 </table>
 </div>
 </div>
+{else}
 <div id="quicksubmit">
 <h2>Quick Submit</h2>
 Submit by choosing source file or dragging your solution to the dropbox below. Please indicate problem ID and use proper extension. Example: 1895.cpp, P3421.pas
@@ -64,4 +73,5 @@ Submit by choosing source file or dragging your solution to the dropbox below. P
 </form>
 <div id="dropzone"></div>
 </div>
+{/if}
 {/block}

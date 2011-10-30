@@ -13,6 +13,7 @@ class Problem extends ActiveRecord
 			'output' => array('class' => 'string'),
 			'compare' => array('class' => 'string'),
 			'submission' => array('class' => 'int'),
+			'accepted' => array('class' => 'int'),
 			'listing' => array('class' => 'bool'),
 			'user' => array('class' => 'User', 'comp' => 'one', 'column' => 'uid')
 		);

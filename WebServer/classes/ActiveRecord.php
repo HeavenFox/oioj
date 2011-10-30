@@ -165,7 +165,7 @@ class ActiveRecord
 						{
 							$queryStr .= ',';
 						}
-						$queryStr.='`'.$className::$tableName.'`.`'.$className::$schema[$prop]['column'].'`';
+						$queryStr.='`'.$className::$tableName.'`.`'.$className::_getDatabaseColumn($prop).'`';
 					}
 				}
 			}
@@ -186,7 +186,6 @@ class ActiveRecord
 				}
 			}
 		}
-		
 		$queryStr .= $suffix;
 		return $queryStr;
 	}
@@ -230,7 +229,7 @@ class ActiveRecord
 	{
 		if (is_int($suffix))
 		{
-			$suffix = 'WHERE `'.static::$keyProperty.'` = '.$suffix;
+			$suffix = 'WHERE `'.static::$tableName.'`.`'.static::$keyProperty.'` = '.$suffix;
 		}
 		$queryStr = self::_makeQueryString($properties, $composites, $suffix);
 		
@@ -286,7 +285,7 @@ class ActiveRecord
 		{
 			foreach ($composites as $prop => $comp)
 			{
-				if (!isset($this->_propValues[$prop]))
+				if (!isset($this->_propValues[$prop]) || !($this->_propValues[$prop] instanceof ActiveRecord))
 				{
 					$className = static::$schema[$prop]['class'];
 					$this->_propValues[$prop] = new $className;
@@ -312,6 +311,15 @@ class ActiveRecord
 	
 	public function _preprocessSet($param, $value)
 	{
+		$processFunc = array(
+			'int' => 'intval',
+			'double' => 'floatval',
+		);
+		if (isset($processFunc[static::$schema[$param]['class']]))
+		{
+			$func = $processFunc[static::$schema[$param]['class']];
+			$value = $func($value);
+		}
 		if (isset(static::$schema[$param]['getter']))
 		{
 			$call = static::$schema[$param]['getter'];

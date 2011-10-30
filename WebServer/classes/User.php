@@ -7,7 +7,7 @@ class User extends ActiveRecord
 	
 	private static $currentUser = null;
 	
-	private $acl = null;
+	protected $acl = null;
 	
 	const ACL_OMNIPOTENT = 'omnipotent';
 	
@@ -26,7 +26,7 @@ class User extends ActiveRecord
 		if (IO::Cookie('uid'))
 		{
 			// Log in automatically
-			$obj = self::fetch(array('id','username','password'),null,'WHERE `id` = '.IO::Cookie('uid',0,'intval'));
+			$obj = self::first(array('id','username','password'),null,'WHERE `id` = '.IO::Cookie('uid',0,'intval'));
 			if ($obj && IO::Cookie('password') == $obj->password)
 			{
 				return self::$currentUser = $obj;
@@ -36,9 +36,10 @@ class User extends ActiveRecord
 		return self::$currentUser = new GuestUser();
 	}
 	
-	public static function destroySession()
+	public static function DestroySession()
 	{
 		IO::DestroySession('user');
+		IO::SetCookie('uid',0,-1);
 		self::$currentUser = new GuestUser();
 	}
 	

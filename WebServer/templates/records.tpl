@@ -10,7 +10,7 @@
 {foreach $records as $record}
 <tr class='{cycle values="odd,even"}'>
   <td>{$record->id}</td>
-  <td>{$record->title}</td>
+  <td>{$record->problem->title}</td>
   <td class='{$record->statusClass}'><a href='javascript:showCaseInfo({$record->id});'>{$record->status}</a></td>
   <td>{$record->score}</td>
   <td>{$record->lang}</td>
