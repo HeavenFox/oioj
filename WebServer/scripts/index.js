@@ -11,3 +11,8 @@ function showCAPTCHA()
 		});
 	}
 }
+
+function moveBannerTo(loc)
+{
+	$("#bn_banners").css("top",loc);
+}

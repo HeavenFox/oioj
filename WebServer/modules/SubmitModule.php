@@ -18,11 +18,14 @@ class SubmitModule
 	
 	public function submitSolution()
 	{
+		error_reporting(0);
 		OIOJ::InitDatabase();
 		
 		$record = new JudgeRecord;
 		
 		$record->code = (file_get_contents($_FILES['source']['tmp_name']));
+		
+		unlink($_FILES['source']['tmp_name']);
 		
 		preg_match('/[0-9]+/',$_FILES['source']['name'],$matches);
 		if (!isset($matches[0]))
@@ -50,12 +53,16 @@ class SubmitModule
 		$lang = $map[$lang];
 		
 		$record->token = Config::$Token;
+		$record->lang = $lang;
+		import('User');
+		$record->user = User::GetCurrent();
+		$record->pid = $problemID;
+		$record->submit();
 		
 		$servers = JudgeServer::GetAvailableServers();
 		
 		$db = Database::Get();
 		
-		$record->submit();
 		
 		$server = null;
 		
@@ -65,14 +72,14 @@ class SubmitModule
 			{
 				$server->addWorkload();
 				$record->status = JudgeRecord::STATUS_DISPATCHED;
-				$record->serverID = $server->id;
+				$record->server = $server;
 				break;
 			}
 		}
 		
 		$record->submit();
 		
-		echo json_encode(array('record_id' => $record->id, 'server_name' => $server->serverName));
+		echo json_encode(array('record_id' => $record->id, 'server_name' => $server->name));
 	}
 	
 	public function showForm()

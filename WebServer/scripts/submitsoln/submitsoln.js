@@ -2,9 +2,9 @@ var timeOutId;
 
 function checkRecord(id)
 {
-	jQuery.get('index.php?mod=record&id='+id,function(data){
-		$('#submit_infobox').html(data.content);
-		if (data.finished)
+	jQuery.get('index.php?mod=records&id='+id,function(data){
+		$('#submit_infobox').html(data.result.content);
+		if (data.result.finished)
 		{
 			clearTimeout(timeOutId);
 		}
@@ -38,7 +38,10 @@ function checkRecord(id)
 				}
 				else
 				{
-					$.fancybox("<div id='submit_infobox'>Response"+data.result.error ? data.result.error:"" +"</div>",{});
+					$.fancybox("<div id='submit_infobox'>ID: "+data.result.record_id+"<br />Server:"+data.result.server_name+"</div>",{'autoDimensions'	: false,
+			'width'         		: 350,
+			'height'        		: 250,
+					'scrolling'		: 'no',});
 					setTimeout('checkRecord('+data.result.id+')',3000);
 				}
 			},

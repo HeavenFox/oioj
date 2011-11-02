@@ -6,8 +6,28 @@
 }
 #blocknav
 {
-	height: 250px;
+	height: 360px;
+	position: relative;
+	overflow: hidden;
 }
+
+#bn_banners
+{
+	position: absolute;
+	top: 0;
+	left: 0;
+	-moz-transition: top 2s ease;
+	-webkit-transition: top 2s ease;
+	-o-transition: top 2s ease;
+}
+
+#bn_links
+{
+	position: absolute;
+	top: 0;
+	left: 720px;
+}
+
 #blocknav li
 {
 	display: block;

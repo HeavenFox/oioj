@@ -86,6 +86,13 @@ function toggleScreen(obj,box)
 		$(box).show().value("");
 	}
 }
+
+function resetForm()
+{
+	$('#testcases').empty();
+	$('#add_form').reset();
+}
+
 $(document).ready(function() {
 	$("a#batch_box_link").fancybox({'transitionIn'	:	'elastic',
 		'transitionOut'	:	'elastic',

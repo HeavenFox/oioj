@@ -3,15 +3,31 @@
 <script type="text/javascript" src="scripts/admin_addproblem.js"></script>
 <script type="text/javascript" src="scripts/fancybox/jquery.easing-1.3.pack.js"></script>
 <script type="text/javascript" src="scripts/fancybox/jquery.fancybox-1.3.4.pack.js"></script>
+<script type="text/javascript" src="lib/ckeditor/ckeditor.js"></script>
+<script type="text/javascript" src="lib/ckeditor/adapters/jquery.js"></script>
 <link rel="stylesheet" href="scripts/fancybox/jquery.fancybox-1.3.4.css" type="text/css" media="screen" />
+
+<script type='text/javascript'>
+$(document).ready(function(){
+	CKEDITOR.replace("prob_body",{
+		toolbar: [
+			{ name: 'document', items : [ 'Preview' ] },
+			{ name: 'basicstyles', items : [ 'Bold','Italic','Subscript','Superscript','-','RemoveFormat' ] },
+			{ name: 'paragraph', items : [ 'NumberedList','BulletedList' ] },
+			{ name: 'links', items : [ 'Link','Unlink' ] },
+			{ name: 'tools', items : [ 'Maximize' ] }
+		]
+	});
+});
+</script>
 {/block}
 {block name="column-left"}
-<form method="post" action="index.php?mod=admin_problem&act=add&submit=1" enctype="multipart/form-data" target="console">
+<form method="post" action="index.php?mod=admin_problem&act=add&submit=1" enctype="multipart/form-data" target="console" id="add_form">
 <table>
 <tr><td><label for="title">Title</label></td><td>
   <input type="text" name="title" id="title" /></td></tr>
 <tr><td><label for="input">Body</label></td><td>
-  <textarea name="body" id="body"></textarea></td></tr>
+  <textarea name="body" id="prob_body"></textarea></td></tr>
 <tr><td><label for="input_file">Input</label></td><td>
     <input type="text" name="input_file" id="input_file" />
     <input type="checkbox" name="screen_input" id="screen_input" onchange="toggleScreen(this,'#input_file')" />

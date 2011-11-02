@@ -46,12 +46,6 @@ class ActiveRecord
 		}
 	}
 	
-	private function handleError($stmt)
-	{
-		//if ($stmt->errorCode())
-		//	var_dump( $stmt->errorInfo());
-	}
-	
 	public function add()
 	{
 		$queryStr = 'INSERT INTO `';
@@ -61,7 +55,7 @@ class ActiveRecord
 		foreach ($this->_propUpdated as $k => $v)
 		{
 			if ($first) {$first = false;} else {$queryStr .= ',';}
-			$queryStr .= "`".$this->getDatabaseColumn($k)."`";
+			$queryStr .= "`".self::_getDatabaseColumn($k)."`";
 		}
 		$queryStr .= ') VALUES (';
 		$arr = array();
@@ -89,7 +83,7 @@ class ActiveRecord
 		return isset($this->_propValues[$prop]);
 	}
 	
-	private function getDatabaseColumn($k)
+	public static function _getDatabaseColumn($k)
 	{
 		if (isset(static::$schema[$k]['column']))
 		{
@@ -108,7 +102,7 @@ class ActiveRecord
 		}
 		else
 		{
-			return $this->_propValues[$k];
+			return $this->_preprocessGet($k);
 		}
 	}
 	
@@ -126,7 +120,7 @@ class ActiveRecord
 				else
 					$queryStr .= ',';
 				
-				$queryStr .= $this->getDatabaseColumn($k);
+				$queryStr .= self::_getDatabaseColumn($k);
 				$queryStr .= ' = ?';
 				$arr[] = $this->getDatabaseRepresentation($k);
 			}
@@ -135,22 +129,46 @@ class ActiveRecord
 		$stmt = Database::Get()->prepare($queryStr);
 		
 		$stmt->execute($arr);
-		$this->handleError($stmt);
 	}
 	
 	protected static function _makeQueryString($properties, $composites, $suffix)
 	{
 		$queryStr = 'SELECT ';
 		$first = true;
-		foreach ($properties as $prop)
+		if ($properties)
 		{
-			if ($first){
-				$first = false;
-			}else
+			foreach ($properties as $prop)
 			{
-				$queryStr .= ',';
+				if ($first){
+					$first = false;
+				}else
+				{
+					$queryStr .= ',';
+				}
+				$queryStr .= "`".static::$tableName."`.`".self::_getDatabaseColumn($prop)."`";
 			}
-			$queryStr .= "`".static::$tableName."`.`{$prop}`";
+		}
+		
+		if ($composites)
+		{
+			foreach ($composites as $k => $v)
+			{
+				if (static::$schema[$k]['comp'] == 'one')
+				{
+					$className = static::$schema[$k]['class'];
+					
+					foreach ($v as $prop)
+					{
+						if ($first){
+							$first = false;
+						}else
+						{
+							$queryStr .= ',';
+						}
+						$queryStr.='`'.$className::$tableName.'`.`'.$className::_getDatabaseColumn($prop).'`';
+					}
+				}
+			}
 		}
 		
 		$queryStr .= " FROM `".static::$tableName."` ";
@@ -159,7 +177,7 @@ class ActiveRecord
 		{
 			foreach ($composites as $k => $v)
 			{
-				if ($className = static::$schema[$k]['comp'] == 'one')
+				if (static::$schema[$k]['comp'] == 'one')
 				{
 					$className = static::$schema[$k]['class'];
 				
@@ -168,9 +186,7 @@ class ActiveRecord
 				}
 			}
 		}
-		
 		$queryStr .= $suffix;
-		
 		return $queryStr;
 	}
 	
@@ -182,7 +198,7 @@ class ActiveRecord
 	 * @param string $suffix
 	 * @todo finish composite function
 	 */
-	public static function find($properties, $composites, $suffix = '', $data = array())
+	public static function find($properties, $composites = null, $suffix = '', $data = array())
 	{
 		$queryStr = self::_makeQueryString($properties, $composites, $suffix);
 		$resultSet = array();
@@ -197,7 +213,7 @@ class ActiveRecord
 			{
 				$obj->_propValues[$properties[$i]] = $row[$i];
 			}*/
-			$obj->_fillRow($row,$properties, $composites);
+			$obj->_fillRow($row, $properties, $composites);
 			$resultSet[] = $obj;
 		}
 		return $resultSet;
@@ -205,6 +221,16 @@ class ActiveRecord
 	
 	public static function first($properties, $composites, $suffix = '', $data = array())
 	{
+		$obj = new static;
+		return $obj->fetch($properties, $composites, $suffix, $data);
+	}
+	
+	public function fetch($properties, $composites, $suffix, $data = array())
+	{
+		if (is_int($suffix))
+		{
+			$suffix = 'WHERE `'.static::$tableName.'`.`'.static::$keyProperty.'` = '.$suffix;
+		}
 		$queryStr = self::_makeQueryString($properties, $composites, $suffix);
 		
 		$stmt = Database::Get()->prepare($queryStr);
@@ -212,19 +238,13 @@ class ActiveRecord
 		$row = $stmt->fetch(PDO::FETCH_NUM);
 		
 		if ($row) {
-			$obj = new static;
-			$obj->_fillRow($row, $properties, $composites);
-			return $obj;
+			$this->_fillRow($row, $properties, $composites);
+			return $this;
 		} else {
 			return null;
 		}
 		
-	}
-	
-	public static function fetch($query, $properties, $id)
-	{
-		if (is_string($id))$id = addslashes($id);
-		return static::first($query, $properties, 'WHERE `'.static::$keyProperty . "` = '{$id}'");
+		//return static::first($query, $properties, 'WHERE `'.static::$keyProperty . "` = '{$id}'");
 	}
 	
 	public static function findByQuery($query, $properties, $composites)
@@ -236,9 +256,17 @@ class ActiveRecord
 		
 	}
 	
-	public function _setProp($prop, $val)
+	public function _setProp($param, $value)
 	{
-		$this->_propValues[$prop] = $val;
+		if (isset(static::$schema[$param]['comp']) && !($value instanceof ActiveRecord))
+		{
+			$className = static::$schema[$param];
+			$value = new $className($value);
+		}
+		
+		
+		$this->_propValues[$param] = $value;
+		
 	}
 	
 	
@@ -249,7 +277,7 @@ class ActiveRecord
 		{
 			foreach ($properties as $v)
 			{
-				$this->_propValues[$v] = $row[$i];
+				$this->_preprocessSet($v,$row[$i]);
 				$i++;
 			}
 		}
@@ -257,12 +285,49 @@ class ActiveRecord
 		{
 			foreach ($composites as $prop => $comp)
 			{
+				if (!isset($this->_propValues[$prop]) || !($this->_propValues[$prop] instanceof ActiveRecord))
+				{
+					$className = static::$schema[$prop]['class'];
+					$this->_propValues[$prop] = new $className;
+				}
 				foreach ($comp as $v)
 				{
-					$this->_propValues[$prop]->_setProp($v,$row[$i]);
+					$this->_propValues[$prop]->_preprocessSet($v,$row[$i]);
 					$i++;
 				}
 			}
+		}
+	}
+	
+	public function _preprocessGet($param)
+	{
+		if (isset(static::$schema[$param]['setter']))
+		{
+			$call = static::$schema[$param]['setter'];
+			return $call($this->_propValues[$param]);
+		}
+		return $this->_propValues[$param];
+	}
+	
+	public function _preprocessSet($param, $value)
+	{
+		$processFunc = array(
+			'int' => 'intval',
+			'double' => 'floatval',
+		);
+		if (isset($processFunc[static::$schema[$param]['class']]))
+		{
+			$func = $processFunc[static::$schema[$param]['class']];
+			$value = $func($value);
+		}
+		if (isset(static::$schema[$param]['getter']))
+		{
+			$call = static::$schema[$param]['getter'];
+			$this->_propValues[$param] = $call($value);
+		}
+		else
+		{
+			$this->_propValues[$param] = $value;
 		}
 	}
 	
@@ -291,13 +356,8 @@ class ActiveRecord
 	
 	public function __set($param, $value)
 	{
-		if (isset(static::$schema[$param]['comp']) && !($value instanceof ActiveRecord))
-		{
-			$className = static::$schema[$param];
-			$value = new $className($value);
-		}
 		$this->_propUpdated[$param] = true;
-		$this->_propValues[$param] = $value;
+		$this->_setProp($param, $value);
 	}
 	
 	public function __sleep()

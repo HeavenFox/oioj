@@ -28,6 +28,9 @@ class UserModule
 		case 'getcaptcha':
 			$this->getCAPTCHA();
 			break;
+		case 'logout':
+			$this->logout();
+			break;
 		}
 	}
 	
@@ -55,6 +58,12 @@ class UserModule
 		
 		OIOJ::Redirect('You have been logged in.');
 		
+	}
+	
+	public function logout()
+	{
+		User::DestroySession();
+		OIOJ::Redirect('You have been logged out.');
 	}
 	
 	public function doRegisterSubmit()
