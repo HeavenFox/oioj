@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Oct 20, 2011 at 03:59 AM
+-- Generation Time: Nov 02, 2011 at 01:43 PM
 -- Server version: 5.5.8
 -- PHP Version: 5.3.5
 
@@ -60,25 +60,6 @@ CREATE TABLE IF NOT EXISTS `oj_articles_tags` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `oj_configs`
---
-
-CREATE TABLE IF NOT EXISTS `oj_configs` (
-  `id` int(11) NOT NULL,
-  `key` varchar(32) NOT NULL,
-  `value` varchar(255) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `key` (`key`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Dumping data for table `oj_configs`
---
-
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `oj_contests`
 --
 
@@ -87,12 +68,12 @@ CREATE TABLE IF NOT EXISTS `oj_contests` (
   `uid` int(11) NOT NULL,
   `title` varchar(128) NOT NULL,
   `description` text NOT NULL,
-  `startTime` int(11) NOT NULL,
-  `endTime` int(11) NOT NULL,
+  `start_time` int(11) NOT NULL,
+  `end_time` int(11) NOT NULL,
   `duration` int(11) NOT NULL,
   `type` smallint(6) NOT NULL,
   `publicity` tinyint(4) NOT NULL,
-  `regDeadline` int(11) NOT NULL,
+  `reg_deadline` int(11) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
@@ -154,6 +135,11 @@ CREATE TABLE IF NOT EXISTS `oj_invitations` (
   KEY `code` (`code`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+--
+-- Dumping data for table `oj_invitations`
+--
+
+
 -- --------------------------------------------------------
 
 --
@@ -177,7 +163,7 @@ CREATE TABLE IF NOT EXISTS `oj_judgeservers` (
 --
 
 INSERT INTO `oj_judgeservers` (`id`, `name`, `ip`, `port`, `workload`, `maxWorkload`, `ftp_username`, `ftp_password`) VALUES
-(1, 'local', '127.0.0.1', 9458, 18, 1500, '', '');
+(1, 'local', '127.0.0.1', 9458, 0, 20, '', '');
 
 -- --------------------------------------------------------
 
@@ -209,23 +195,24 @@ CREATE TABLE IF NOT EXISTS `oj_problems` (
   `title` varchar(255) NOT NULL,
   `body` text NOT NULL,
   `uid` int(11) DEFAULT NULL,
+  `source` tinytext,
+  `solution` text,
   `type` smallint(6) NOT NULL,
   `input` varchar(64) NOT NULL,
   `output` varchar(64) NOT NULL,
   `compare` varchar(25) NOT NULL,
-  `submission` int(11) NOT NULL,
-  `accepted` int(11) NOT NULL,
+  `submission` int(11) NOT NULL DEFAULT '0',
+  `accepted` int(11) NOT NULL DEFAULT '0',
   `listing` tinyint(4) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`),
   KEY `uid` (`uid`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=5 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=6 ;
 
 --
 -- Dumping data for table `oj_problems`
 --
 
-INSERT INTO `oj_problems` (`id`, `title`, `body`, `uid`, `type`, `input`, `output`, `compare`, `submission`, `accepted`, `listing`) VALUES
-(1, 'A+B Problem', 'calc a+b', 1, 1, 'ab.in', 'ab.out', '/FULLTEXT/', 0, 0, 1);
+
 -- --------------------------------------------------------
 
 --
@@ -261,14 +248,12 @@ CREATE TABLE IF NOT EXISTS `oj_records` (
   `cases` varchar(1024) NOT NULL,
   `timestamp` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 --
 -- Dumping data for table `oj_records`
 --
 
-INSERT INTO `oj_records` (`id`, `pid`, `status`, `server`, `lang`, `uid`, `code`, `cases`, `timestamp`) VALUES
-(1, 1, 1, 1, 'cpp', 1, '#include', '', 1318770663);
 
 -- --------------------------------------------------------
 
@@ -307,6 +292,25 @@ CREATE TABLE IF NOT EXISTS `oj_resources_tags` (
 
 --
 -- Dumping data for table `oj_resources_tags`
+--
+
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `oj_settings`
+--
+
+CREATE TABLE IF NOT EXISTS `oj_settings` (
+  `id` int(11) NOT NULL,
+  `key` varchar(32) NOT NULL,
+  `value` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `key` (`key`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `oj_settings`
 --
 
 
@@ -372,6 +376,10 @@ CREATE TABLE IF NOT EXISTS `oj_testcases` (
   KEY `pid` (`pid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+--
+-- Dumping data for table `oj_testcases`
+--
+
 
 -- --------------------------------------------------------
 
@@ -414,6 +422,8 @@ CREATE TABLE IF NOT EXISTS `oj_users_acl` (
 -- Dumping data for table `oj_users_acl`
 --
 
+INSERT INTO `oj_users_acl` (`uid`, `key`, `permission`) VALUES
+(1, 'omnipotent', 10);
 
 -- --------------------------------------------------------
 
