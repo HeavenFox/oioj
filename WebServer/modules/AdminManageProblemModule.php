@@ -95,10 +95,12 @@ class AdminManageProblemModule
 			// Hide problem until dispatched
 			$prob->listing = 0;
 			$prob->add();
+			/*
 			foreach ($prob->testCases as $v)
 			{
 				$v->add();
 			}
+			*/
 			
 			echo "Dispatching problem to judge servers...<br />\n";
 			

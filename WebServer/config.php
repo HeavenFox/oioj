@@ -17,6 +17,6 @@ class Config
 	static $CAPTCHA_Public = '6Lf85MgSAAAAAJ6wTy4saHVye28O19cvTBw1eRzE';
 	static $CAPTCHA_Private = '6Lf85MgSAAAAALSrX3MkcTibjmv8vOMDTtjxLvWK';
 	
-	static $LocalJudgeServerDataDir = 'd:\\working\\';
+	static $LocalJudgeServerDataDir = 'd:\\oioj working\\';
 }
 ?>

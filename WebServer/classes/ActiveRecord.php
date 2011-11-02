@@ -198,7 +198,7 @@ class ActiveRecord
 	 * @param string $suffix
 	 * @todo finish composite function
 	 */
-	public static function find($properties, $composites, $suffix = '', $data = array())
+	public static function find($properties, $composites = null, $suffix = '', $data = array())
 	{
 		$queryStr = self::_makeQueryString($properties, $composites, $suffix);
 		$resultSet = array();
