@@ -62,7 +62,7 @@ class User extends ActiveRecord
 	
 	public function getACL()
 	{
-		$this->acl = array();
+		$acl = array();
 		
 		$str = 'SELECT  `key` , SUM( `permission`) FROM (
 SELECT  `key` ,  `permission` 
@@ -77,15 +77,16 @@ GROUP BY  `key`';
 		$stmt->execute(array($this->id,$this->id));
 		foreach ($stmt as $v)
 		{
-			$this->acl[$v[0]] = $v[1];
+			$acl[$v[0]] = $v[1];
 		}
+		return $acl;
 	}
 	
 	public function ableTo($key)
 	{
 		if ($this->acl === null)
 		{
-			$this->getACL();
+			$this->acl = $this->getACL();
 			$this->createSession();
 		}
 		if (isset($this->acl[self::ACL_OMNIPOTENT]) && $this->acl[self::ACL_OMNIPOTENT] > 0)

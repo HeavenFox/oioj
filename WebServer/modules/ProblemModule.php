@@ -11,16 +11,24 @@ class ProblemModule
 		
 		if (!OIOJ::$template->isCached('problem.tpl', $probID))
 		{
-			OIOJ::InitDatabase();
-			$obj = Problem::first(array('title','body'),null,'WHERE `id` = '.$probID);
-			if ($obj) {
-				OIOJ::$template->assign('pid', $probID);
-				OIOJ::$template->assign('problem', $obj);
-			} else {
+			if (!($obj = $this->loadProblem($probID)) || $obj->listing == 0) {
 				throw new Exception('Problem does not exist', 404);
 			}
 		}
-		
+		$this->display($probID);
+	}
+	
+	public function loadProblem($id)
+	{
+		$obj = Problem::first(array('title','body','accepted','submit','source','listing'),null,'WHERE `id` = '.$id);
+		if (!$obj) return false;
+		OIOJ::$template->assign('pid', $id);
+		OIOJ::$template->assign('problem', $obj);
+		return $obj;
+	}
+	
+	public function display($probID)
+	{
 		OIOJ::$template->display('problem.tpl',$probID);
 	}
 }

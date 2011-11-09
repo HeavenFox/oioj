@@ -10,6 +10,8 @@ class ActiveRecord
 	public static $tableName;
 	public static $keyProperty = 'id';
 	
+	public static $count;
+	
 	public function __construct($id = null)
 	{
 		if ($id) {
@@ -34,13 +36,22 @@ class ActiveRecord
 			$className = static::$schema[$k]['class'];
 			switch (static::$schema[$k]['comp']) {
 			case 'many':
-				$this->_propValues[$k] = $className::find($v,null,'WHERE `'. static::$schema[$k]['column'] .'` = '.$this->_propValues[static::$keyProperty]);
+				if (isset(static::$schema[$k]['junction']))
+				{
+					$this->_propValues[$k] = $className::find($v,null,
+															  'LEFT JOIN `'.static::$schema[$k]['junction'].
+															  '` ON (`'.$className::$tableName.'`.`'.$className::$keyProperty.'` = `'.static::$schema[$k]['junction'].'`.`'.static::$schema[$k]['column'][1].'`)'.
+															  ' WHERE `'.static::$schema[$k]['junction'].'`.`'. static::$schema[$k]['column'][0] .'` = '.$this->_propValues[static::$keyProperty]);
+				
+				}
+				else
+				{
+					$this->_propValues[$k] = $className::find($v,null,'WHERE `'. static::$schema[$k]['column'] .'` = '.$this->_propValues[static::$keyProperty]);
+				}
 				break;
 			case 'one':
-				$this->_propValues[$k] = $className::first($v,null,'WHERE `'. static::$schema[$k]['column'] .'` = '.$this->_propValues[static::$keyProperty]);
-				break;
-			case 'junction':
 				
+				$this->_propValues[$k] = $className::first($v,null,'WHERE `'. static::$schema[$k]['column'] .'` = '.$this->_propValues[static::$keyProperty]);
 				break;
 			}
 		}

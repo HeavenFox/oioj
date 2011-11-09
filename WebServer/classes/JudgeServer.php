@@ -12,7 +12,8 @@ class JudgeServer extends ActiveRecord
 		'ip' => array('class' => 'string'),
 		'port' => array('class' => 'int'),
 		'ftpUsername' => array('class' => 'string', 'column' => 'ftp_username'),
-		'ftpPassword' => array('class' => 'string', 'column' => 'ftp_password')
+		'ftpPassword' => array('class' => 'string', 'column' => 'ftp_password'),
+		'online' => array('class' => 'int')
 	);
 	static $keyProperty = 'id';
 	
@@ -20,7 +21,7 @@ class JudgeServer extends ActiveRecord
 	
 	public static function GetAvailableServers()
 	{
-		return self::find(array('id','name','ip','port','workload','maxWorkload'),null,'WHERE workload < maxWorkload ORDER BY workload ASC');
+		return self::find(array('id','name','ip','port','workload','maxWorkload'),null,'WHERE workload < maxWorkload AND `online` = 1 ORDER BY workload ASC');
 	}
 	
 	public function dispatch($task)

@@ -14,7 +14,8 @@ $availableModules = array(
 	'problem' => 'ProblemModule',
 	'admin_problem' => 'AdminManageProblemModule',
 	
-	'contestlist' => 'ContestListModule'
+	'contestlist' => 'ContestListModule',
+	'contest' => 'ContestModule'
 );
 
 // These modules should be autoloaded

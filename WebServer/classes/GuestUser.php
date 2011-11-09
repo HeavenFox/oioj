@@ -10,5 +10,16 @@ class GuestUser extends User
 	{
 		throw new Exception('Trying to add guest');
 	}
+	
+	public function ableTo($key)
+	{
+		// Cache Guest ACL, since they're expected to constitute a good portion
+		if ($acl = Cache::MemGet('guest-acl'))
+		{
+			return $acl[$key];
+		}
+		Cache::MemSet('guest-acl',$acl = $this->getACL());
+		return $acl[$key];
+	}
 }
 ?>

@@ -6,7 +6,12 @@ class Cache
 	 --------------------------------------*/
 	private static $Enabled = true;
 	
-	public static function Available()
+	//-------------------------------------
+	// Memory Cacheing
+	//  These are used for globally persistent files
+	//-------------------------------------
+	
+	public static function MemAvailable()
 	{
 		if (!self::$Enabled)return false;
 		$func = array('apc_store');
@@ -18,6 +23,7 @@ class Cache
 		{
 			apc_store($id,$vari);
 		}
+		return false;
 	}
 	
 	public static function MemGet($id)
@@ -28,6 +34,21 @@ class Cache
 		}
 		
 		return null;
+	}
+	
+	//--------------------------------------
+	// User Caching
+	//  These are stored in session
+	//--------------------------------------
+	
+	public static function UserGet($id)
+	{
+		
+	}
+	
+	public static function UserSet($id, $vari)
+	{
+		
 	}
 }
 ?>

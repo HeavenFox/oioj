@@ -64,20 +64,9 @@ class SubmitModule
 		$db = Database::Get();
 		
 		
-		$server = null;
 		
-		while ($server = array_shift($servers))
-		{
-			if ($server->dispatch($record))
-			{
-				$server->addWorkload();
-				$record->status = JudgeRecord::STATUS_DISPATCHED;
-				$record->server = $server;
-				break;
-			}
-		}
 		
-		$record->submit();
+		$record->dispatch();
 		
 		echo json_encode(array('record_id' => $record->id, 'server_name' => $server->name));
 	}
