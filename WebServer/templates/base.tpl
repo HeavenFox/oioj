@@ -2,6 +2,20 @@
 <html>
 <title>{block name="pagetitle"}OIOJ{/block}</title>
 <script type="text/javascript" src="scripts/jquery.min.js"></script>
+<script type="text/javascript" src="scripts/fancybox/jquery.easing-1.3.pack.js"></script>
+<script type="text/javascript" src="scripts/fancybox/jquery.fancybox-1.3.4.pack.js"></script>
+
+<link rel="stylesheet" href="scripts/fancybox/jquery.fancybox-1.3.4.css" type="text/css" media="screen" />
+<script type="text/javascript">
+function globalShowLoginBox()
+{
+	$.fancybox('<div id="global-login-box"><h2>Log in to OIOJ</h2>	<table>	<form action="index.php?mod=user&act=login" method="post">	<tr><td>Username</td><td><input name="username" /></td></tr>	<tr><td>Password</td><td><input type="password" name="password" /></td></tr>	<tr><td>Remember?</td><td><input type="checkbox" name="remember" /></td></tr>	<tr><td colspan="2"><input type="submit" value="Submit" /></td></tr>	</form>	</table></div>',{
+		'scrolling': 'no',
+		'transitionIn'	:	'elastic',
+		'transitionOut'	:	'elastic'
+	});
+}
+</script>
 <link rel="stylesheet" href="templates/reset.css" />
 <link rel="stylesheet" href="templates/base.css" />
 
@@ -21,5 +35,6 @@
 
 <div id="body">{block name="body"}<!-- DEFAULT CONTENT -->{/block}</div>
 <div id="footer">OIOJ Instructional Online Judge (c){$smarty.now|date_format:"%Y"} Zhu Jingsi. All Rights Reserved.</div></div>
+
 </body>
 </html>

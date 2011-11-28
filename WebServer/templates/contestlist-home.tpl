@@ -11,7 +11,7 @@
 {if $open_contests}
 {foreach $open_contests as $c}
 <tr>
-  <td>{$c->id}</td><td><a href="index.php?mod=contest&id={$c->id}">{$c->title}</a></td><td>{$c->user->username}</td><td>{if $c->regDeadline > 0}{$c->regDeadline|date_format}{else}N/A{/if}</td><td>{if $c->beginTime > 0}{$c->beginTime|date_format}{else}N/A{/if}</td><td>{if $c->beginTime > 0}{$c->endTime|date_format}{else}N/A{/if}</td><td>{$c->duration|duration_format}</td>
+  <td>{$c->id}</td><td><a href="index.php?mod=contest&id={$c->id}">{$c->title}</a></td><td>{$c->user->username}</td><td>{if $c->regDeadline > 0}{$c->regDeadline|date_format}{else}N/A{/if}</td><td>{if $c->beginTime > 0}{$c->beginTime|date_format}{else}N/A{/if}</td><td>{if $c->endTime > 0}{$c->endTime|date_format}{else}N/A{/if}</td><td>{$c->duration|duration_format}</td>
 </tr>
 {/foreach}
 {else}

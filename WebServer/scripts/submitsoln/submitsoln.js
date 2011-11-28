@@ -38,10 +38,11 @@ function checkRecord(id)
 				}
 				else
 				{
-					$.fancybox("<div id='submit_infobox'>ID: "+data.result.record_id+"<br />Server:"+data.result.server_name+"</div>",{'autoDimensions'	: false,
-			'width'         		: 350,
-			'height'        		: 250,
-					'scrolling'		: 'no',});
+					$.fancybox("<div id='submit_infobox'>ID: "+data.result.record_id+"<br />Server:"+data.result.server_name+"</div>",{
+						'autoDimensions'	: false,
+						'width'     : 350,
+						'height'    : 250,
+						'scrolling'	: 'no'});
 					setTimeout('checkRecord('+data.result.id+')',3000);
 				}
 			},

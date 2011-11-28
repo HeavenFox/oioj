@@ -19,11 +19,10 @@ class SubmitModule
 	public function submitSolution()
 	{
 		error_reporting(0);
-		OIOJ::InitDatabase();
 		
 		$record = new JudgeRecord;
 		
-		$record->code = (file_get_contents($_FILES['source']['tmp_name']));
+		$record->code = file_get_contents($_FILES['source']['tmp_name']);
 		
 		unlink($_FILES['source']['tmp_name']);
 		
@@ -35,15 +34,9 @@ class SubmitModule
 		}
 		$problemID = intval($matches[0]);
 		$uid = IO::Session('uid');
-		$lang = pathinfo($_FILES['source']['name'], PATHINFO_EXTENSION);
+		$lang = strtolower(pathinfo($_FILES['source']['name'], PATHINFO_EXTENSION));
 		
-		$map = array(
-			'c' => 'c',
-			'cpp' => 'cpp',
-			'cc' => 'cpp',
-			'cxx' => 'cpp',
-			'pas' => 'pas'
-		);
+		$map = Problem::$LanguageMap;
 		
 		if (!isset($map[$lang]))
 		{
@@ -56,15 +49,11 @@ class SubmitModule
 		$record->lang = $lang;
 		import('User');
 		$record->user = User::GetCurrent();
-		$record->pid = $problemID;
+		$record->problem = new Problem($problemID);
 		$record->submit();
 		
-		$servers = JudgeServer::GetAvailableServers();
 		
 		$db = Database::Get();
-		
-		
-		
 		
 		$record->dispatch();
 		

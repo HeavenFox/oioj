@@ -1,7 +1,6 @@
 {extends file="base.tpl"}
 {block name="extra_header"}
 <script type="text/javascript" src="scripts/index.js"></script>
-<script type="text/javascript" src="scripts/fancybox/jquery.fancybox-1.3.4.pack.js"></script>
 <script type="text/javascript" src="scripts/jquery-ui-1.8.16.custom.min.js"></script>
 <script type="text/javascript" src="scripts/jquery.fileupload.js"></script>
 <script type="text/javascript" src="scripts/submitsoln/submitsoln.js"></script>
@@ -34,7 +33,6 @@ $(function(){
    <div id="login_panel"><h2>Log in</h2>
 
 <div id="login_traditional">
-<p>Use OIOJ account | <a href="javascript:;" >Use OpenID (Google, Yahoo, etc)</a></p>
 <table>
 <form action="index.php?mod=user&act=login" method="post">
 <tr><td>Username</td><td><input name="username" /></td></tr>

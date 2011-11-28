@@ -236,12 +236,23 @@ class ActiveRecord
 		return $obj->fetch($properties, $composites, $suffix, $data);
 	}
 	
-	public function fetch($properties, $composites, $suffix, $data = array())
+	private function _makeIdClause($id)
 	{
-		if (is_int($suffix))
+		return 'WHERE `'.static::$tableName.'`.`'.static::_getDatabaseColumn(static::$keyProperty).'` = '.$id;
+	}
+	
+	public function fetch($properties, $composites, $suffix = null, $data = array())
+	{
+		if ($suffix === null)
 		{
-			$suffix = 'WHERE `'.static::$tableName.'`.`'.static::$keyProperty.'` = '.$suffix;
+			$suffix = $this->_makeIdClause($this->_propValues[static::$keyProperty]);
 		}
+		else if (is_int($suffix))
+		{
+			$this->_propValues[static::$keyProperty] = $suffix;
+			$suffix = $this->_makeIdClause($suffix);
+		}
+		
 		$queryStr = self::_makeQueryString($properties, $composites, $suffix);
 		
 		$stmt = Database::Get()->prepare($queryStr);
@@ -262,7 +273,7 @@ class ActiveRecord
 	{
 	}
 	
-	public function fetchByQuery($query, $properties, $composites)
+	public function fetchByQuery($properties, $composites, $query)
 	{
 		
 	}

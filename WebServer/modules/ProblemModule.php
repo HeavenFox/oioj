@@ -20,7 +20,7 @@ class ProblemModule
 	
 	public function loadProblem($id)
 	{
-		$obj = Problem::first(array('title','body','accepted','submit','source','listing'),null,'WHERE `id` = '.$id);
+		$obj = Problem::first(array('id','title','body','accepted','submission','source','listing'),null,$id);
 		if (!$obj) return false;
 		OIOJ::$template->assign('pid', $id);
 		OIOJ::$template->assign('problem', $obj);

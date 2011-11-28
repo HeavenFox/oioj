@@ -22,12 +22,15 @@ class JudgeRecord extends ActiveRecord
 		'user' => array('class' => 'User', 'comp' => 'one', 'column' => 'uid'),
 		'cases' => array('class' => 'string', 'setter' => 'serialize', 'getter' => 'unserialize'),
 		'code' => array('class' => 'text'),
+		'score' => array('class' => 'int'),
 		'timestamp' => array('class' => 'int')
 	);
 		
 	static $keyProperty = 'id';
 	
 	public $token;
+	
+	public $localUrl = null;
 	
 	
 	public function add()
@@ -45,24 +48,30 @@ class JudgeRecord extends ActiveRecord
 			throw new Exception('Unauthorized access.');
 		}
 		
-		$this->constructFromID($gen['RecordID']);
+		$this->id = $gen['RecordID'];
 		$this->status = $gen['Status'];
 		
 		array_map("parseProtocol", $cases);
 		
-		$this->casesString = serialize($cases);
+		$this->score = 0;
+		foreach ($cases as $k => $c)
+		{
+			$cases[$k] = parseProtocol($c);
+			$this->score += intval($cases[$k]['CaseScore']);
+		}
+		
+		$this->cases = $cases;
 		
 		import('JudgeServer');
 		
-		$server = new JudgeServer();
-		$server->id = $this->serverID;
+		$server = new JudgeServer($this->server);
 		$server->addWorkload(-1);
 	}
 	
 	public function __toString()
 	{
 		$codeBase64 = base64_encode($this->code);
-		return "JUDGE\nProblemID {$this->problemID}\nRecordID {$this->id}\nLang {$this->lang}\nSubmission {$codeBase64}";
+		return "JUDGE\nProblemID {$this->problem->id}\nRecordID {$this->id}\nLang {$this->lang}\nSubmission {$codeBase64}";
 	}
 	
 	public function dispatch($server = null)
@@ -81,13 +90,15 @@ class JudgeRecord extends ActiveRecord
 		}
 		else
 		{
+			$servers = JudgeServer::GetAvailableServers();
 			while ($server = array_shift($servers))
 			{
 				if ($this->dispatch($server))
 				{
-					break;
+					return true;
 				}
 			}
 		}
 	}
+	return false;
 }

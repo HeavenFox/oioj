@@ -1,4 +1,5 @@
 <?php
+$start_timer = microtime(true);
 require_once 'init.php';
 
 import('OIOJ');
@@ -15,7 +16,8 @@ $availableModules = array(
 	'admin_problem' => 'AdminManageProblemModule',
 	
 	'contestlist' => 'ContestListModule',
-	'contest' => 'ContestModule'
+	'contest' => 'ContestModule',
+	'contestproblem' => 'ContestProblemModule'
 );
 
 // These modules should be autoloaded
@@ -49,5 +51,7 @@ else
 {
 	OIOJ::$template->display('index.tpl');
 }
+
+echo '<!-- '.(microtime(true)-$start_timer).' -->';
 
 ?>

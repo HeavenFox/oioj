@@ -31,6 +31,14 @@ class Problem extends ActiveRecord
 	public static $tableName = 'oj_problems';
 	public static $keyProperty = 'id';
 	
+	public static $LanguageMap = array(
+			'c' => 'c',
+			'cpp' => 'cpp',
+			'cc' => 'cpp',
+			'cxx' => 'cpp',
+			'pas' => 'pas'
+		);
+	
 	public $testCases = array();
 	public $archiveLocation;
 	public $dependencies;
