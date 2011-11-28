@@ -99,6 +99,6 @@ class JudgeRecord extends ActiveRecord
 				}
 			}
 		}
+		return false;
 	}
-	return false;
 }
