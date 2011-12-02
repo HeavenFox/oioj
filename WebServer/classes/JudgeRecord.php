@@ -43,7 +43,7 @@ class JudgeRecord extends ActiveRecord
 	{
 		$gen = parseProtocol($general);
 		
-		if ($gen['Token'] != $this->token)
+		if (!in_array($gen['Token'], $this->token))
 		{
 			throw new Exception('Unauthorized access.');
 		}

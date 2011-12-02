@@ -4,6 +4,7 @@ require_once 'init.php';
 
 import('OIOJ');
 import('IO');
+import('Settings');
 
 // These modules are legimate
 $availableModules = array(

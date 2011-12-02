@@ -26,13 +26,18 @@ class SubmitModule
 		
 		unlink($_FILES['source']['tmp_name']);
 		
-		preg_match('/[0-9]+/',$_FILES['source']['name'],$matches);
-		if (!isset($matches[0]))
-		{
-			die(json_encode(array('error' => 'You did not indicate problem no.')));
+		$problemID = 0;
 		
+		if (($problemID = IO::GET('id',0,'intval')) <= 0)
+		{
+			preg_match('/[0-9]+/',$_FILES['source']['name'],$matches);
+			if (!isset($matches[0]))
+			{
+				die(json_encode(array('error' => 'You did not indicate problem no.')));
+			}
+			$problemID = intval($matches[0]);
 		}
-		$problemID = intval($matches[0]);
+		
 		$uid = IO::Session('uid');
 		$lang = strtolower(pathinfo($_FILES['source']['name'], PATHINFO_EXTENSION));
 		
@@ -45,7 +50,11 @@ class SubmitModule
 		
 		$lang = $map[$lang];
 		
-		$record->token = Config::$Token;
+		$record->token = array(Settings::Get('token'));
+		if (strlen($s = Settings::Get('backup_token')) > 0)
+		{
+			$record->token[] = $s;
+		}
 		$record->lang = $lang;
 		import('User');
 		$record->user = User::GetCurrent();
