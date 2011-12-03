@@ -4,11 +4,23 @@
 	font-size: 22px;
 	font-family: 'Segoe UI Light','Segoe UI','Lucida Grande',Verdana,Arial,Helvetica,sans-serif;
 }
+
+#body
+{
+	padding: 0;
+	width: 960px;
+}
+
 #blocknav
 {
 	height: 360px;
 	position: relative;
 	overflow: hidden;
+}
+
+#blocknav img
+{
+	display: block;
 }
 
 #bn_banners

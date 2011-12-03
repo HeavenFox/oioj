@@ -18,14 +18,14 @@ $(function(){
 {block name="body"}
 <div id="blocknav">
 <div id="bn_banners">
-<p><img src='templates/images/index/learn_banner.png' /></p>
-<p><img src='templates/images/index/solve_banner.png' /></p>
-<p><img src='templates/images/index/compete_banner.png' /></p>
+<img src='templates/images/index/learn_banner.png' />
+<img src='templates/images/index/solve_banner.png' />
+<img src='templates/images/index/compete_banner.png' />
 </div>
 <div id="bn_links">
-<p><a href='#' onclick='moveBannerTo("-0")'><img src='templates/images/index/learn_tn.png' /></a></p>
-<p><a href='#' onclick='moveBannerTo("-360px")'><img src='templates/images/index/solve_tn.png' /></a></p>
-<p><img src='templates/images/index/compete_tn.png' /></p>
+<a href='#' onclick='moveBannerTo("-0")'><img src='templates/images/index/learn_tn.png' /></a>
+<a href='#' onclick='moveBannerTo("-360px")'><img src='templates/images/index/solve_tn.png' /></a>
+<a href='#' onclick='moveBannerTo("-720px")'><img src='templates/images/index/compete_tn.png' /></a>
 </div>
 
 </div>
@@ -34,7 +34,6 @@ $(function(){
    <div id="login_panel"><h2>Log in</h2>
 
 <div id="login_traditional">
-<p>Use OIOJ account | <a href="javascript:;" >Use OpenID (Google, Yahoo, etc)</a></p>
 <table>
 <form action="index.php?mod=user&act=login" method="post">
 <tr><td>Username</td><td><input name="username" /></td></tr>
@@ -43,10 +42,6 @@ $(function(){
 <tr><td colspan="2"><input type='submit' value='Submit' /></td></tr>
 </form>
 </table>
-</div>
-<div id="login_openid">
-<p><a href="javascript:;" >Use OIOJ account</a> | Use OpenID (Google, Yahoo, etc)</p>
-<p></p>
 </div>
    </div>
    <div id="vertical_separator"></div>

@@ -7,7 +7,7 @@ class Settings
 	{
 		if (!self::$stored)
 		{
-			$p = Cache::MemGet('settings')
+			$p = Cache::MemGet('settings');
 			if (!$p)
 			{
 				$p = array();

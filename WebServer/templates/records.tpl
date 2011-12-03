@@ -1,6 +1,7 @@
 {extends file="base.tpl"}
 {block name="extra_header"}
 <script type="text/javascript" src="scripts/records.js"></script>
+<link rel='stylesheet' href='templates/list.css' />
 <link rel="stylesheet" href="templates/records.css" />
 {/block}
 {block name="body"}
