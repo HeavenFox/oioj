@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Nov 02, 2011 at 01:43 PM
+-- Generation Time: Nov 03, 2011 at 06:50 AM
 -- Server version: 5.5.8
 -- PHP Version: 5.3.5
 
@@ -73,7 +73,9 @@ CREATE TABLE IF NOT EXISTS `oj_contests` (
   `duration` int(11) NOT NULL,
   `type` smallint(6) NOT NULL,
   `publicity` tinyint(4) NOT NULL,
-  `reg_deadline` int(11) NOT NULL,
+  `status` tinyint(4) NOT NULL,
+  `reg_begin` int(11) DEFAULT NULL,
+  `reg_deadline` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
@@ -97,6 +99,26 @@ CREATE TABLE IF NOT EXISTS `oj_contest_problems` (
 
 --
 -- Dumping data for table `oj_contest_problems`
+--
+
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `oj_contest_register`
+--
+
+CREATE TABLE IF NOT EXISTS `oj_contest_register` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `cid` int(11) NOT NULL,
+  `uid` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `cid` (`cid`),
+  KEY `uid` (`uid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+--
+-- Dumping data for table `oj_contest_register`
 --
 
 
@@ -155,6 +177,7 @@ CREATE TABLE IF NOT EXISTS `oj_judgeservers` (
   `maxWorkload` int(11) NOT NULL,
   `ftp_username` varchar(32) NOT NULL,
   `ftp_password` varchar(64) NOT NULL,
+  `online` tinyint NOT NULL DEFAULT 1,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
 
@@ -206,7 +229,7 @@ CREATE TABLE IF NOT EXISTS `oj_problems` (
   `listing` tinyint(4) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`),
   KEY `uid` (`uid`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=6 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 --
 -- Dumping data for table `oj_problems`
@@ -463,6 +486,13 @@ ALTER TABLE `oj_articles_tags`
 ALTER TABLE `oj_contest_problems`
   ADD CONSTRAINT `oj_contest_problems_ibfk_1` FOREIGN KEY (`cid`) REFERENCES `oj_contests` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `oj_contest_problems_ibfk_2` FOREIGN KEY (`pid`) REFERENCES `oj_problems` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `oj_contest_register`
+--
+ALTER TABLE `oj_contest_register`
+  ADD CONSTRAINT `oj_contest_register_ibfk_2` FOREIGN KEY (`uid`) REFERENCES `oj_users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `oj_contest_register_ibfk_1` FOREIGN KEY (`cid`) REFERENCES `oj_contests` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `oj_dependencies`

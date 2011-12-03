@@ -5,10 +5,33 @@ class RecordsModule
 {
 	public function showSingleRecordAjax()
 	{
-		$record = JudgeRecord::first(array('id','status','cases'),array('server' => array('name')),IO::GET('id',0,'intval'));
 		$content = '<p>Record ID: '.$record->id.'</p>';
 		$content .= '<p>Dispatched to: '.$record->server->name ? $record->server->name : 'None' . '</p>';
 		echo json_encode(array('continue'=>in_array($record->status,array(JudgeRecord::STATUS_WAITING,JudgeRecord::STATUS_DISPATCHED)),'content' => $content));
+	}
+	
+	public function getSingleRecord()
+	{
+		return JudgeRecord::first(array('id','status','cases'),array('server' => array('name')),IO::GET('id',0,'intval'));
+	}
+	
+	public function formatCaseResult($li)
+	{
+		$prefix = 'Case '.$li['CaseID'].': '.$caseStr[intval($li['CaseResult'])].'.';
+						$timeMemory = ' Time: '.$li['CaseTime'].'s Memory: '.$li['CaseMemory'].'MB';
+						$str = '';
+						switch(intval($li['CaseResult']))
+						{
+							case 4:
+								$str = $prefix . ' Call Code: '.$li['CaseExtendedCode'].' '.$timeMemory;
+								break;
+							case 5:
+								$str = $prefix . ' Error Code: '.$li['CaseExtendedCode'] . ' ' . $timeMemory£»;
+								break;
+							default:
+								$str = $prefix . $timeMemory;
+						}
+		return $str;
 	}
 	
 	public function run()
@@ -20,7 +43,7 @@ class RecordsModule
 		{
 			//$db = Database::Get();
 			
-			$records = JudgeRecord::find(array('id','status','cases','lang','timestamp'),array('problem' => array('id','title'),'user' => array('id','username')));
+			$records = JudgeRecord::find(array('id','status','cases','lang','timestamp','score'),array('problem' => array('id','title'),'user' => array('id','username')));
 			
 			//$stmt = $db->prepare('SELECT `oj_records`.`id` AS `id`,`pid`,`oj_problems`.`title` AS `prob_title`,`oj_records`.`uid`,`oj_users`.`username` AS `username`,`status`,`lang`,`server`,`oj_judgeservers`.`name` AS `server_name`, `cases`, `timestamp` FROM `oj_records` LEFT JOIN `oj_judgeservers` ON (`oj_judgeservers`.`id` = `server`) LEFT JOIN `oj_problems` ON (`pid` = `oj_problems`.`id`) LEFT JOIN `oj_users` ON (`oj_records`.`uid` = `oj_users`.`id`) LIMIT 0,50');
 			//$stmt->execute();
@@ -55,27 +78,12 @@ class RecordsModule
 				{
 					foreach ($v->cases as $li)
 					{
-						$li = parseProtocol($li);
 						$score += intval($li['CaseScore']);
-						$prefix = 'Case '.$li['CaseID'].': '.$caseStr[intval($li['CaseResult'])].'.';
-						$timeMemory = ' Time: '.$li['CaseTime'].'s Memory: '.$li['CaseMemory'].'MB';
-						$str = '';
-						switch(intval($li['CaseResult']))
-						{
-							case 4:
-								$str = $prefix . ' Call Code: '.$li['CaseExtendedCode'].' '.$timeMemory;
-								break;
-							case 5:
-								$str = $prefix . ' Error Code: '.$li['CaseExtendedCode'] . ' ' . $timeMemory£»;
-								break;
-							default:
-								$str = $prefix . $timeMemory;
-						}
-						$detailList[] = $str;
+						
+						$detailList[] = $this->formatCaseResult($li);
 					}
 				}
 				$v->cases = $detailList;
-				$v->score = $score;
 			}
 			
 			OIOJ::$template->assign('records',$records);

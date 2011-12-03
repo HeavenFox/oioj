@@ -10,6 +10,8 @@ class ActiveRecord
 	public static $tableName;
 	public static $keyProperty = 'id';
 	
+	public static $count;
+	
 	public function __construct($id = null)
 	{
 		if ($id) {
@@ -34,13 +36,22 @@ class ActiveRecord
 			$className = static::$schema[$k]['class'];
 			switch (static::$schema[$k]['comp']) {
 			case 'many':
-				$this->_propValues[$k] = $className::find($v,null,'WHERE `'. static::$schema[$k]['column'] .'` = '.$this->_propValues[static::$keyProperty]);
+				if (isset(static::$schema[$k]['junction']))
+				{
+					$this->_propValues[$k] = $className::find($v,null,
+															  'LEFT JOIN `'.static::$schema[$k]['junction'].
+															  '` ON (`'.$className::$tableName.'`.`'.$className::$keyProperty.'` = `'.static::$schema[$k]['junction'].'`.`'.static::$schema[$k]['column'][1].'`)'.
+															  ' WHERE `'.static::$schema[$k]['junction'].'`.`'. static::$schema[$k]['column'][0] .'` = '.$this->_propValues[static::$keyProperty]);
+				
+				}
+				else
+				{
+					$this->_propValues[$k] = $className::find($v,null,'WHERE `'. static::$schema[$k]['column'] .'` = '.$this->_propValues[static::$keyProperty]);
+				}
 				break;
 			case 'one':
-				$this->_propValues[$k] = $className::first($v,null,'WHERE `'. static::$schema[$k]['column'] .'` = '.$this->_propValues[static::$keyProperty]);
-				break;
-			case 'junction':
 				
+				$this->_propValues[$k] = $className::first($v,null,'WHERE `'. static::$schema[$k]['column'] .'` = '.$this->_propValues[static::$keyProperty]);
 				break;
 			}
 		}
@@ -225,12 +236,23 @@ class ActiveRecord
 		return $obj->fetch($properties, $composites, $suffix, $data);
 	}
 	
-	public function fetch($properties, $composites, $suffix, $data = array())
+	private function _makeIdClause($id)
 	{
-		if (is_int($suffix))
+		return 'WHERE `'.static::$tableName.'`.`'.static::_getDatabaseColumn(static::$keyProperty).'` = '.$id;
+	}
+	
+	public function fetch($properties, $composites, $suffix = null, $data = array())
+	{
+		if ($suffix === null)
 		{
-			$suffix = 'WHERE `'.static::$tableName.'`.`'.static::$keyProperty.'` = '.$suffix;
+			$suffix = $this->_makeIdClause($this->_propValues[static::$keyProperty]);
 		}
+		else if (is_int($suffix))
+		{
+			$this->_propValues[static::$keyProperty] = $suffix;
+			$suffix = $this->_makeIdClause($suffix);
+		}
+		
 		$queryStr = self::_makeQueryString($properties, $composites, $suffix);
 		
 		$stmt = Database::Get()->prepare($queryStr);
@@ -251,7 +273,7 @@ class ActiveRecord
 	{
 	}
 	
-	public function fetchByQuery($query, $properties, $composites)
+	public function fetchByQuery($properties, $composites, $query)
 	{
 		
 	}

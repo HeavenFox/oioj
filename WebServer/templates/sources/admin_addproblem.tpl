@@ -1,11 +1,8 @@
 {extends file="two-column.tpl"}
 {block name="extra_header" prepend}
 <script type="text/javascript" src="scripts/admin_addproblem.js"></script>
-<script type="text/javascript" src="scripts/fancybox/jquery.easing-1.3.pack.js"></script>
-<script type="text/javascript" src="scripts/fancybox/jquery.fancybox-1.3.4.pack.js"></script>
 <script type="text/javascript" src="lib/ckeditor/ckeditor.js"></script>
 <script type="text/javascript" src="lib/ckeditor/adapters/jquery.js"></script>
-<link rel="stylesheet" href="scripts/fancybox/jquery.fancybox-1.3.4.css" type="text/css" media="screen" />
 
 <script type='text/javascript'>
 $(document).ready(function(){
@@ -36,14 +33,14 @@ $(document).ready(function(){
     <input type="text" name="output_file" id="output_file" />
     <input type="checkbox" name="screen_output" id="screen_output" onchange="toggleScreen(this,'#output_file')" />
     <label for="screen_output">Screen</label></td></tr>
-<tr><td><label for="comp_method">Type</label></td><td>
+<tr><td><label for="type">Type</label></td><td>
     <select name="type" id="type">
       <option value="1" selected="selected">Traditional</option>
       <option value="2">Interactive</option>
       <option value="3">Output</option>
     </select></td></tr>
 <tr><td><label for="comp_method">Compare Method</label></td><td>
-    <select name="comp_method" id="comp_method" onchange="comp(this)">
+    <select name="comp_method" id="comp_method" onchange="compareBox(this)">
       <option value="/FULLTEXT/" selected="selected">Full Text</option>
       <option value="/OMITSPACE/">Omit Spaces at Line Ends</option>
       <option value="special">Special Judge</option>

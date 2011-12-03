@@ -71,9 +71,9 @@ function batchAddCase()
 	$.fancybox.close();
 }
 
-function comp(obj)
+function compareBox(obj)
 {
-if (obj.selectedIndex == 2){$('#special_judge').show();}else{$('#special_judge').hide();}
+	if (obj.selectedIndex == 2){$('#special_judge').show();}else{$('#special_judge').hide();}
 }
 
 function toggleScreen(obj,box)

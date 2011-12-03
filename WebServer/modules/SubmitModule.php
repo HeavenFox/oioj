@@ -19,31 +19,29 @@ class SubmitModule
 	public function submitSolution()
 	{
 		error_reporting(0);
-		OIOJ::InitDatabase();
 		
 		$record = new JudgeRecord;
 		
-		$record->code = (file_get_contents($_FILES['source']['tmp_name']));
+		$record->code = file_get_contents($_FILES['source']['tmp_name']);
 		
 		unlink($_FILES['source']['tmp_name']);
 		
-		preg_match('/[0-9]+/',$_FILES['source']['name'],$matches);
-		if (!isset($matches[0]))
+		$problemID = 0;
+		
+		if (($problemID = IO::GET('id',0,'intval')) <= 0)
 		{
-			die(json_encode(array('error' => 'You did not indicate problem no.')));
-		
+			preg_match('/[0-9]+/',$_FILES['source']['name'],$matches);
+			if (!isset($matches[0]))
+			{
+				die(json_encode(array('error' => 'You did not indicate problem no.')));
+			}
+			$problemID = intval($matches[0]);
 		}
-		$problemID = intval($matches[0]);
-		$uid = IO::Session('uid');
-		$lang = pathinfo($_FILES['source']['name'], PATHINFO_EXTENSION);
 		
-		$map = array(
-			'c' => 'c',
-			'cpp' => 'cpp',
-			'cc' => 'cpp',
-			'cxx' => 'cpp',
-			'pas' => 'pas'
-		);
+		$uid = IO::Session('uid');
+		$lang = strtolower(pathinfo($_FILES['source']['name'], PATHINFO_EXTENSION));
+		
+		$map = Problem::$LanguageMap;
 		
 		if (!isset($map[$lang]))
 		{
@@ -52,32 +50,21 @@ class SubmitModule
 		
 		$lang = $map[$lang];
 		
-		$record->token = Config::$Token;
+		$record->token = array(Settings::Get('token'));
+		if (strlen($s = Settings::Get('backup_token')) > 0)
+		{
+			$record->token[] = $s;
+		}
 		$record->lang = $lang;
 		import('User');
 		$record->user = User::GetCurrent();
-		$record->pid = $problemID;
+		$record->problem = new Problem($problemID);
 		$record->submit();
 		
-		$servers = JudgeServer::GetAvailableServers();
 		
 		$db = Database::Get();
 		
-		
-		$server = null;
-		
-		while ($server = array_shift($servers))
-		{
-			if ($server->dispatch($record))
-			{
-				$server->addWorkload();
-				$record->status = JudgeRecord::STATUS_DISPATCHED;
-				$record->server = $server;
-				break;
-			}
-		}
-		
-		$record->submit();
+		$record->dispatch();
 		
 		echo json_encode(array('record_id' => $record->id, 'server_name' => $server->name));
 	}

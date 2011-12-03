@@ -2,6 +2,8 @@
 import('ActiveRecord');
 import('TestCase');
 import('JudgeServer');
+import('Settings');
+
 class Problem extends ActiveRecord
 {
 	const TYPE_CLASSIC = 1;
@@ -30,6 +32,14 @@ class Problem extends ActiveRecord
 		);
 	public static $tableName = 'oj_problems';
 	public static $keyProperty = 'id';
+	
+	public static $LanguageMap = array(
+			'c' => 'c',
+			'cpp' => 'cpp',
+			'cc' => 'cpp',
+			'cxx' => 'cpp',
+			'pas' => 'pas'
+		);
 	
 	public $testCases = array();
 	public $archiveLocation;
@@ -91,7 +101,7 @@ class Problem extends ActiveRecord
 		}
 		if ($server->isLocal())
 		{
-			copy($this->archiveLocation,Config::$LocalJudgeServerDataDir.$this->id.'.zip');
+			copy($this->archiveLocation,Settings::Get('local_judgeserver_data_dir').$this->id.'.zip');
 			//$this->archiveLocation = null;
 		}
 		else
