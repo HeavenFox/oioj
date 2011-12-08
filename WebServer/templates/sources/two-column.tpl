@@ -1,5 +1,5 @@
 {extends file="base.tpl"}
-{block name="extra_header"}
+{block name="html_head" append}
 <link rel='stylesheet' href='templates/two-column.css' />
 {/block}
 {block name="body"}

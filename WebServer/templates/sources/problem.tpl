@@ -1,15 +1,18 @@
 {extends file="two-column.tpl"}
-{block name="extra_header" prepend}
+{block name="html_head" append}
 <script type="text/javascript" src="scripts/jquery-ui-1.8.16.custom.min.js"></script>
 <script type="text/javascript" src="scripts/jquery.fileupload.js"></script>
 <script type="text/javascript" src="scripts/submitsoln/submitsoln.js"></script>
+{block name="submit_script"}
+<script type="text/javascript" src="scripts/submitsoln/submitsoln_prob.js"></script>
 <script type="text/javascript">
 $(function(){
-	$("#submitsoln").submitsoln({
+	$("#problem-submit-box").submitsoln_prob({
 		drop: $('#dropzone')
 	});
 });
 </script>
+{/block}
 {/block}
 {block name="column-left"}
 <h2>{$problem->title}</h2>
@@ -20,6 +23,7 @@ $(function(){
 {block name="column-right"}
 <div>
 <ul>
+<h2>Problem Info</h2>
 	<li>Author: </li>
 	<li>Submission:</li>
 	<li>Accepted:</li>
@@ -27,15 +31,18 @@ $(function(){
 	<li>Rating: </li>
 </ul>
 </div>
-<div>
+{block name="problem_submit_box"}
+<div id="problem-submit-box">
 	<h2>Submit</h2>
 	<div id="dropzone">
 	</div>
 	<div id="manual-upload">
-	<form enctype="multipart/form-data" action="index.php?mod=submit&id={$problem->id}">
+	<form method="post" enctype="multipart/form-data" action="index.php?mod=submit">
+		<input type='hidden' name='id' value='{$problem->id}' />
 		<input type="file" name="source" />
 		<input type="submit" />
 	</form>
 	</div>
 </div>
+{/block}
 {/block}

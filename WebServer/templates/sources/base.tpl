@@ -1,11 +1,17 @@
 <!DOCTYPE html> 
 <html>
+<head>
+{block name="html_head"}
 <title>{block name="pagetitle"}OIOJ{/block}</title>
+
+<link rel="stylesheet" href="templates/reset.css" />
+<link rel="stylesheet" href="templates/base.css" />
+
 <script type="text/javascript" src="scripts/jquery.min.js"></script>
 <script type="text/javascript" src="scripts/fancybox/jquery.easing-1.3.pack.js"></script>
 <script type="text/javascript" src="scripts/fancybox/jquery.fancybox-1.3.4.pack.js"></script>
-
 <link rel="stylesheet" href="scripts/fancybox/jquery.fancybox-1.3.4.css" type="text/css" media="screen" />
+
 <script type="text/javascript">
 function globalShowLoginBox()
 {
@@ -16,11 +22,8 @@ function globalShowLoginBox()
 	});
 }
 </script>
-<link rel="stylesheet" href="templates/reset.css" />
-<link rel="stylesheet" href="templates/base.css" />
-
-{block name="extra_header"}
 {/block}
+</head>
 
 <body>
 <div id="header">
@@ -30,6 +33,8 @@ function globalShowLoginBox()
 <div id="container"><div id="infobar"><div id="breadcrumb">Home</div><div id="userinfo">Welcome, {$user->username}
 {if $user->id != 0}
  <a href='index.php?mod=user&act=editprofile'>User Center</a> - <a href='index.php?mod=user&act=logout'>Log out</a>
+{else}
+ <a href='javascript:;' onclick='globalShowLoginBox()'>Log in</a>
 {/if}
 </div></div>
 

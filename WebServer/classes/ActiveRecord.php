@@ -382,6 +382,11 @@ class ActiveRecord
 		$this->_setProp($param, $value);
 	}
 	
+	public function __isset($param)
+	{
+		return isset($this->_propUpdated[$param]);
+	}
+	
 	public function __sleep()
 	{
 		return array('_propValues');

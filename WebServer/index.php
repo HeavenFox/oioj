@@ -53,6 +53,6 @@ else
 	OIOJ::$template->display('index.tpl');
 }
 
-echo '<!-- '.(microtime(true)-$start_timer).' -->';
+//echo '<!-- '.(microtime(true)-$start_timer).' -->';
 
 ?>

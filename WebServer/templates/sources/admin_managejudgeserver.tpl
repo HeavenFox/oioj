@@ -1,5 +1,5 @@
 {extends file="two-column.tpl"}
-{block name="extra_header" prepend}
+{block name="html_head" append}
 <script type="text/javascript" src="scripts/admin_addproblem.js"></script>
 <script type="text/javascript" src="scripts/fancybox/jquery.easing-1.3.pack.js"></script>
 <script type="text/javascript" src="scripts/fancybox/jquery.fancybox-1.3.4.pack.js"></script>

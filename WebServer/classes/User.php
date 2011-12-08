@@ -38,8 +38,8 @@ class User extends ActiveRecord
 	
 	public static function DestroySession()
 	{
-		IO::DestroySession('user');
-		IO::SetCookie('uid',0,-1);
+		IO::DestroySession();
+		IO::SetCookie('uid',0,-4200);
 		self::$currentUser = new GuestUser();
 	}
 	

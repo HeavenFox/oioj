@@ -1,18 +1,18 @@
 {extends file="base.tpl"}
-{block name="extra_header"}
+{block name="html_head" append}
 <script type="text/javascript" src="scripts/index.js"></script>
 <script type="text/javascript" src="scripts/jquery-ui-1.8.16.custom.min.js"></script>
 <script type="text/javascript" src="scripts/jquery.fileupload.js"></script>
 <script type="text/javascript" src="scripts/submitsoln/submitsoln.js"></script>
+<script type="text/javascript" src="scripts/submitsoln/submitsoln_prob.js"></script>
 <script type="text/javascript">
 $(function(){
-	$("#submitsoln").submitsoln({
+	$("#submitsoln").submitsoln_prob({
 		drop: $('#dropzone')
 	});
 });
 </script>
 <link rel='stylesheet' href='templates/index.css' />
-<link rel='stylesheet' href='scripts/fancybox/jquery.fancybox-1.3.4.css' />
 {/block}
 {block name="body"}
 <div id="blocknav">

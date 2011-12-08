@@ -99,6 +99,9 @@ class Contest extends ActiveRecord
 		}
 	}
 	
+	/**
+	 * Check enrollment status of a user
+	 */
 	public function checkEnrollment($user)
 	{
 		$registered = false;
@@ -107,25 +110,66 @@ class Contest extends ActiveRecord
 			if (($sess = IO::Session('contest-registered-'.$this->id,-1)) == -1)
 			{
 				$db = Database::Get();
-				$stmt = $db->query('SELECT * FROM `oj_contest_register` WHERE `cid` = '.$this->id.' AND `uid` = '.$user->id);
-				if ($stmt->rowCount())
+				$stmt = $db->query('SELECT count(*) FROM `oj_contest_register` WHERE `cid` = '.$this->id.' AND `uid` = '.$user->id)->fetch();
+				if ($stmt[0] > 0)
 				{
 					$registered = true;
 				}else
 				{
-					$registered = $sess;
+					$registered = false;
 				}
+				IO::SetSession('contest-registered-'.$this->id,$registered);
 			}
-			IO::SetSession('contest-registered-'.$this->id,$registered);
+			else
+			{
+				$registered = $sess;
+			}
+			
 		}
 		return $registered;
+	}
+	
+	/**
+	 * Check if user has started working on a contest
+	 * @return mixed false if has not begin, time started otherwise
+	 */
+	public function checkStarted($user)
+	{
+		$beginTime = false;
+		if ($user->id != 0)
+		{
+			if (($sess = IO::Session('contest-began-'.$this->id,false,'intval')) === false)
+			{
+				$db = Database::Get();
+				$stmt = $db->query('SELECT `started` FROM `oj_contest_register` WHERE `cid` = '.$this->id.' AND `uid` = '.$user->id)->fetch();
+				if (!is_null($stmt[0]))
+				{
+					$beginTime = intval($stmt[0]);
+					IO::SetSession('contest-began-'.$this->id,$beginTime);
+				}
+			}
+			else
+			{
+				$beginTime = intval($sess);
+			}
+		}
+		return $beginTime;
+	}
+	
+	public function userStart($user,$time)
+	{
+		if ($user->id > 0)
+		{
+			$db = Database::Get();
+			$db->query('UPDATE `oj_contest_register` SET `started` = '.$time.' WHERE `cid` = '.$this->id.' AND `uid` = '.$user->id);
+		}
 	}
 	
 	public function submitSolution($problemID, $userID, $code, $lang)
 	{
 		$db = Database::Get();
-		$stmt = $db->prepare("INSERT INTO (cid,uid,pid,code,lang,timestamp) VALUES (?,?,?,?,?,?)");
-		$stmt->execute($this->id,$problemID,$userID,$code,$lang,time());
+		$stmt = $db->prepare("INSERT INTO `oj_contest_submissions` (cid,uid,pid,code,lang,timestamp) VALUES (?,?,?,?,?,?)");
+		$stmt->execute(array($this->id,$problemID,$userID,$code,$lang,time()));
 	}
 }
 ?>

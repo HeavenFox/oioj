@@ -11,32 +11,43 @@ class ContestProblemModule extends ProblemModule
 	
 	public function run()
 	{
-		$probID = IO::GET('id',0,'intval');
-		$contID = IO::GET('cid',0,'intval');
-		
-		// Check enrollment status
-		$this->contest = new Contest($contID);
-		$cu = User::GetCurrent();
-		if (!$this->contest->checkEnrollment($cu))
+		if (IO::GET('act',false) == 'submit')
 		{
-			throw new Exception('You\'re not registered. Please log in (if you have not) and enter from contest homepage.');
+			$this->submitSolution();
 		}
-		
-		$this->loadContest();
-		
-		if (!OIOJ::$template->isCached('contestproblem.tpl', $probID))
+		else
 		{
-			if (!$this->loadProblem($probID)) {
-				throw new Exception('Problem does not exist', 404);
+			$probID = IO::GET('id',0,'intval');
+			$contID = IO::GET('cid',0,'intval');
+			// Check enrollment status
+			$this->contest = new Contest($contID);
+			$cu = User::GetCurrent();
+			if (!$this->contest->checkEnrollment($cu))
+			{
+				throw new Exception('You\'re not registered. Please log in (if you have not) and enter from contest homepage.');
 			}
+			
+			$this->loadContest();
+			
+			if (!OIOJ::$template->isCached('contestproblem.tpl', $probID))
+			{
+				if (!$this->loadProblem($probID)) {
+					throw new Exception('Problem does not exist', 404);
+				}
+			}
+			$this->display($probID);
 		}
-		$this->display($probID);
 	}
 	
 	public function loadContest()
 	{
-		$this->contest->fetch(array('endTime'),array());
-		OIOJ::$template->assign('user_deadline',min(IO::Session('contest-deadline',2147483647),$this->contest->endTime));
+		$this->contest->fetch(array('endTime','duration'),array());
+		$started = $this->contest->checkStarted(User::GetCurrent());
+		if (!$started)
+		{
+			$this->contest->userStart(User::GetCurrent(),$started = time());
+		}
+		OIOJ::$template->assign('user_deadline',min($started + $this->contest->duration,$this->contest->endTime));
 		OIOJ::$template->assign('c',$this->contest);
 	}
 	
@@ -48,19 +59,41 @@ class ContestProblemModule extends ProblemModule
 	
 	public function submitSolution()
 	{
+		$probID = IO::POST('id',0,'intval');
+		$contID = IO::POST('cid',0,'intval');
+		
+		// Check enrollment status
+		$contest = Contest::first(array('id','endTime','duration'),array(),$contID);
+		$cu = User::GetCurrent();
+		if (!$contest->checkEnrollment($cu))
+		{
+			die(json_encode(array('error' => 'You\'re not registered.')));
+		}
+		$started = $contest->checkStarted($cu);
+		
+		if (!$started)
+		{
+			die(json_encode(array('error' => 'You did not register or start working')));
+		}
+		
+		if (time() > $contest->endTime || time() > ($contest->duration + $started))
+		{
+			die(json_encode(array('error' => 'Deadline has passed')));
+		}
+		
 		$lang = pathinfo($_FILES['source']['name'], PATHINFO_EXTENSION);
 		if (!isset(Problem::$LanguageMap[$lang]))
 		{
 			$result = array('error' => 'Unsupported Language');
-			echo json_encode($result);
+			die(json_encode($result));
 		}else
 		{
 			$lang = Problem::$LanguageMap[$lang];
 		}
 		
-		$code = file_get_contents($_FILES['source']['name']);
+		$code = file_get_contents($_FILES['source']['tmp_name']);
 		
-		$this->contest->submitSolution($this->id,User::GetCurrent()->id,$code,$lang);
+		$contest->submitSolution($probID,$cu->id,$code,$lang);
 		
 		echo json_encode(array('result' => 1));
 	}

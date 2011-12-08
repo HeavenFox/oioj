@@ -1,5 +1,5 @@
 {extends file="base.tpl"}
-{block name="extra_header"}
+{block name="html_head" append}
 <script type="text/javascript" src="scripts/records.js"></script>
 <link rel='stylesheet' href='templates/list.css' />
 <link rel="stylesheet" href="templates/records.css" />
@@ -16,7 +16,7 @@
   <td>{$record->score}</td>
   <td>{$record->lang}</td>
   <td><a href="user.php?uid={$record->user->id}">{$record->user->username}</a></td>
-  <td>{$record->timestamp|date_format}</td>
+  <td>{$record->timestamp|datetime_format}</td>
 </tr>
 <tr class="caseinfo" id="caseinfo-{$record->id}"><td colspan="7">
 <ul>

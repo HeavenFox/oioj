@@ -12,24 +12,6 @@ class ContestModule
 		$this->contestId = IO::GET('id',0,'intval');
 		$c = new Contest($this->contestId);
 		$this->registered = $c->checkEnrollment(User::GetCurrent());
-		/*
-		if (User::GetCurrent()->id != 0)
-		{
-			if (($sess = IO::Session('contest-registered-'.$this->contestId,-1)) == -1)
-			{
-				$db = Database::Get();
-				$stmt = $db->query('SELECT * FROM `oj_contest_register` WHERE `cid` = '.$this->contestId.' AND `uid` = '.User::GetCurrent()->id);
-				if ($stmt->rowCount())
-				{
-					$this->registered = true;
-				}else
-				{
-					$this->registered = $sess;
-				}
-			}
-			IO::SetSession('contest-registered-'.$this->contestId,$this->registered);
-		}
-		*/
 	}
 	
 	public function run()
@@ -61,13 +43,16 @@ class ContestModule
 		
 		OIOJ::$template->assign('global_message','You have registered for this contest');
 		
+		IO::SetSession('contest-registered-'.$contest_id,true);
+		
 		$this->showProfile();
 	}
 	
 	public function showProfile()
 	{
 		$contest = Contest::first(array('id','title','description','regBegin','regDeadline','beginTime','endTime','duration','status'),array('user'=>array('username')),'WHERE `oj_contests`.`id`='.$this->contestId);
-		if (intval($contest->getOption('display_problem_title_before_start')))
+		
+		if (intval($contest->getOption('display_problem_title_before_start')) || $contest->status != Contest::STATUS_WAITING)
 		{
 			$contest->getComposite(array('problems' => array('id','title','input','output')));
 		}
@@ -81,9 +66,14 @@ class ContestModule
 		}
 		
 		OIOJ::$template->assign('registered',$this->registered);
+		OIOJ::$template->assign('started',$contest->checkStarted(User::GetCurrent()));
 		
 		OIOJ::$template->assign('c',$contest);
 		OIOJ::$template->display('contest.tpl');
+	}
+	
+	public function displayRanking()
+	{
 	}
 }
 ?>

@@ -4,6 +4,9 @@
 <div id="description">{$c->description}</div>
 {if $c->problems}
 <h3>Problems</h3>
+{if $registered && !$started}
+<p>Note: By viewing any of the problems below, you start working on this contest and the timer starts to tick.</p>
+{/if}
 <table>
 <thead>
 	<tr>
@@ -36,6 +39,11 @@
 {nocache}
 {if $registered}
 <p>You have registered for this contest</p>
+{if $started}
+<p>You have started working on your problem at {$started|date_format}. Be sure to submit before time runs out!</p>
+{else}
+<p>You havn't started working yet. Start now!</p>
+{/if}
 {else}
 <p>You have not registered.</p>
 <p>{if $user->id != 0}

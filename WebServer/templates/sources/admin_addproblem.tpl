@@ -1,5 +1,5 @@
 {extends file="two-column.tpl"}
-{block name="extra_header" prepend}
+{block name="html_head" append}
 <script type="text/javascript" src="scripts/admin_addproblem.js"></script>
 <script type="text/javascript" src="lib/ckeditor/ckeditor.js"></script>
 <script type="text/javascript" src="lib/ckeditor/adapters/jquery.js"></script>
