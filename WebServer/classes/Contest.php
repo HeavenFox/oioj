@@ -1,6 +1,7 @@
 <?php
 import('ActiveRecord');
 import('JudgeRecord');
+import('ContestParticipant');
 class Contest extends ActiveRecord
 {
 	const STATUS_WAITING = 1;
@@ -61,7 +62,11 @@ class Contest extends ActiveRecord
 				$this->option[$r['key']] = $r['value'];
 			}
 		}
-		return isset($this->option[$option]) && $this->option[$option];
+		if (isset($this->option[$option]))
+		{
+			return $this->option[$option];
+		}
+		return null;
 	}
 	
 	public function handleSubmit($problem, $name)
@@ -74,11 +79,96 @@ class Contest extends ActiveRecord
 	
 	public function generateRanking()
 	{
+		$suffix = 'FROM `oj_contest_submissions` LEFT JOIN `oj_records` ON (`oj_records`.`id`=`rid`) WHERE `rid` IS NOT NULL AND `oj_contest_submissions`.`cid` = `oj_contest_register`.`cid` AND `oj_contest_submissions`.`uid`=`oj_contest_register`.`uid`';
+		$suffix_right = 'AND `status` = 2';
+		$param_sql = array
+		(
+			'num_right' => "(SELECT count(*) {$suffix} {$suffix_right}) AS `num_right`,",
+			'num_wrong' => "(SELECT count(*) {$suffix} AND `status` <> 0 AND `status` <> 2) AS `num_wrong`,",
+			'duration' => "`finished`-`started` AS `duration`,",
+			'total_time' => "(SELECT sum(`oj_contest_submissions`.`timestamp`-`started`) {$suffix} {$suffix_right}) AS `total_time`,",
+			'max_time' => "(SELECT MAX(`oj_contest_submissions`.`timestamp`)-`started` {$suffix} {$suffix_right}) AS `max_time`,",
+			'total_score' => "(SELECT sum(`score`) {$suffix}) AS `total_score`,",
+		);
+		
+		$criteria = $this->getOption('ranking_criteria');
+		
+		$sql = 'SELECT ';
+		
+		$usedParams = array();
+		
+		foreach ($param_sql as $k => $v)
+		{
+			if (strpos($criteria,$k) !== false)
+			{
+				$sql .= $v;
+				$usedParams[] = $k;
+			}
+		}
+		$sql .= '`oj_contest_register`.`uid` AS `id`,`oj_users`.`username` AS `username` FROM `oj_contest_register` LEFT JOIN `oj_users` ON (`oj_users`.`id`=`oj_contest_register`.`uid`) WHERE `cid` = '.intval($this->id);
+		
+		$users = array();
+		
+		$db = Database::Get();
+		$stmt = $db->query($sql);
+		foreach ($stmt as $row)
+		{
+			$n = new ContestParticipant($row['id']);
+			$n->username = $row['username'];
+			
+			foreach ($usedParams as $k)
+			{
+				$n->rankingParams[$k] = intval($row[$k]);
+			}
+			$users[] = $n;
+		}
+		
+		//var_dump($users);
+		
+		
+		$criteria = explode(';',$criteria);
+		
+		usort($users,function($a,$b) use ($criteria,$usedParams){
+			$objs = array($a,$b);
+			foreach ($criteria as $c)
+			{
+				$replacedc = array();
+				$asc = 1;
+				if ($c[0] == 'd')
+				{
+					$asc = -1;
+				}
+				$c = substr($asc,1);
+				for ($i=0;$i<2;$i++)
+				{
+					foreach ($usedParams as $k)
+					{
+						$replacedc[$i] = str_replace($k,intval($objs[$i]->rankingParams[$k]),$c);
+					}
+					$replacedc[$i] = eval('return '.$replacedc[$i].';');
+				}
+				if (($diff = $asc*($replacedc[0]-$replacedc[1])) != 0)
+				{
+					return $diff;
+				}
+			}
+			return $a->id-$b->id;
+		});
+		
+		foreach ($users as $k => $v)
+		{
+			$v->rank = $k+1;
+		}
+		
+		return $users;
+		
+		/*
 		if (($this->getOption('after_submit') == 'judge' && $this->getOption('show_realtime_rank')) || $this->status == self::STATUS_JUDGED)
 		{
 			// Score, Num Right, Total Time, Num Wrong
 			'SELECT FROM `oj_contest_register` ';
 		}
+		*/
 	}
 	
 	public function judge($callback)

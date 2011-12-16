@@ -5,8 +5,9 @@
 
 <body>
 <div id="box">
+<h1>Redirecting...</h1>
 <p>{$message}</p>
-<p><a href="{$redirect}">Click here to continue...</a></p>
+<p id="link"><a href="{$redirect}">Click here to continue...</a></p>
 </div>
 </body>
 </html>

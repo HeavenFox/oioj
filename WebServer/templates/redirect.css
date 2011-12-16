@@ -1,0 +1,24 @@
+body
+{
+	background-color: #ebebeb;
+	font-family: Tahoma;
+	font-size: 14px;
+	
+}
+
+#box
+{
+	width: 600px;
+	background-color: white;
+	margin: auto;
+	border: 1px solid #696969;
+	box-shadow: 0 0 10px rgba(25,25,25,0.7);
+}
+
+h1
+{
+	background-color: #a4a4a4;
+	padding: 6px;
+	font-size: 14px;
+	margin: 0;
+}

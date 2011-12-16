@@ -17,6 +17,8 @@ class RecordsModule
 	
 	public function formatCaseResult($li)
 	{
+		$caseStr = array('Unknown','Time Limit Exceeded','Memory Limit Exceeded','Output Limit Exceeded','Forbidden System Call','Runtime Error','Wrong Answer','OK');
+		
 		$prefix = 'Case '.$li['CaseID'].': '.$caseStr[intval($li['CaseResult'])].'.';
 						$timeMemory = ' Time: '.$li['CaseTime'].'s Memory: '.$li['CaseMemory'].'MB';
 						$str = '';
@@ -51,7 +53,6 @@ class RecordsModule
 			//$records = $stmt->fetchAll();
 			
 			$statusStr = array('Waiting','Dispatched','Accepted','Compile Error','Rejected');
-			$caseStr = array('Unknown','Time Limit Exceeded','Memory Limit Exceeded','Output Limit Exceeded','Forbidden System Call','Runtime Error','Wrong Answer','OK');
 			
 			foreach($records as $k => $v)
 			{
@@ -60,25 +61,25 @@ class RecordsModule
 				{
 					case JudgeRecord::STATUS_WAITING:
 					case JudgeRecord::STATUS_DISPATCHED:
-						$statusClass = 'status_pending';
+						$statusClass = 'status-pending';
 						break;
 					case JudgeRecord::STATUS_ACCEPTED:
-						$statusClass = 'status_ok';
+						$statusClass = 'status-ok';
 						break;
 					case JudgeRecord::STATUS_CE:
 					case JudgeRecord::STATUS_REJECTED:
-						$statusClass = 'status_wa';
+						$statusClass = 'status-wa';
 						break;
 				}
 				$v->statusClass = $statusClass;
 				$v->status = $statusStr[intval($v->status)];
 				$detailList = array();
-				$score = 0;
+				//$score = 0;
 				if ($v->cases)
 				{
 					foreach ($v->cases as $li)
 					{
-						$score += intval($li['CaseScore']);
+						//$score += intval($li['CaseScore']);
 						
 						$detailList[] = $this->formatCaseResult($li);
 					}

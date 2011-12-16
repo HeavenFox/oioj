@@ -9,3 +9,15 @@
 	float: right;
 	width: 200px;
 }
+
+#column-right .sidebar-box
+{
+	
+}
+
+#column-right .sidebar-box h2
+{
+	font-size: 16px;
+	text-align: right;
+	margin-bottom: 3px;
+}

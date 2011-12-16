@@ -3,8 +3,8 @@
 <link rel='stylesheet' href='templates/list.css' />
 {/block}
 {block name="body"}
-<table id='problems'>
-<thead><tr><td width="20px">ID</td><td>Title</td><td width="100px">Acceptance</td></tr></thead>
+<table id='problems' class='tablist'>
+<thead><tr><td width="50px">ID</td><td>Title</td><td width="100px">Acceptance</td></tr></thead>
 <tbody>
 {foreach $problems as $problem}
 <tr class="{cycle values="odd,even"}">

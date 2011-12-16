@@ -25,19 +25,19 @@ $(function(){
 {/block}
 
 {block name="column-right"}
-<div>
+<div class="sidebar-box">
 	<h2>Timer</h2>
 	<p id="timer-display"></p>
-	<small>Please refrain from using back button. Doing so may disable the timer.</small>
+	<small></small>
 </div>
 {$smarty.block.parent}
-<div>
+<div class="sidebar-box">
 	<h2>Contest Info</h2>
 	<a><a href="index.php?mod=contest&id={$c->id}">Back to Contest Home Page</a></a>
 </div>
 {/block}
 {block name="problem_submit_box"}
-<div id="problem-submit-box">
+<div class="sidebar-box" id="problem-submit-box">
 	<h2>Submit</h2>
 	<div id="dropzone">
 	</div>

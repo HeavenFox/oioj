@@ -1,4 +1,9 @@
 {extends file="two-column.tpl"}
+{block name="html_head" append}
+<link rel='stylesheet' href='templates/list.css' />
+<link rel='stylesheet' href='templates/contest.css' />
+
+{/block}
 {block name="column-left"}
 <h2>{$c->title}</h2>
 <div id="description">{$c->description}</div>
@@ -7,7 +12,7 @@
 {if $registered && !$started}
 <p>Note: By viewing any of the problems below, you start working on this contest and the timer starts to tick.</p>
 {/if}
-<table>
+<table class='tablist'>
 <thead>
 	<tr>
 		<td>Title</td><td>Input</td><td>Output</td>
@@ -22,9 +27,12 @@
 </tbody>
 </table>
 {/if}
+<h3>Ranking</h3>
+{include file="boxes/contest_ranking.tpl"}
+
 {/block}
 {block name="column-right"}
-<div id="sidebar-box">
+<div class="sidebar-box">
 <h2>At a Glance</h2>
 <ul>
 <li>Reg Begin: {if $c->regBegin > 0}{$c->regBegin|date_format}{else}N/A{/if}</li>
@@ -34,13 +42,13 @@
 <li>Duration: {$c->duration|duration_format}</li>
 </ul>
 </div>
-<div id="sidebar-box">
+<div class="sidebar-box">
 <h2>Your Status</h2>
 {nocache}
 {if $registered}
 <p>You have registered for this contest</p>
 {if $started}
-<p>You have started working on your problem at {$started|date_format}. Be sure to submit before time runs out!</p>
+<p>You have started working on your problem at {$started|datetime_format}. Be sure to submit before time runs out!</p>
 {else}
 <p>You havn't started working yet. Start now!</p>
 {/if}

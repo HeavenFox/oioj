@@ -21,9 +21,9 @@ $(function(){
 </div>
 {/block}
 {block name="column-right"}
-<div>
-<ul>
+<div class="sidebar-box">
 <h2>Problem Info</h2>
+<ul>
 	<li>Author: </li>
 	<li>Submission:</li>
 	<li>Accepted:</li>
@@ -32,7 +32,7 @@ $(function(){
 </ul>
 </div>
 {block name="problem_submit_box"}
-<div id="problem-submit-box">
+<div class="sidebar-box" id="problem-submit-box">
 	<h2>Submit</h2>
 	<div id="dropzone">
 	</div>

@@ -2,3 +2,13 @@
 {
 	display: none;
 }
+
+.status-ok a
+{
+	color: green !important;
+}
+
+.status-wa a
+{
+	color: red !important;
+}

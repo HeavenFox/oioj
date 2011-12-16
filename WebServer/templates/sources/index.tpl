@@ -45,7 +45,6 @@ $(function(){
    </div>
    <div id="vertical_separator"></div>
    <div id="register_panel"><h2>Register</h2>
-<p>If you have any OpenID (eg. Google Account, Yahoo account, etc), you do not need to register.</p>
 <table>
 <form action="index.php?mod=user&act=register_submit" method="post">
 <tr><td>Username</td><td><input name="username" onclick="showCAPTCHA()" /></td></tr>

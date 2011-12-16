@@ -4,3 +4,4 @@ WebServer/.project
 WebServer/.settings/
 JudgeServer/.cproject
 JudgeServer/.project
+*.komodoproject

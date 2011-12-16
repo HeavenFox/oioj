@@ -69,11 +69,15 @@ class ContestModule
 		OIOJ::$template->assign('started',$contest->checkStarted(User::GetCurrent()));
 		
 		OIOJ::$template->assign('c',$contest);
+		OIOJ::$template->assign('ranking',array_slice($contest->generateRanking(),0,10));
+		
+		OIOJ::$template->assign('ranking_display_params',array_flip(explode(';',$contest->getOption('ranking_display_params'))));
 		OIOJ::$template->display('contest.tpl');
 	}
 	
 	public function displayRanking()
 	{
+		
 	}
 }
 ?>
