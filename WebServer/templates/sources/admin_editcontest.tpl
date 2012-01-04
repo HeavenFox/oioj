@@ -35,7 +35,14 @@ Add
 
 </div>
 <div>
+<table>
+<tr>
+<td>
 Display titles before contest starts
+</td>
+<td>
+<input type="checkbox" name="display-title-before" />
+</td>
 Automatically start at scheduled time
 Automatically send to judge server
 </div>

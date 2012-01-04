@@ -69,14 +69,6 @@ class Contest extends ActiveRecord
 		return null;
 	}
 	
-	public function handleSubmit($problem, $name)
-	{
-		if ($this->getOption('after_submit') == 'save')
-		{
-			
-		}
-	}
-	
 	public function generateRanking()
 	{
 		$suffix = 'FROM `oj_contest_submissions` LEFT JOIN `oj_records` ON (`oj_records`.`id`=`rid`) WHERE `rid` IS NOT NULL AND `oj_contest_submissions`.`cid` = `oj_contest_register`.`cid` AND `oj_contest_submissions`.`uid`=`oj_contest_register`.`uid`';
@@ -255,11 +247,27 @@ class Contest extends ActiveRecord
 		}
 	}
 	
-	public function submitSolution($problemID, $userID, $code, $lang)
+	public function submitSolution($problem, $user, $code, $lang)
 	{
-		$db = Database::Get();
-		$stmt = $db->prepare("INSERT INTO `oj_contest_submissions` (cid,uid,pid,code,lang,timestamp) VALUES (?,?,?,?,?,?)");
-		$stmt->execute(array($this->id,$problemID,$userID,$code,$lang,time()));
+		switch ($this->getOption('after_submit'))
+		{
+		case 'judge':
+			$rec = new JudgeRecord;
+			$rec->problem = new Problem($problem);
+			$rec->code = $code;
+			$rec->lang = $lang;
+			$rec->user = $user;
+			$rec->timestamp = time();
+			$rec->submit();
+			
+			
+			$rec->dispatch($servers = $this->getOption('judge_servers') ? array_map(explode(',',$servers),function($c){return new JudgeServer(intval($c));}) : null);
+		case  'save':
+			$db = Database::Get();
+			$stmt = $db->prepare("INSERT INTO `oj_contest_submissions` (cid,uid,pid,code,lang,timestamp) VALUES (?,?,?,?,?,?)");
+			$stmt->execute(array($this->id,$problem->id,$user->id,$code,$lang,time()));
+			break;
+		}
 	}
 }
 ?>

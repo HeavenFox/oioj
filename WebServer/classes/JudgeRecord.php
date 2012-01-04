@@ -39,6 +39,15 @@ class JudgeRecord extends ActiveRecord
 		parent::add();
 	}
 	
+	public function setTokens()
+	{
+		$this->token = array(Settings::Get('token'));
+		if (strlen($s = Settings::Get('backup_token')) > 0)
+		{
+			$this->token[] = $s;
+		}
+	}
+	
 	public function parseCallback($general, $cases)
 	{
 		$gen = parseProtocol($general);
@@ -90,7 +99,7 @@ class JudgeRecord extends ActiveRecord
 		}
 		else
 		{
-			$servers = JudgeServer::GetAvailableServers();
+			$servers = (is_array($server) ? $server : JudgeServer::GetAvailableServers());
 			while ($server = array_shift($servers))
 			{
 				if ($this->dispatch($server))

@@ -50,11 +50,8 @@ class SubmitModule
 		
 		$lang = $map[$lang];
 		
-		$record->token = array(Settings::Get('token'));
-		if (strlen($s = Settings::Get('backup_token')) > 0)
-		{
-			$record->token[] = $s;
-		}
+		$record->setTokens();
+		
 		$record->lang = $lang;
 		import('User');
 		$record->user = User::GetCurrent();

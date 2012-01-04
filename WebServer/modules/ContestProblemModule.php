@@ -93,7 +93,7 @@ class ContestProblemModule extends ProblemModule
 		
 		$code = file_get_contents($_FILES['source']['tmp_name']);
 		
-		$contest->submitSolution($probID,$cu->id,$code,$lang);
+		$contest->submitSolution(new Problem($probID),$cu,$code,$lang);
 		
 		echo json_encode(array('result' => 1));
 	}

@@ -6,12 +6,11 @@ require_once 'init.php';
 
 import('OIOJ');
 
+import('Settings');
+
 OIOJ::InitDatabase();
 
 import('JudgeRecord');
-
-$record = new JudgeRecord();
-$record->token = Config::$Token;
 
 try {
 	$record->parseCallback($_POST['general'],$_POST['cases']);
