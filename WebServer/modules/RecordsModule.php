@@ -5,14 +5,39 @@ class RecordsModule
 {
 	public function showSingleRecordAjax()
 	{
-		$content = '<p>Record ID: '.$record->id.'</p>';
-		$content .= '<p>Dispatched to: '.$record->server->name ? $record->server->name : 'None' . '</p>';
-		echo json_encode(array('continue'=>in_array($record->status,array(JudgeRecord::STATUS_WAITING,JudgeRecord::STATUS_DISPATCHED)),'content' => $content));
+		$this->setSingleRecordVars();
+		echo json_encode(array('finished' => !in_array($record->status,array(JudgeRecord::STATUS_WAITING,JudgeRecord::STATUS_DISPATCHED)),'content' => OIOJ::$template->fetch('boxes/records_single.tpl')));
 	}
 	
-	public function getSingleRecord()
+	public function showSingleRecord()
 	{
-		return JudgeRecord::first(array('id','status','cases'),array('server' => array('name')),IO::GET('id',0,'intval'));
+		$this->setSingleRecordVars();
+		OIOJ::$template->display(IO::GET('popup') ? 'records_single_popup.tpl' : 'records_single.tpl');
+	}
+	
+	private function setSingleRecordVars()
+	{
+		$record = $this->getSingleRecord();
+		OIOJ::$template->assign('id',$record->id);
+		OIOJ::$template->assign('server_name',$record->server ? $record->server->name : 'None');
+		OIOJ::$template->assign('status',$record->getReadableStatus());
+		$resultsAvailable = in_array($record->status,array(JudgeRecord::STATUS_ACCEPTED,JudgeRecord::STATUS_CE,JudgeRecord::STATUS_REJECTED));
+		OIOJ::$template->assign('results_available',$resultsAvailable);
+		if ($resultsAvailable)
+		{
+			OIOJ::$template->assign('score',$record->score);
+			$cases = $record->cases;
+			foreach ($cases as $k=>$v)
+			{
+				$cases[$k] = $this->formatCaseResult($v);
+			}
+			OIOJ::$template->assign('cases',$cases);
+		}
+	}
+	
+	private function getSingleRecord()
+	{
+		return JudgeRecord::first(array('id','status','cases','score'),array('server' => array('name')),IO::GET('id',0,'intval'));
 	}
 	
 	public function formatCaseResult($li)
@@ -40,7 +65,13 @@ class RecordsModule
 	{
 		if (IO::GET('id'))
 		{
-			$this->showSingleRecordAjax();
+			if (IO::GET('ajax'))
+			{
+				$this->showSingleRecordAjax();
+			}else
+			{
+				$this->showSingleRecord();
+			}
 		}else
 		{
 			//$db = Database::Get();

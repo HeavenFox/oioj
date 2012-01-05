@@ -28,7 +28,9 @@ class JudgeRecord extends ActiveRecord
 		
 	static $keyProperty = 'id';
 	
-	public $token;
+	public $tokens;
+	
+	private $usedToken;
 	
 	public $localUrl = null;
 	
@@ -41,10 +43,10 @@ class JudgeRecord extends ActiveRecord
 	
 	public function setTokens()
 	{
-		$this->token = array(Settings::Get('token'));
+		$this->tokens = array(Settings::Get('token'));
 		if (strlen($s = Settings::Get('backup_token')) > 0)
 		{
-			$this->token[] = $s;
+			$this->tokens[] = $s;
 		}
 	}
 	
@@ -80,20 +82,26 @@ class JudgeRecord extends ActiveRecord
 	public function __toString()
 	{
 		$codeBase64 = base64_encode($this->code);
-		return "JUDGE\nProblemID {$this->problem->id}\nRecordID {$this->id}\nLang {$this->lang}\nSubmission {$codeBase64}";
+		return "JUDGE\nProblemID {$this->problem->id}\nRecordID {$this->id}\nLang {$this->lang}\nSubmission {$codeBase64}\nToken {$this->usedToken}";
 	}
 	
 	public function dispatch($server = null)
 	{
 		if ($server instanceof JudgeServer)
 		{
-			if ($server->dispatch($record))
+			
+			foreach ($this->tokens as $token)
 			{
-				$server->addWorkload();
-				$this->status = JudgeRecord::STATUS_DISPATCHED;
-				$this->server = $server;
-				$this->submit();
-				return true;
+				$this->usedToken = $token;
+				if ($server->dispatch($this))
+				{
+					$server->addWorkload();
+					$this->status = JudgeRecord::STATUS_DISPATCHED;
+					$this->server = $server;
+					
+					$this->submit();
+					return true;
+				}
 			}
 			return false;
 		}
@@ -109,5 +117,11 @@ class JudgeRecord extends ActiveRecord
 			}
 		}
 		return false;
+	}
+	
+	public function getReadableStatus()
+	{
+		$statusStr = array('Waiting','Dispatched','Accepted','Compile Error','Rejected');
+		return $statusStr[$this->status];
 	}
 }

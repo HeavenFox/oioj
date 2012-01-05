@@ -63,7 +63,7 @@ class SubmitModule
 		
 		$record->dispatch();
 		
-		echo json_encode(array('record_id' => $record->id, 'server_name' => $server->name));
+		echo json_encode(array('record_id' => $record->id, 'server_name' => $record->server ? $record->server->name : 'To be determined'));
 	}
 	
 	public function showForm()

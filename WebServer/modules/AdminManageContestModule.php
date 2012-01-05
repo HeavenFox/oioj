@@ -3,9 +3,16 @@ class AdminManageContestModule
 {
 	public function run()
 	{
-		OIOJ::$template->display('admin_editcontest.tpl');
+		switch (IO::GET('act'))
+		{
+		}
+		$this->addContest();
+		
 	}
 	
-	
+	public function addContest()
+	{
+		OIOJ::$template->display('admin_editcontest.tpl');
+	}
 }
 ?>

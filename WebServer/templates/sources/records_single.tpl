@@ -1,0 +1,1 @@
+{include "boxes/records_single.tpl"}

@@ -8,17 +8,16 @@
 			dropZone: params.drop,
 			paramName: 'source',
 			fail: function(e, data){console.log(data);},
-			send: function(e, data){that.find('input[type=submit]').attr('disabled','disabled');},
-			always: function(e, data){that.find('input[type=submit]').removeAttr('disabled');},
+			send: function(e, data){console.log("sending");that.find('input[type=submit]').attr('disabled','disabled');},
+			always: function(e, data){console.log("done");that.find('input[type=submit]').removeAttr('disabled');},
 			done: function(e, data){
-				console.log(data);
 				if (data.result.error)
 				{
 					alert(data.result.error);
 				}
 				else
 				{
-					params.handler();
+					params.handler(data);
 				}
 			},
 			

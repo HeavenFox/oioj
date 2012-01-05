@@ -115,9 +115,6 @@ class Contest extends ActiveRecord
 			$users[] = $n;
 		}
 		
-		//var_dump($users);
-		
-		
 		$criteria = explode(';',$criteria);
 		
 		usort($users,function($a,$b) use ($criteria,$usedParams){
@@ -260,11 +257,11 @@ class Contest extends ActiveRecord
 			$rec->timestamp = time();
 			$rec->submit();
 			
-			
 			$rec->dispatch($servers = $this->getOption('judge_servers') ? array_map(explode(',',$servers),function($c){return new JudgeServer(intval($c));}) : null);
+			
 		case  'save':
 			$db = Database::Get();
-			$stmt = $db->prepare("INSERT INTO `oj_contest_submissions` (cid,uid,pid,code,lang,timestamp) VALUES (?,?,?,?,?,?)");
+			$stmt = $db->prepare("INSERT INTO `oj_contest_submissions` (cid,uid,pid,code,lang,timestamp,rid) VALUES (?,?,?,?,?,?,".(isset($rec) ? $rec->id : 'NULL').")");
 			$stmt->execute(array($this->id,$problem->id,$user->id,$code,$lang,time()));
 			break;
 		}
