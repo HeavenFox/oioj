@@ -12,6 +12,8 @@ OIOJ::InitDatabase();
 
 import('JudgeRecord');
 
+$record = new JudgeRecord();
+
 try {
 	$record->parseCallback($_POST['general'],$_POST['cases']);
 	$record->submit();

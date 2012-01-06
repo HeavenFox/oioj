@@ -3,10 +3,11 @@ import('JudgeRecord');
 
 class RecordsModule
 {
+	private $record;
 	public function showSingleRecordAjax()
 	{
 		$this->setSingleRecordVars();
-		echo json_encode(array('finished' => !in_array($record->status,array(JudgeRecord::STATUS_WAITING,JudgeRecord::STATUS_DISPATCHED)),'content' => OIOJ::$template->fetch('boxes/records_single.tpl')));
+		echo json_encode(array('finished' => !in_array($this->record->status,array(JudgeRecord::STATUS_WAITING,JudgeRecord::STATUS_DISPATCHED)),'content' => OIOJ::$template->fetch('boxes/records_single.tpl')));
 	}
 	
 	public function showSingleRecord()
@@ -17,9 +18,9 @@ class RecordsModule
 	
 	private function setSingleRecordVars()
 	{
-		$record = $this->getSingleRecord();
+		$this->record = $record = $this->getSingleRecord();
 		OIOJ::$template->assign('id',$record->id);
-		OIOJ::$template->assign('server_name',$record->server ? $record->server->name : 'None');
+		OIOJ::$template->assign('server_name',$record->server->name ? $record->server->name : 'None');
 		OIOJ::$template->assign('status',$record->getReadableStatus());
 		$resultsAvailable = in_array($record->status,array(JudgeRecord::STATUS_ACCEPTED,JudgeRecord::STATUS_CE,JudgeRecord::STATUS_REJECTED));
 		OIOJ::$template->assign('results_available',$resultsAvailable);
@@ -76,7 +77,7 @@ class RecordsModule
 		{
 			//$db = Database::Get();
 			
-			$records = JudgeRecord::find(array('id','status','cases','lang','timestamp','score'),array('problem' => array('id','title'),'user' => array('id','username')));
+			$records = JudgeRecord::find(array('id','status','cases','lang','timestamp','score'),array('problem' => array('id','title'),'user' => array('id','username'),'server' => array('name')));
 			
 			//$stmt = $db->prepare('SELECT `oj_records`.`id` AS `id`,`pid`,`oj_problems`.`title` AS `prob_title`,`oj_records`.`uid`,`oj_users`.`username` AS `username`,`status`,`lang`,`server`,`oj_judgeservers`.`name` AS `server_name`, `cases`, `timestamp` FROM `oj_records` LEFT JOIN `oj_judgeservers` ON (`oj_judgeservers`.`id` = `server`) LEFT JOIN `oj_problems` ON (`pid` = `oj_problems`.`id`) LEFT JOIN `oj_users` ON (`oj_records`.`uid` = `oj_users`.`id`) LIMIT 0,50');
 			//$stmt->execute();

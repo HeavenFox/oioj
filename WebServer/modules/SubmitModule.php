@@ -28,7 +28,7 @@ class SubmitModule
 		
 		$problemID = 0;
 		
-		if (($problemID = IO::GET('id',0,'intval')) <= 0)
+		if (($problemID = IO::REQUEST('id',0,'intval')) <= 0)
 		{
 			preg_match('/[0-9]+/',$_FILES['source']['name'],$matches);
 			if (!isset($matches[0]))

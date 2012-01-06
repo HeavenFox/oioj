@@ -6,6 +6,7 @@
 			dataType: 'json',
 			url: params.url,
 			dropZone: params.drop,
+			formData: $(that).find('form').first().serializeArray(),
 			paramName: 'source',
 			fail: function(e, data){console.log(data);},
 			send: function(e, data){console.log("sending");that.find('input[type=submit]').attr('disabled','disabled');},

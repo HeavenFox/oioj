@@ -53,8 +53,8 @@ class JudgeRecord extends ActiveRecord
 	public function parseCallback($general, $cases)
 	{
 		$gen = parseProtocol($general);
-		
-		if (!in_array($gen['Token'], $this->token))
+		$this->setTokens();
+		if (!in_array(trim($gen['Token']), $this->tokens))
 		{
 			throw new Exception('Unauthorized access.');
 		}
@@ -75,8 +75,10 @@ class JudgeRecord extends ActiveRecord
 		
 		import('JudgeServer');
 		
-		$server = new JudgeServer($this->server);
-		$server->addWorkload(-1);
+		$this->fetch(array(),array('server' => array('id')));
+		$this->server->addWorkload(-1);
+		
+		
 	}
 	
 	public function __toString()

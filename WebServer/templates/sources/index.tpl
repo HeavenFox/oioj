@@ -1,6 +1,7 @@
 {extends file="base.tpl"}
 {block name="html_head" append}
 <script type="text/javascript" src="scripts/index.js"></script>
+<script type="text/javascript" src="scripts/popup_record.js"></script>
 <script type="text/javascript" src="scripts/jquery-ui-1.8.16.custom.min.js"></script>
 <script type="text/javascript" src="scripts/jquery.fileupload.js"></script>
 <script type="text/javascript" src="scripts/submitsoln/submitsoln.js"></script>

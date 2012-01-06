@@ -11,6 +11,11 @@ class IO
 		return self::GetArrayElement($_POST, $prop, $defaultValue, $san);
 	}
 	
+	public static function REQUEST($prop, $defaultValue = null, $san = null)
+	{
+		return self::GetArrayElement($_REQUEST, $prop, $defaultValue, $san);
+	}
+	
 	public static function Session($prop, $defaultValue = null, $san = null)
 	{
 		return self::GetArrayElement($_SESSION, $prop, $defaultValue, $san);

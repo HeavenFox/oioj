@@ -3,6 +3,7 @@
 <script type="text/javascript" src="scripts/jquery-ui-1.8.16.custom.min.js"></script>
 <script type="text/javascript" src="scripts/jquery.fileupload.js"></script>
 <script type="text/javascript" src="scripts/submitsoln/submitsoln.js"></script>
+<script type="text/javascript" src="scripts/popup_record.js"></script>
 {block name="submit_script"}
 <script type="text/javascript" src="scripts/submitsoln/submitsoln_prob.js"></script>
 <script type="text/javascript">
