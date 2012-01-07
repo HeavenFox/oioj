@@ -25,9 +25,14 @@ $(function(){
 <h3><a href='#'>Registration</a></h3>
 <div>
 <table>
-<tr><td>Anyone can register</td><td></td></tr>
-<tr><td>Automatic Registration</td><td><small>Users will be automatically registered once they begin working</small></td></tr>
-
+<tr><td>Publicity Level</td><td>
+<select>
+<option value="0">Unlisted: contest will be invisible to ordinary user</option>
+<option value="1">Internal: contest is visible, but not available for register</option>
+<option value="2">Register: users need to register beforehand</option>
+<option value="3">Auto: automatically register user once begin working</option>
+</select>
+</td></tr>
 
 <tr><td>Registration Begins</td><td></td></tr>
 <tr><td>Registration Ends</td><td></td></tr>

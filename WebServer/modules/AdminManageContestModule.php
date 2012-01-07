@@ -5,14 +5,25 @@ class AdminManageContestModule
 	{
 		switch (IO::GET('act'))
 		{
+		case 'cp':
+			
+		default:
+			$this->addContest();
 		}
-		$this->addContest();
+		
 		
 	}
 	
 	public function addContest()
 	{
-		OIOJ::$template->display('admin_editcontest.tpl');
+		if (IO::GET('submit'))
+		{
+			
+		}
+		else
+		{
+			OIOJ::$template->display('admin_editcontest.tpl');
+		}
 	}
 }
 ?>
