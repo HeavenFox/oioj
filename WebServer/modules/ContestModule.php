@@ -6,12 +6,14 @@ class ContestModule
 {
 	public $contestId;
 	public $registered;
+	private $contest;
 	
 	public function __construct()
 	{
 		$this->contestId = IO::GET('id',0,'intval');
 		$c = new Contest($this->contestId);
 		$this->registered = $c->checkEnrollment(User::GetCurrent());
+		$this->contest = $c;
 	}
 	
 	public function run()
@@ -32,18 +34,36 @@ class ContestModule
 		{
 			throw new Exception('Please log in before you register for a contest');
 		}
-		$contest_id = IO::GET('id',0,'intval');
+		
 		if ($this->registered)
 		{
 			throw new Exception('You have registered for this contest');
 		}
+		
+		$this->contest->fetch('regBegin', 'regDeadline', 'publicity');
+		
+		if ($this->contest->publicity <= 1)
+		{
+			throw new Exception('The contest is not open to public');
+		}
+		
+		if ($this->contest->regBegin && time() < $this->contest->regBegin)
+		{
+			throw new Exception('Registration has not begun yet.');
+		}
+		
+		if ($this->contest->regDeadline && time() > $this->contest->regDeadline)
+		{
+			throw new Exception('Registration deadline has passed');
+		}
+		
 		$db = Database::Get();
 		
 		$db->exec('INSERT INTO `oj_contest_register` (cid,uid) VALUES ('.$this->contestId.','.User::GetCurrent()->id.')');
 		
 		OIOJ::$template->assign('global_message','You have registered for this contest');
 		
-		IO::SetSession('contest-registered-'.$contest_id,true);
+		IO::SetSession('contest-registered-'.$this->contestId,true);
 		
 		$this->showProfile();
 	}

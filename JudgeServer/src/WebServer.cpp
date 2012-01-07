@@ -36,20 +36,23 @@ void WebServer::pushResult(JudgeRecord *record)
 {
 	int recordID = record->recordID;
 	int status = RECORDSTATUS_ACCEPTED;
-
+	
 	char generalState[256];
+	
+	for (vector<TestCase>::iterator it = record->cases.begin();it != record->cases.end();it++)
+	{
+		if ((*it).result != TESTRESULT_OK)
+		{
+			status = RECORDSTATUS_REJECTED;
+		}
+	}
+	
 	sprintf(generalState, "RecordID %d\nStatus %d\nToken %s\n", recordID, status, Configuration::Token.c_str());
 
 	string postString("general=");
 	postString.append(urlencode(generalState));
 	for (vector<TestCase>::iterator it = record->cases.begin();it != record->cases.end();it++)
 	{
-
-		if ((*it).result != TESTRESULT_OK)
-		{
-			status = RECORDSTATUS_REJECTED;
-		}
-
 		char thiscase[1024];
 
 		sprintf(thiscase, "CaseID %d\nCaseResult %d\nCaseExtendedCode %d\nCaseScore %d\nCaseTime %.2f\nCaseMemory %.2f\n", (*it).caseID, (*it).result, (*it).resultExtended, (*it).score, (*it).actualTime, ((double)(*it).bytesActualMemory)/1024.0/1024.0);

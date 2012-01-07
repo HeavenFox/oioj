@@ -1,5 +1,4 @@
 <?php
-$start_timer = microtime(true);
 require_once 'init.php';
 
 import('OIOJ');
@@ -53,7 +52,4 @@ else
 {
 	OIOJ::$template->display('index.tpl');
 }
-
-//echo '<!-- '.(microtime(true)-$start_timer).' -->';
-
 ?>

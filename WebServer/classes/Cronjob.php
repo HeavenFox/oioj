@@ -10,26 +10,23 @@ class Cronjob
 		'status' => array('class' => 'int'),
 	*/
 	
-	public $reference;
-	
 	public static function RunScheduled()
 	{
-		$lock = fopen(Settings::Get('tmp_dir'),'wb');
+		$lock = fopen(Settings::Get('tmp_dir').'/cron.lock','wb');
 		if (flock($lock,LOCK_EX | LOCK_NB))
 		{
 			// Execute cron jobs
 			$db = Database::Get();
 			
-			$stmt = $db->query('SELECT `id`,`class`,`arguments`,`reference` FROM `oj_cronjobs` WHERE `next` < '.time());
+			$stmt = $db->query('SELECT `id`,`class`,`parameter`, FROM `oj_cronjobs` WHERE `next` < '.time());
 			
 			foreach ($stmt as $row)
 			{
-				import('cronjobs.'$row['class']);
+				import('cronjobs.'.$row['class']);
 				
 				$job = new $row['class'];
-				$job->reference = $row['reference'];
 				
-				$result = call_user_func_array(array($job,'run'),unserialize($row['arugments']));
+				$result = $job->run(unserialize($row['arugments']));
 				
 				if (!$result || $result['next'] <= 0)
 				{

@@ -5,6 +5,7 @@
 <script type='text/javascript'>
 $(function(){
 	$('#prefs').accordion();
+	$('input[type="date"]').datepicker();
 });
 </script>
 {/block}
@@ -16,21 +17,21 @@ $(function(){
 <table>
 <tr><td>Title</td><td><input type="text" name="title" /></td></tr>
 <tr><td>Description</td><td><textarea name="description"></textarea></td></tr>
-<tr><td>Scheduled Start Time</td><td><small>Note: This is for information only. Unless directed, contest will not automatically start at this time.</small></td></tr>
-<tr><td>Scheduled End Time</td><td></td></tr>
-<tr><td>Duration</td><td></td></tr>
+<tr><td>Scheduled Start Time</td><td><input type="date" name="starttime" onchange="p=document.getElementById('endtime');if (!p.value)p.value=this.value;" /><small>Note: This is for information only. Unless directed, contest will not automatically start at this time.</small></td></tr>
+<tr><td>Scheduled End Time</td><td><input type="date" name="endtime" id="endtime" /></td></tr>
+<tr><td>Duration</td><td><input type="number" name="duration-h" min="0" />h <input type="number" name="duration-m" min="0" max="59" step="1" />min <input type="number" name="duration-h" min="0" max="59" step="1" />sec<br /><small>This does not have to match end minus start. User can begin anytime during that window and have this much time to finish.</small></td></tr>
 </table>
 </div>
 <h3><a href='#'>Registration</a></h3>
 <div>
 <table>
-<tr><td>Automatic Registration</td><td></td></tr>
-<tr><td>Allow Registration</td><td></td></tr>
+<tr><td>Anyone can register</td><td></td></tr>
+<tr><td>Automatic Registration</td><td><small>Users will be automatically registered once they begin working</small></td></tr>
+
 
 <tr><td>Registration Begins</td><td></td></tr>
 <tr><td>Registration Ends</td><td></td></tr>
 
-<tr><td>Current Registrants</td><td></td></tr>
 </table>
 </div>
 <h3><a href='#'>Judging & Ranking</a></h3>
@@ -59,14 +60,15 @@ $(function(){
 <div>
 <table>
 <tr><td>Display titles before contest starts</td><td><input type="checkbox" name="display-title-before-start" /></td></tr>
+<tr><td>Problems</td><td><input name="problems" /><br /><small>Please put the IDs of problems here, separated by a comma. Please add problems first if you havn't</small></td></tr>
 </table>
 </div>
 <h3><a href='#'>Automation</a></h3>
 <div>
 <table>
-<tr><td>Automatically start at scheduled time</td><td></td></tr>
-<tr><td>Automatically send to judge servers</td><td></td></tr>
-<tr><td>Automatically bring judge servers exclusive</td><td><small>If checked, these servers will no longer accept normal requests. Recommended for live feedback scenario.</small></td></tr>
+<tr><td>Automatically start at scheduled time</td><td><input type="checkbox" name="auto-start" /></td></tr>
+<tr><td>Automatically send to judge servers</td><td><input type="checkbox" name="auto-judge" /></td></tr>
+<tr><td>Automatically bring judge servers exclusive</td><td><input type="checkbox" name="auto-shut-judgeserver" /><small>If checked, these servers will no longer accept normal requests. Recommended for live feedback scenario.</small></td></tr>
 </table>
 </div>
 </div>
