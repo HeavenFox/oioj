@@ -25,7 +25,7 @@ void AddRequest::processRequest(string &s)
 		for (int i=0;i<ncase;i++)
 		{
 			TestCase c;
-			c.problemID = p.id
+			c.problemID = p.id;
 			sin>>c.caseID>>c.input>>c.answer>>c.timeLimit>>c.memoryLimit>>c.score;
 			c.addSchema(db);
 		}
@@ -54,19 +54,22 @@ void AddRequest::processRequest(string &s)
 			writeBase64(dir.str(),file);
 		}
 		*/
-		string format,filename;
-		sin>>format>>filename;
-		string path = Configuration::DataDirPrefix + filename;
-		ostringstream outputdir(Configuration::DataDirPrefix);
-		outputdir<<p.id<<'/';
-		if (fork()==0)
+		string format;
+		sin>>format;
+                ostringstream path;
+                path<<Configuration::TempDirPrefix<<p.id<<"."<<format;
+		ostringstream outputdir;
+		outputdir<<Configuration::DataDirPrefix<<p.id<<'/';
+                pid_t cld = fork();
+		if (cld == 0)
 		{
-			execl("unzip","unzip","-jqq",path.c_str(),"-d",outputdir.str().c_str(),NULL);
+			execl("/usr/bin/unzip","unzip","-jqq",path.str().c_str(),"-d",outputdir.str().c_str(),NULL);
+                        unlink(path.str().c_str());
 		}
 		else
 		{
-			wait(NULL);
-			unlink(path.c_str());
+			waitpid(cld,NULL,0);
+			
 		}
 	}
 

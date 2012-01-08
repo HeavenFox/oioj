@@ -49,8 +49,8 @@ void TestCase::run()
 	// Prepare pipe for IPC
 	int pd[2];
 	pipe(pd);
-
-	if (fork() == 0)
+        pid_t cld = fork();
+	if (cld == 0)
 	{
 		// in case of screen input / output, redirect stdio
 		if (record->input.compare("/SCREEN/") == 0)
@@ -226,7 +226,7 @@ void TestCase::run()
 		FILE *pin = fdopen(pd[0],"r");
 		fscanf(pin, "%d %d %f %d", &result, &resultExtended, &actualTime, &bytesActualMemory);
 		fclose(pin);
-		wait(NULL);
+		waitpid(cld,NULL,0);
 	}
 }
 
@@ -318,15 +318,15 @@ void TestCase::compare()
 
 			char scorestr[4];
 			sprintf(scorestr,"%d",score);
-
-			if (vfork() == 0)
+                        pid_t cld = vfork();
+			if (cld == 0)
 			{
 				// Run file
 				execl(specialJudge,specialJudgeBin,scorestr,answerPath,NULL);
 			}
 			else
 			{
-				wait(NULL);
+				waitpid(cld,NULL,0);
 
 				// Load score
 				FILE *scoreFile = fopen(scorePath, "r");
@@ -458,7 +458,6 @@ void TestCase::initCallAllowance()
 void TestCase::addSchema(sqlite3 *db)
 {
 	char query[] = "INSERT INTO `testcases` (pid,cid,input,answer,time_limit,memory_limit,score) VALUES (?,?,?,?,?,?,?)";
-
 	sqlite3_stmt *stmt;
 	sqlite3_prepare_v2(db,query,sizeof(query),&stmt,NULL);
 	sqlite3_bind_int(stmt,1,problemID);

@@ -168,7 +168,7 @@ int main (int argc, const char * argv[])
             	req.processRequest(str);
             }
         }
-        cout<<"session finished"<<endl;
+        cout<<"finished request"<<endl;
         close(client_sock);
     }
     

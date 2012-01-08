@@ -17,6 +17,7 @@ double Configuration::TimeMultipler;
 int Configuration::WaitlistSize;
 string Configuration::WorkingDirPrefix;
 string Configuration::DataDirPrefix;
+string Configuration::TempDirPrefix;
 string Configuration::ProblemSchemaDB;
 string Configuration::Token;
 string Configuration::WebServer;
@@ -85,6 +86,13 @@ void Configuration::ReadConfiguration()
                 DataDirPrefix = param;
                 continue;
             }
+            
+            if (op.compare("TempDirPrefix") == 0)
+            {
+                TempDirPrefix = param;
+                continue;
+            }
+            
             if (op.compare("ProblemSchemaDB") == 0)
             {
                 ProblemSchemaDB = param;

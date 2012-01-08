@@ -26,6 +26,7 @@ public:
     static int WaitlistSize;
     static string WorkingDirPrefix;
     static string DataDirPrefix;
+    static string TempDirPrefix;
     static string ProblemSchemaDB;
     
     static string Token;
