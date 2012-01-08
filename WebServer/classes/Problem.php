@@ -115,7 +115,11 @@ class Problem extends ActiveRecord
 				throw new Exception('Unable to connect');
 			}
 			
-			ftp_fput($ftp,$this->id.'.zip',$this->archiveLocation,FTP_BINARY);
+			$file = fopen($this->archiveLocation,'rb');
+			
+			ftp_fput($ftp,$this->id.'.zip',$file,FTP_BINARY);
+			
+			fclose($file);
 			
 			ftp_close($ftp);
 			
@@ -132,7 +136,8 @@ class Problem extends ActiveRecord
 	
 	private function generateDispatchString()
 	{
-		$str = "1\n{$this->id} {$this->type} {$this->compare} {$this->input} {$this->output}\n";
+		$str = "ADDPB\n";
+		$str .= "1\n{$this->id} {$this->type} {$this->compare} {$this->input} {$this->output}\n";
 		$str .= strval(count($this->testCases)) . "\n";
 		foreach ($this->testCases as $c)
 		{
@@ -140,6 +145,7 @@ class Problem extends ActiveRecord
 		}
 		// TODO add dependency support
 		$str .= "0\n";
+		$str .= "zip\n";
 		
 		return $str;
 	}

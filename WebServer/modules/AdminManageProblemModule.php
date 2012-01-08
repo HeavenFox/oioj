@@ -51,6 +51,8 @@ class AdminManageProblemModule
 			{
 				$prob->compare = IO::POST('special_judge');
 			}
+			
+			
 			$inputs = IO::POST('case-in');
 			$outputs = IO::POST('case-out');
 			$tls = IO::POST('case-tl');
