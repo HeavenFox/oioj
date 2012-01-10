@@ -58,7 +58,6 @@ class SubmitModule
 		$record->problem = new Problem($problemID);
 		$record->submit();
 		
-		
 		$db = Database::Get();
 		
 		$record->dispatch();

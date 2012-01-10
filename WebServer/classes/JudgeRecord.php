@@ -91,7 +91,6 @@ class JudgeRecord extends ActiveRecord
 	{
 		if ($server instanceof JudgeServer)
 		{
-			
 			foreach ($this->tokens as $token)
 			{
 				$this->usedToken = $token;
