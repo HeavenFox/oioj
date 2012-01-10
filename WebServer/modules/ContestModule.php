@@ -61,7 +61,7 @@ class ContestModule
 		
 		$db->exec('INSERT INTO `oj_contest_register` (cid,uid) VALUES ('.$this->contestId.','.User::GetCurrent()->id.')');
 		
-		OIOJ::$template->assign('global_message','You have registered for this contest');
+		OIOJ::GlobalMessage('You have registered for this contest');
 		
 		IO::SetSession('contest-registered-'.$this->contestId,true);
 		

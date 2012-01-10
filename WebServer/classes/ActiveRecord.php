@@ -253,7 +253,7 @@ class ActiveRecord
 			$suffix = $this->_makeIdClause($suffix);
 		}
 		
-		$queryStr = self::_makeQueryString($properties, $composites, $suffix);
+		$queryStr = self::_makeQueryString($properties, $composites, $suffix . ' LIMIT 0,1');
 		
 		$stmt = Database::Get()->prepare($queryStr);
 		$stmt->execute($data);
