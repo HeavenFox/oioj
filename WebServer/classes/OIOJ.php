@@ -26,5 +26,12 @@ class OIOJ
 		self::$template->assign('redirect',$redirect);
 		self::$template->display('redirect.tpl');
 	}
+	
+	public static function GlobalMessage($message)
+	{
+		OIOJ::$template->assign('display_global_message',true);
+		OIOJ::$template->assign('global_message',$message);
+		
+	}
 }
 ?>

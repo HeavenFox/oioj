@@ -34,6 +34,32 @@ class JudgeRecord extends ActiveRecord
 	
 	public $localUrl = null;
 	
+	public static function popWaitlist()
+	{
+		$this->setTokens();
+		$db = Database::Get();
+		$db->beginTransaction();
+		$rec = JudgeRecord::first(array('id','code'),NULL,'WHERE `status` = '.self::STATUS_WAITING.' ORDER BY `timestamp` ASC');
+		$rec->dispatch();
+		$db->commit();
+	}
+	
+	public static function PopAllWaitlist()
+	{
+		$this->setTokens();
+		$db = Database::Get();
+		$db->beginTransaction();
+		$recs = JudgeRecord::find(array('id','code'),NULL,'WHERE `status` = '.self::STATUS_WAITING.' ORDER BY `timestamp` ASC');
+		foreach ($recs as $rec)
+		{
+			if (!$rec->dispatch())
+			{
+				// Likely maximum capacity
+				break;
+			}
+		}
+		$db->commit();
+	}
 	
 	public function add()
 	{

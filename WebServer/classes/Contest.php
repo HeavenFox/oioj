@@ -34,12 +34,14 @@ class Contest extends ActiveRecord
 	
 	public function startContest()
 	{
+		/*
 		$this->getComposite(array('problems' => array('id')));
 		foreach ($this->problems as $p)
 		{
 			$p->listing = 1;
 			$p->submit();
 		}
+		*/
 		$this->status = self::STATUS_INPROGRESS;
 		$this->submit();
 	}
@@ -69,10 +71,17 @@ class Contest extends ActiveRecord
 		return null;
 	}
 	
+	public function addOption($option, $value)
+	{
+		$db = Database::Get();
+		$stmt = $db->prepare('INSERT INTO `oj_contest_options` (`cid`,`key`,`value`) VALUES (?,?,?)');
+		$stmt->execute(array($this->id,$option,$value));
+	}
+	
 	public function generateRanking()
 	{
 		$suffix = 'FROM `oj_contest_submissions` LEFT JOIN `oj_records` ON (`oj_records`.`id`=`rid`) WHERE `rid` IS NOT NULL AND `oj_contest_submissions`.`cid` = `oj_contest_register`.`cid` AND `oj_contest_submissions`.`uid`=`oj_contest_register`.`uid`';
-		$suffix_right = 'AND `status` = 2';
+		$suffix_right = 'AND `status` = '.JudgeRecord::STATUS_ACCEPTED;
 		$param_sql = array
 		(
 			'num_right' => "(SELECT count(*) {$suffix} {$suffix_right}) AS `num_right`,",
@@ -160,22 +169,30 @@ class Contest extends ActiveRecord
 		*/
 	}
 	
-	public function judge($callback)
+	public function judge()
 	{
 		if ($this->getOption('after_submit') == 'save')
 		{
 			$db = Database::Get();
 			
-			foreach ($db->query('SELECT `pid`,`uid`,`code`,`lang` FROM `oj_contest_submissions` WHERE `cid` = '.$this->id.' GROUP BY `uid`,`pid` HAVING `timestamp` = MAX(`timestamp`)') as $row)
+			$db->exec("CALL contest_judge({$this->id})");
+			/*
+			foreach ($db->query('SELECT `id`,`pid`,`uid`,`code`,`lang` FROM `oj_contest_submissions` WHERE `cid` = '.$this->id.' AND `timestamp` = (SELECT MAX(`temp`.`timestamp`) FROM `oj_contest_submissions` AS `temp` WHERE `temp`.`uid`=`oj_contest_submissions`.`uid` AND `temp`.`pid`=`oj_contest_submissions`.`pid` )') as $row)
 			{
 				$rec = new JudgeRecord();
 				$rec->problem = new Problem($row['pid']);
 				$rec->user = new User($row['uid']);
 				$rec->code = $row['code'];
 				$rec->lang = $row['lang'];
-				$rec->dispatch();
+				$rec->status = JudgeRecord::STATUS_WAITING;
+				$rec->submit();
+				$db->exec('UPDATE `oj_contest_submissions` ');
 			}
+			*/
+			
+			JudgeRecord::PopAllWaitlist();
 		}
+		return false;
 	}
 	
 	/**
@@ -254,8 +271,7 @@ class Contest extends ActiveRecord
 			$rec->code = $code;
 			$rec->lang = $lang;
 			$rec->user = $user;
-			$rec->timestamp = time();
-			$rec->submit();
+			$rec->add();
 			
 			$rec->dispatch($servers = $this->getOption('judge_servers') ? array_map(explode(',',$servers),function($c){return new JudgeServer(intval($c));}) : null);
 			

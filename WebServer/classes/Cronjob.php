@@ -10,28 +10,30 @@ class Cronjob
 		'status' => array('class' => 'int'),
 	*/
 	
-	public static function RunScheduled()
+	public $reference;
+	
+	public static function RunScheduled($qos)
 	{
-		$lock = fopen(Settings::Get('tmp_dir').'/cron.lock','wb');
+		$lock = fopen(Settings::Get('tmp_dir').'cronlock-'.$qos,'wb');
 		if (flock($lock,LOCK_EX | LOCK_NB))
 		{
 			// Execute cron jobs
 			$db = Database::Get();
 			
-			$stmt = $db->query('SELECT `id`,`class`,`parameter`, FROM `oj_cronjobs` WHERE `next` < '.time());
+			$stmt = $db->query('SELECT `id`,`class`,`method`,`arguments`,`reference` FROM `oj_cronjobs` WHERE `qos` = '.$qos.' AND `next` < '.time());
 			
 			foreach ($stmt as $row)
 			{
-				import('cronjobs.'.$row['class']);
+				import('cronjobs.'$row['class']);
 				
 				$job = new $row['class'];
+				$job->reference = $row['reference'];
 				
-				$result = $job->run(unserialize($row['arugments']));
+				$result = call_user_func_array(array($job,$row['method']),unserialize($row['arugments']));
 				
-				if (!$result || $result['next'] <= 0)
+				if (!$result || !isset($result['next']))
 				{
 					$query = 'DELETE FROM `oj_cronjobs` WHERE `id`='.$row['id'];
-					
 				}
 				else
 				{
@@ -42,12 +44,15 @@ class Cronjob
 					}
 					$query .= ' WHERE `id`='.$row['id'];
 				}
+				flock($lock,LOCK_UN);
 			}
-			
-			flock($lock,LOCK_UN);
 			fclose($lock);
 		}
 	}
 	
+	public static function AddTask($cls, $method, $arguments, $next, $qos, $reference = null)
+	{
+		
+	}
 }
 ?>

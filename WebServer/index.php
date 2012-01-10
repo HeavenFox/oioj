@@ -18,6 +18,7 @@ $availableModules = array(
 	'contestlist' => 'ContestListModule',
 	'contest' => 'ContestModule',
 	'contestproblem' => 'ContestProblemModule',
+	'contestcp' => 'ContestCPModule',
 	'admin_contest' => 'AdminManageContestModule'
 );
 
