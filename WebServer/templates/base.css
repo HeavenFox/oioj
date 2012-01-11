@@ -57,9 +57,8 @@ body
 
 #body
 {
-	width: 946px;
-	margin: 0 auto 0 auto;
-	padding: 7px;
+	padding: 0 !important;
+	width: 960px !important;
 }
 
 #navbar li
@@ -91,6 +90,17 @@ body
 	height: 24px;
 	line-height: 24px;
 	padding: 0 10px 0 10px;
+}
+
+#infobar a
+{
+	color: #4f4f4f;
+	text-decoration: none;
+}
+
+#infobar a:hover
+{
+	text-decoration: underline;
 }
 
 #infobar #breadcrumb

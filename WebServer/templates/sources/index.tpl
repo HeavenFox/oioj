@@ -9,7 +9,9 @@
 <script type="text/javascript">
 $(function(){
 	$("#submitsoln").submitsoln_prob({
-		drop: $('#dropzone')
+		drop: $('#dropzone'),
+		inClass: 'in',
+		hoverClass: 'hover'
 	});
 });
 </script>
@@ -18,19 +20,18 @@ $(function(){
 {block name="body"}
 <div id="blocknav">
 <div id="bn_banners">
-<img src='templates/images/index/learn_banner.png' />
-<img src='templates/images/index/solve_banner.png' />
-<img src='templates/images/index/compete_banner.png' />
-</div>
-<div id="bn_links">
-<a href='#' onclick='moveBannerTo("-0")'><img src='templates/images/index/learn_tn.png' /></a>
-<a href='#' onclick='moveBannerTo("-360px")'><img src='templates/images/index/solve_tn.png' /></a>
-<a href='#' onclick='moveBannerTo("-720px")'><img src='templates/images/index/compete_tn.png' /></a>
+<img src='templates/images/index/banner_1.jpg' /><img src='templates/images/index/banner_2.jpg' />
 </div>
 
+
+</div>
+<div id="bn_links">
+<a href='#' onclick='moveBannerTo(1)'><img src='templates/images/index/bullet.png' /></a>
+<a href='#' onclick='moveBannerTo(2)'><img src='templates/images/index/bullet.png' /></a>
 </div>
 {if $user->id == 0}
-<div id="user_panel">
+<div class="homepage_box">
+<div class="homepage_inner_box" id="quicksubmit">
    <div id="login_panel"><h2>Log in</h2>
 
 <div id="login_traditional">
@@ -44,7 +45,6 @@ $(function(){
 </table>
 </div>
    </div>
-   <div id="vertical_separator"></div>
    <div id="register_panel"><h2>Register</h2>
 <table>
 <form action="index.php?mod=user&act=register_submit" method="post">
@@ -58,14 +58,19 @@ $(function(){
 </table>
 </div>
 </div>
+</div>
 {else}
-<div id="quicksubmit">
+<div class="homepage_box">
+<div class="homepage_inner_box" id="quicksubmit">
+<div id="drop_instructions">
 <h2>Quick Submit</h2>
-Submit by choosing source file or dragging your solution to the dropbox below. Please indicate problem ID and use proper extension. Example: 1895.cpp, P3421.pas
+Submit by choosing source file or dragging your solution to the dropbox. Please indicate problem ID and use proper extension. Example: 1895.cpp, P3421.pas
 <form>
 <input id="submitsoln" type="file" name="source" />
 </form>
+</div>
 <div id="dropzone"></div>
+</div>
 </div>
 {/if}
 {/block}

@@ -12,7 +12,7 @@ function showCAPTCHA()
 	}
 }
 
-function moveBannerTo(loc)
+function moveBannerTo(n)
 {
-	$("#bn_banners").css("top",loc);
+	$("#bn_banners").css("top",-(n-1)*360+"px");
 }
