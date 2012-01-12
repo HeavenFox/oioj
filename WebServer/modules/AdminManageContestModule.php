@@ -1,6 +1,7 @@
 <?php
 import('Contest');
 import('Problem');
+import('Cronjob');
 class AdminManageContestModule
 {
 	public function run()
@@ -62,7 +63,7 @@ class AdminManageContestModule
 		{
 			$c->regBegin = $this->getTimestamp('regstart');
 		}
-		$c->publicity = intval(IO::POST('publicity'));
+		$c->publicity = IO::POST('publicity',0,'intval');
 		$c->status = Contest::STATUS_WAITING;
 		if (strlen(IO::POST('regend-date')))
 		{
@@ -118,6 +119,17 @@ class AdminManageContestModule
 		$db->exec($addAssocQuery);
 		
 		// Add Cron Jobs as Required
+		if (IO::POST('auto_start',false,$cbCallback))
+		{
+			Cronjob::AddJob('Contest','start',array(),$c->beginTime,0,$c->id);
+		}
+		
+		Cronjob::AddJob('Contest','end',array(),$c->endTime,0,$c->id);
+		
+		if (IO::POST('auto_judge',false,$cbCallback))
+		{
+			Cronjob::AddJob('Contest','judge',array(),$c->endTime + 60*IO::POST('judge-hiatus',10,'intval'),1,$c->id);
+		}
 		
 		OIOJ::Redirect('The Contest Has Been Saved');
 	}

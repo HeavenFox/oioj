@@ -31,7 +31,7 @@ $(function(){
 <div>
 <table>
 <tr><td>Publicity Level</td><td>
-<select>
+<select name="publicity">
 <option value="0">Unlisted: contest will be invisible to ordinary user</option>
 <option value="1">Internal: contest is visible, but not available for register</option>
 <option value="2">Register: users need to register beforehand</option>
@@ -63,7 +63,7 @@ $(function(){
 <tr><td>Automatically send to judge servers</td><td><input type="checkbox" name="auto_judge" /> <input type='number' name='judge-hiatus' value='10' /> minutes after contest ends<br /><small>You may need some time to deal with unexpected situations.</small></td></tr>
 <tr><td>Display Ranking</td><td><input type="checkbox" name="display_ranking" /></td></tr>
 <tr><td>... Before Judge Finishes</td><td><input type="checkbox" name="display_preliminary_ranking" /></td></tr>
-<tr><td>Ranking Criteria</td><td><ul id="criteria-list"><li></li></ul><input id="add-criterion" /><select id="add-criterion-order"><option value="a">ascending</option><option value="a">descending</option></select><input type='button' value='Add' onclick='addCriterion()' /><p>You can use any PHP expression as criteria. The following parameters are available:</p>
+<tr><td>Ranking Criteria</td><td><ul id="criteria-list"></ul><input id="add-criterion" /><select id="add-criterion-order"><option value="a">ascending</option><option value="a">descending</option></select><input type='button' value='Add' onclick='addCriterion()' /><p>You can use any PHP expression as criteria. The following parameters are available:</p>
 <p><ul><li>num_right: Number of correct submissions</li>
 <li>num_wrong: Number of wrong submissions</li>
 <li>num_right: Number of correct submissions</li>

@@ -27,9 +27,10 @@
 </tbody>
 </table>
 {/if}
+{if isset($ranking)}
 <h3>Ranking</h3>
 {include file="boxes/contest_ranking.tpl"}
-
+{/if}
 {/block}
 {block name="column-right"}
 <div class="sidebar-box">

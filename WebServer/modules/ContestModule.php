@@ -40,7 +40,7 @@ class ContestModule
 			throw new Exception('You have registered for this contest');
 		}
 		
-		$this->contest->fetch('regBegin', 'regDeadline', 'publicity');
+		$this->contest->fetch(array('regBegin', 'regDeadline', 'publicity'),NULL);
 		
 		if ($this->contest->publicity <= 1)
 		{
@@ -76,22 +76,19 @@ class ContestModule
 		{
 			$contest->getComposite(array('problems' => array('id','title','input','output')));
 		}
-		if (intval($contest->getOption('display_preliminary_ranking')) || $contest->status == Contest::STATUS_JUDGED)
-		{
-			
-		}
-		else if ($contest->status != Contest::STATUS_JUDGED && intval($contest->getOption('display_participants_before_end')))
-		{
-			$contest->getComposite(array('participants' => array('id','username')));
-		}
+		
 		
 		OIOJ::$template->assign('registered',$this->registered);
 		OIOJ::$template->assign('started',$contest->checkStarted(User::GetCurrent()));
 		
 		OIOJ::$template->assign('c',$contest);
-		OIOJ::$template->assign('ranking',array_slice($contest->generateRanking(),0,10));
 		
-		OIOJ::$template->assign('ranking_display_params',array_flip(explode(';',$contest->getOption('ranking_display_params'))));
+		if ($contest->displayRanking())
+		{
+			OIOJ::$template->assign('ranking',array_slice($contest->generateRanking(),0,10));
+			OIOJ::$template->assign('ranking_display_params',array_flip(explode(';',$contest->getOption('ranking_display_params'))));
+		}
+		
 		OIOJ::$template->display('contest.tpl');
 	}
 	

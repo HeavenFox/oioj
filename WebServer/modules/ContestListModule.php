@@ -12,11 +12,11 @@ class ContestListModule
 		$paramList = array('id','title','beginTime','endTime','regBegin','regDeadline','duration');
 		$compList = array('user' => array('id','username'));
 		$commonSuffix = ' LIMIT 0,5';
-		$openContests = Contest::find($paramList,$compList,'WHERE `begin_time` > '.time().' AND (`reg_deadline` = 0 OR `reg_deadline` > '.time().') '.$commonSuffix);
-		$inProgressContests = Contest::find($paramList,$compList,'WHERE `begin_time` < '.time().' AND `end_time` > '.time().$commonSuffix);
-		$readyContests = Contest::find($paramList,$compList,'WHERE `begin_time` > '.time().' AND `reg_deadline` <> 0 AND `reg_deadline` < '.time().$commonSuffix);
-		$pastContests = Contest::find($paramList,$compList,'WHERE `end_time` < '.time().$commonSuffix);
-		$futureContests = Contest::find($paramList,$compList,'WHERE `reg_begin` > '.time().$commonSuffix);
+		$openContests = Contest::find($paramList,$compList,'WHERE `publicity` > 0 AND `begin_time` > '.time().' AND (`reg_deadline` IS NULL OR `reg_deadline` > '.time().') '.$commonSuffix);
+		$inProgressContests = Contest::find($paramList,$compList,'WHERE `publicity` > 0 AND `begin_time` < '.time().' AND `end_time` > '.time().$commonSuffix);
+		$readyContests = Contest::find($paramList,$compList,'WHERE `publicity` > 0 AND `begin_time` > '.time().' AND `reg_deadline` IS NOT NULL AND `reg_deadline` < '.time().$commonSuffix);
+		$pastContests = Contest::find($paramList,$compList,'WHERE `publicity` > 0 AND `end_time` < '.time().$commonSuffix);
+		$futureContests = Contest::find($paramList,$compList,'WHERE `publicity` > 0 AND `reg_begin` > '.time().$commonSuffix);
 
 
 		OIOJ::$template->assign('open_contests',$openContests);

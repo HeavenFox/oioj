@@ -25,6 +25,7 @@ class Contest extends ActiveRecord
 		'regBegin' => array('class' => 'int','column' => 'reg_begin'),
 		'regDeadline' => array('class' => 'int','column' => 'reg_deadline'),
 		'duration' => array('class' => 'int'),
+		'publicity' => array('class' => 'int'),
 		'user' => array('class' => 'User','comp' => 'one','column' => 'uid'),
 		'problems' => array('class' => 'Problem', 'comp' => 'many', 'junction' => 'oj_contest_problems', 'column' => array('cid','pid')),
 		'participants' => array('class' => 'User', 'comp' => 'many', 'junction' => 'oj_contest_register', 'column' => array('cid','uid'))
@@ -76,6 +77,11 @@ class Contest extends ActiveRecord
 		$db = Database::Get();
 		$stmt = $db->prepare('INSERT INTO `oj_contest_options` (`cid`,`key`,`value`) VALUES (?,?,?)');
 		$stmt->execute(array($this->id,$option,$value));
+	}
+	
+	public function displayRanking()
+	{
+		return $this->status >= self::STATUS_INPROGRESS && intval($this->getOption('display_ranking')) && ($this->status == self::STATUS_JUDGED || intval($contest->getOption('display_preliminary_ranking')) );
 	}
 	
 	public function generateRanking()

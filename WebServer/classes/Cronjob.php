@@ -1,16 +1,18 @@
 <?php
 import('Settings');
-class Cronjob
+class Cronjob extends ActiveRecord
 {
-	/*
 	static $tableName = 'oj_cronjobs';
 	static $schema = array(
 		'id' => array('class' => 'int'),
-		'title' => array('class' => 'string'),
-		'status' => array('class' => 'int'),
-	*/
-	
-	public $reference;
+		'class' => array('class' => 'string'),
+		'method' => array('class' => 'string'),
+		'arguments' => array('class' => 'string', 'setter' => 'serialize', 'getter' => 'unserialize'),
+		'reference' => array('class' => 'int'),
+		'next' => array('class' => 'timestamp'),
+		'qos' => array('class' => 'int'),
+		'enabled' => array('class' => 'bool')
+	);
 	
 	public static function RunScheduled($qos)
 	{
@@ -68,7 +70,7 @@ class Cronjob
 	public static function AddJob($cls, $method, $arguments, $next, $qos, $reference = null)
 	{
 		$db = Database::Get();
-		$stmt = $db->prepare('INSERT INTO `oj_cronjobs_log` (`class`,`method`,`arguments`,`next`,`qos`,`reference`) VALUES (?,?,?,?,?,?)');
+		$stmt = $db->prepare('INSERT INTO `oj_cronjobs` (`class`,`method`,`arguments`,`next`,`qos`,`reference`) VALUES (?,?,?,?,?,?)');
 		$stmt->execute(array($cls,$method,serialize($arguments),$next,$qos,$reference));
 	}
 	
