@@ -22,7 +22,7 @@
 </div>
 <div id="container"><div id="infobar"><div id="breadcrumb">Home</div><div id="userinfo">Welcome, {$user->username}
 {if $user->id != 0}
- <a href='index.php?mod=user&act=editprofile'>User Center</a> - <a href='index.php?mod=user&act=logout'>Log out</a>
+{ifable to="admin_cp"}<a href='index.php?mod=admin_home'>Admin CP</a> - {endif} <a href='index.php?mod=user&act=editprofile'>User Center</a> - <a href='index.php?mod=user&act=logout'>Log out</a>
 {else}
  <a href='javascript:;' onclick='globalShowLoginBox()'>Log in</a>
 {/if}

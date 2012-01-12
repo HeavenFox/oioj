@@ -26,8 +26,8 @@ $(function(){
 
 </div>
 <div id="bn_links">
-<a href='#' onclick='moveBannerTo(1)'><img src='templates/images/index/bullet.png' /></a>
-<a href='#' onclick='moveBannerTo(2)'><img src='templates/images/index/bullet.png' /></a>
+<a href='#' onclick='moveBannerTo(1);return false;'><img src='templates/images/index/bullet.png' /></a>
+<a href='#' onclick='moveBannerTo(2);return false;'><img src='templates/images/index/bullet.png' /></a>
 </div>
 {if $user->id == 0}
 <div class="homepage_box">

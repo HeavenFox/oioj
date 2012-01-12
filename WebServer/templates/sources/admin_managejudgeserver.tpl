@@ -1,13 +1,20 @@
 {extends file="two-column.tpl"}
 {block name="html_head" append}
-<script type="text/javascript" src="scripts/admin_addproblem.js"></script>
-<script type="text/javascript" src="scripts/fancybox/jquery.easing-1.3.pack.js"></script>
-<script type="text/javascript" src="scripts/fancybox/jquery.fancybox-1.3.4.pack.js"></script>
-<link rel="stylesheet" href="scripts/fancybox/jquery.fancybox-1.3.4.css" type="text/css" media="screen" />
+<link rel='stylesheet' href='templates/list.css' />
 {/block}
 {block name="column-left"}
-<table>
+<h2>Manage Judge Server</h2>
+<table class='tablist'>
+<thead>
+<tr><td>On?</td><td>ID</td><td>Name</td><td>IP : Port</td><td>workload</td><td>max. workload</td><td>FTP User</td><td></td></tr>
+</thead>
+<tbody>
+{foreach $servers as $s}
+<tr><td>{if $s->online}<span style='color: green'>Y</span>{else}<span style='color: red'>N</span>{/if}</td><td>{$s->id}</td><td>{$s->name}</td><td>{$s->ip}:{$s->port}</td><td>{$s->workload}</td><td>{$s->maxWorkload}</td><td>{$s->ftpUsername}</td><td><a href='index.php?mod=admin_judgeserver&amp;act=edit&amp;id={$s->id}'>Edit</a></td></tr>
+{/foreach}
+</tbody>
 </table>
+<a href='index.php?mod=admin_judgeserver&amp;act=add'>Add Server</a>
 {/block}
 {block name="column-right"}
 {include file="admin_sidebar.tpl"}

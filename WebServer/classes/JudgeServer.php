@@ -13,7 +13,7 @@ class JudgeServer extends ActiveRecord
 		'port' => array('class' => 'int'),
 		'ftpUsername' => array('class' => 'string', 'column' => 'ftp_username'),
 		'ftpPassword' => array('class' => 'string', 'column' => 'ftp_password'),
-		'online' => array('class' => 'int')
+		'online' => array('class' => 'bool')
 	);
 	static $keyProperty = 'id';
 	

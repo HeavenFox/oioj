@@ -12,7 +12,10 @@ function showCAPTCHA()
 	}
 }
 
+var currentBannerBullet;
+
 function moveBannerTo(n)
 {
 	$("#bn_banners").css("top",-(n-1)*360+"px");
+	//currentBannerBullet = $('')
 }
