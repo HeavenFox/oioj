@@ -4,7 +4,7 @@ class Cache
 	/*-------------------------------------
 	   MASTER SWITCH OF CACHING.
 	 --------------------------------------*/
-	private static $Enabled = true;
+	private static $Enabled = false;
 	
 	//-------------------------------------
 	// Memory Cacheing
@@ -19,6 +19,7 @@ class Cache
 	
 	public static function MemSet($id, $vari)
 	{
+		if (!self::$Enabled)return false;
 		if (function_exists('apc_store'))
 		{
 			apc_store($id,$vari);
@@ -28,12 +29,18 @@ class Cache
 	
 	public static function MemGet($id)
 	{
+		if (!self::$Enabled)return false;
 		if (function_exists('apc_fetch'))
 		{
 			return apc_fetch($id);
 		}
 		
 		return null;
+	}
+	
+	public static function MemFlush($id)
+	{
+		
 	}
 	
 	//--------------------------------------

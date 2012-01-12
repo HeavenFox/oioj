@@ -28,6 +28,7 @@ class Problem extends ActiveRecord
 			'submission' => array('class' => 'int'),
 			'accepted' => array('class' => 'int'),
 			'listing' => array('class' => 'bool'),
+			'dispatched' => array('class' => 'bool'),
 			'user' => array('class' => 'User', 'comp' => 'one', 'column' => 'uid')
 		);
 	public static $tableName = 'oj_problems';
@@ -71,6 +72,10 @@ class Problem extends ActiveRecord
 		$this->testCases[] = $curCase;
 	}
 	
+	public function getCases()
+	{
+		$this->testCases = TestCase::find(array('cid','input','answer','timelimit','memorylimit','score'),NULL,'WHERE `pid` = '.$this->id);
+	}
 	
 	public function createArchive($location = null)
 	{
@@ -112,7 +117,7 @@ class Problem extends ActiveRecord
 			
 			if (!$ftp || !ftp_login($ftp,$server->ftpUsername,$server->ftpPassword))
 			{
-				throw new Exception('Unable to connect');
+				throw new Exception('Unable to connect FTP');
 			}
 			
 			$file = fopen($this->archiveLocation,'rb');
@@ -125,7 +130,10 @@ class Problem extends ActiveRecord
 			
 		}
 		
-		$server->dispatch($this->generateDispatchString());
+		if (!$server->dispatch($this->generateDispatchString()))
+		{
+			throw new Exception('Schema');
+		}
 		
 	}
 	

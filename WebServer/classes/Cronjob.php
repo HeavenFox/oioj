@@ -24,12 +24,16 @@ class Cronjob
 			
 			foreach ($stmt as $row)
 			{
-				import('cronjobs.'$row['class']);
+				$clsName = 'Cronjob_'.$row['class'];
+				import('cronjobs.'.$clsName);
 				
-				$job = new $row['class'];
-				$job->reference = $row['reference'];
+				$job = new $clsName;
+				$job->reference = intval($row['reference']);
 				
-				$result = call_user_func_array(array($job,$row['method']),unserialize($row['arugments']));
+				
+				$args = unserialize($row['arguments']);
+				if (!$args) $args = array();
+				$result = call_user_func_array(array($job,$row['method']),$args);
 				
 				if (!$result || !isset($result['next']))
 				{
@@ -40,19 +44,39 @@ class Cronjob
 					$query = 'UPDATE `oj_cronjobs` SET `next` = '.$result['next'];
 					if (isset($result['arguments']))
 					{
-						$query .= ', `argument` = '.serialize($result['arguments']);
+						$query .= ', `arguments` = '.serialize($result['arguments']);
 					}
 					$query .= ' WHERE `id`='.$row['id'];
 				}
+				$db->exec($query);
+				
 				flock($lock,LOCK_UN);
 			}
 			fclose($lock);
 		}
 	}
 	
-	public static function AddTask($cls, $method, $arguments, $next, $qos, $reference = null)
+	/**
+	 * Add a Cron Job
+	 * @param string $cls Job class
+	 * @param string $method Class method
+	 * @param array $arguments Arguments for method
+	 * @param int $next UNIX timestamp of next launch
+	 * @param int $qos Quality of Service level
+	 * @param int $reference Reference variable
+	 */
+	public static function AddJob($cls, $method, $arguments, $next, $qos, $reference = null)
 	{
-		
+		$db = Database::Get();
+		$stmt = $db->prepare('INSERT INTO `oj_cronjobs_log` (`class`,`method`,`arguments`,`next`,`qos`,`reference`) VALUES (?,?,?,?,?,?)');
+		$stmt->execute(array($cls,$method,serialize($arguments),$next,$qos,$reference));
+	}
+	
+	public function log($content)
+	{
+		$db = Database::Get();
+		$stmt = $db->prepare('INSERT INTO `oj_cronjobs_log` (`class`,`content`,`timestamp`) VALUES (?,?,UNIX_TIMESTAMP())');
+		$stmt->execute(array(substr(get_class($this),8),$content));
 	}
 }
 ?>

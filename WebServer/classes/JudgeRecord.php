@@ -39,7 +39,7 @@ class JudgeRecord extends ActiveRecord
 		$this->setTokens();
 		$db = Database::Get();
 		$db->beginTransaction();
-		$rec = JudgeRecord::first(array('id','code'),NULL,'WHERE `status` = '.self::STATUS_WAITING.' ORDER BY `timestamp` ASC');
+		$rec = JudgeRecord::first(array('id','lang','problem','code'),NULL,'WHERE `status` = '.self::STATUS_WAITING.' ORDER BY `timestamp` ASC');
 		$rec->dispatch();
 		$db->commit();
 	}
@@ -49,7 +49,7 @@ class JudgeRecord extends ActiveRecord
 		$this->setTokens();
 		$db = Database::Get();
 		$db->beginTransaction();
-		$recs = JudgeRecord::find(array('id','code'),NULL,'WHERE `status` = '.self::STATUS_WAITING.' ORDER BY `timestamp` ASC');
+		$recs = JudgeRecord::find(array('id','lang','problem','code'),NULL,'WHERE `status` = '.self::STATUS_WAITING.' ORDER BY `timestamp` ASC');
 		foreach ($recs as $rec)
 		{
 			if (!$rec->dispatch())

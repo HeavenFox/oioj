@@ -96,8 +96,6 @@ class AdminManageContestModule
 			$criteria[$k] = $criteria_order[$k].$v;
 		}
 		
-		
-		
 		$c->addOption('ranking_criteria',implode(';',$criteria));
 		$c->addOption('ranking_display_params',implode(';',IO::POST('display_params')));
 		
@@ -119,12 +117,14 @@ class AdminManageContestModule
 		$db = Database::Get();
 		$db->exec($addAssocQuery);
 		
+		// Add Cron Jobs as Required
+		
 		OIOJ::Redirect('The Contest Has Been Saved');
 	}
 	
 	public function addContest()
 	{
-			OIOJ::$template->display('admin_editcontest.tpl');
+		OIOJ::$template->display('admin_editcontest.tpl');
 	}
 }
 ?>

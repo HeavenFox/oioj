@@ -2,9 +2,6 @@
 import('Problem');
 class AdminManageProblemModule
 {
-	
-	
-	
 	public function run()
 	{
 		switch (IO::GET('act'))
@@ -32,6 +29,7 @@ class AdminManageProblemModule
 	{
 		try
 		{
+			Settings::Flush();
 			// Check permission
 			if (!User::GetCurrent()->ableTo('add_problem'))
 			{
@@ -77,7 +75,11 @@ class AdminManageProblemModule
 				throw new Exception('error reading archive');
 			}
 			
-			$prob->archiveLocation = $_FILES['archive']['tmp_name'];
+			$newloc = Settings::Get('tmp_dir').'cases/'.md5(rand());
+			
+			move_uploaded_file($_FILES['archive']['tmp_name'],$newloc);
+			
+			$prob->archiveLocation = $newloc;
 			
 			foreach ($scores as $k => $v)
 			{
@@ -93,29 +95,39 @@ class AdminManageProblemModule
 				$prob->testCases[] = $c;
 			}
 			
-			echo "Adding problem to web server...<br />\n";
-			// Hide problem until dispatched
-			$prob->listing = 0;
+			$prob->dispatched = 0;
+			
 			$prob->add();
-			/*
-			foreach ($prob->testCases as $v)
+			
+			$db = Database::Get();
+			
+			echo 'Adding problem to dispatch queue<br />';
+			
+			$servers = JudgeServer::find(array('id'));
+			
+			if ($servers)
 			{
-				$v->add();
+				$insQuery = 'INSERT INTO `oj_probdist_queue` (`pid`,`server`,`file`) VALUES ';
+			
+				$first = true;
+				foreach ($servers as $server)
+				{
+					if ($first)
+					{
+						$first = false;
+					}else
+					{
+						$insQuery .= ',';
+					}
+				
+					$insQuery .= "({$prob->id},{$server->id},:archive)";
+				}
+				echo $insQuery;
+				$stmt = $db->prepare($insQuery);
+				$stmt->bindParam('archive',$newloc);
+				$stmt->execute();
 			}
-			*/
 			
-			echo "Dispatching problem to judge servers...<br />\n";
-			
-			$servers = JudgeServer::find(array('id','name','ip','port','ftpUsername','ftpPassword'),null);
-			foreach ($servers as $server)
-			{
-				echo '&nbsp;&nbsp;Server: '.$server->name."<br />\n";
-				$prob->dispatch($server);
-			}
-			
-			echo "Finishing up...<br />\n";
-			$prob->listing = 1;
-			$prob->update();
 			echo 'done.';
 			echo '<script type="text/javascript">parent.resetForm();</script>';
 		}catch(Exception $e)
