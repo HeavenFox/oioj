@@ -1,19 +1,26 @@
 .tablist
 {
 	width: 100%;
-	border: 1px solid #626262;
+	border-bottom: 1px solid #8a8a8a;
 	font-size: 16px;
 }
 
 .tablist td
 {
-	padding: 3px;
+	padding: 6px;
 }
 
-.tablist thead tr
+.tablist thead
 {
-	background-color: #626262;
-	color: white;
+	background: url('./images/table_thead.gif');
+	border-top: 1px solid #8a8a8a;
+	border-bottom: 1px solid #8a8a8a;
+	font-size: 14px;
+}
+
+.tablist thead td
+{
+	padding: 3px 6px 3px 6px;
 }
 
 .tablist tbody tr .even
@@ -35,5 +42,5 @@
 
 .tablist .even
 {
-	background-color: #D9D9D9;
+	background-color: #e2e5e9;
 }

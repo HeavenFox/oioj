@@ -2,7 +2,7 @@
 <h2>Judge System</h2>
 <ul>
 <li>Manage Problems</li>
-<li>Manage Judge Servers</li>
+<li><a href='index.php?mod=admin_judgeserver'>Manage Judge Servers</a></li>
 </ul>
 </div>
 
@@ -10,6 +10,7 @@
 <h2>User Management</h2>
 <ul>
 <li>Manage Users</li>
+<li><a href='index.php?mod=admin_user&act=invitation'>Invitation</a></li>
 </ul>
 </div>
 

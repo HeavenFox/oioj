@@ -11,6 +11,8 @@ class Template extends Smarty
 		$this->cache_dir = ROOT. 'templates' . DIRECTORY_SEPARATOR.'cache'.DIRECTORY_SEPARATOR;
 		$this->config_dir = ROOT . 'templates' . DIRECTORY_SEPARATOR.'configs'.DIRECTORY_SEPARATOR;
 		//$this->caching = Smarty::CACHING_LIFETIME_CURRENT;
+		
+		$this->addPluginsDir(SMARTY_DIR.DIRECTORY_SEPARATOR.'oiojplugins');
 	}
 }
 

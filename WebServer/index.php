@@ -19,7 +19,12 @@ $availableModules = array(
 	'contest' => 'ContestModule',
 	'contestproblem' => 'ContestProblemModule',
 	'contestcp' => 'ContestCPModule',
-	'admin_contest' => 'AdminManageContestModule'
+	'admin_contest' => 'AdminManageContestModule',
+		
+	'admin_judgeserver' => 'AdminManageJudgeServerModule',
+	'admin_user' => 'AdminManageUserModule',
+		
+		'admin_home' => 'AdminHomeModule'
 );
 
 // These modules should be autoloaded

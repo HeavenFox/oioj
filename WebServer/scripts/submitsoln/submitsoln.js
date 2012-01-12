@@ -20,9 +20,30 @@
 				{
 					params.handler(data);
 				}
-			},
+			}
 			
 		});
+		
+		if (params.hoverClass)
+		{
+			$(document).bind('dragover', function (e) {
+		    var dropZone = params.drop,timeout = window.dropZoneTimeout;
+		    if (!timeout) {
+		        dropZone.addClass(params.inClass);
+		    } else {
+		        clearTimeout(timeout);
+		    }
+		    if (e.target === dropZone[0]) {
+		        dropZone.addClass(params.hoverClass);
+		    } else {
+		        dropZone.removeClass(params.hoverClass);
+		    }
+		    window.dropZoneTimeout = setTimeout(function () {
+		        window.dropZoneTimeout = null;
+		        dropZone.removeClass(params.inClass +" " + params.hoverClass);
+		    }, 100);
+		});
+		}
 		return this;
 	}
 })(jQuery);

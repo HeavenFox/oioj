@@ -5,11 +5,7 @@
 	font-family: 'Segoe UI Light','Segoe UI','Lucida Grande',Verdana,Arial,Helvetica,sans-serif;
 }
 
-#body
-{
-	padding: 0 !important;
-	width: 960px !important;
-}
+
 
 #blocknav
 {
@@ -35,9 +31,32 @@
 
 #bn_links
 {
-	position: absolute;
-	top: 0;
-	left: 720px;
+	width: 100%;
+	text-align: center;
+	height: 14px;
+	margin: 3px;
+}
+
+#bn_links a
+{
+	height: 14px;
+	line-height: 14px;
+	vertical-align: center;
+}
+
+#bn_links a img
+{
+	width: 10px;
+	height: 10px;
+	margin: 2px;
+}
+
+
+#bn_links a img.current
+{
+	width: 14px;
+	height: 14px;
+	margin: 0;
 }
 
 #blocknav li
@@ -70,36 +89,17 @@ font-weight: normal;
 	vertical-align: middle;
 }
 
-#learn
-{
-	background-color: #9f9aff;
-}
-
-#solve
-{
-background-color: #82ff60;
-margin-left: 30px;
-margin-right: 30px;
-}
-
-#compete
-{
-	background-color: blue;
-}
-
-
-
 #login_panel
 {
-	background-color: #ebeaff;
 	padding: 3px;
-	width: 350px;
+	width: 340px;
 	float: left;
 }
 
 #register_panel
 {
-	width: 600px;
+	width: 330px;
+	padding: 3px;
 	float: right;
 }
 
@@ -108,14 +108,49 @@ margin-right: 30px;
 	float: left;
 }
 
-#quicksubmit
+.homepage_box
 {
 	clear: both;
+	margin: 5px;
+	border: 1px solid #a3a3a3;
+	border-radius: 3px;
+	box-shadow: 0 0 2px rgba(130,130,130,0.8);
+}
+
+.homepage_inner_box
+{
+	margin: 2px;
+	background-color: #f6f6f6;
+}
+
+#quicksubmit
+{
+	height: 125px;
+}
+
+#drop_instructions
+{
+	float: left;
+	width: 600px;
 }
 
 #dropzone
 {
-background-color: red;
+	background-image: url('images/dropbox_index.jpg');
 	width: 300px;
-	height: 100px;
+	height: 120px;
+	border: 1px solid #b6b6b6;
+	float: right;
+	margin: 2px;
 }
+
+#dropzone.in
+{
+	background-position: 0 -120px;
+}
+
+#dropzone.hover
+{
+	background-position: 0 -240px;
+}
+
