@@ -1,0 +1,17 @@
+.edittable
+{
+	margin: 3px;
+	width: 100%;
+}
+
+#testcases-table tbody input
+{
+	border: 0;
+	border-bottom: 1px solid black;
+}
+
+input[name="title"]
+{
+	font-size: 14px;
+	width: 90%;
+}

@@ -1,7 +1,6 @@
 <div class="sidebar-box">
 <h2>Judge System</h2>
 <ul>
-<li>Manage Problems</li>
 <li><a href='index.php?mod=admin_judgeserver'>Manage Judge Servers</a></li>
 </ul>
 </div>
@@ -15,10 +14,9 @@
 </div>
 
 <div class="sidebar-box">
-<h2>User Management</h2>
+<h2>Problem Management</h2>
 <ul>
-<li>Manage Users</li>
-<li><a href='index.php?mod=admin_user&act=invitation'>Invitation</a></li>
+<li><a href='index.php?mod=admin_problem&act=add'>Add Problem</a></li>
 </ul>
 </div>
 

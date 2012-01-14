@@ -6,6 +6,9 @@
 <script type='text/javascript'>
 $(function(){
 	$('#prefs').accordion();
+	$.datepicker.setDefaults({
+		"dateFormat":"yy-mm-dd"
+	});
 	$('input[type="date"]').datepicker();
 });
 </script>
@@ -24,7 +27,6 @@ $(function(){
 <tr><td>Duration</td><td><input type="number" name="duration-h" min="0" />h <input type="number" name="duration-m" min="0" max="59" step="1" />min <input type="number" name="duration-s" min="0" max="59" step="1" />sec<br /><small>This does not have to match end minus start. User can begin anytime during that window and have this much time to finish.</small></td></tr>
 <tr><td>Support Early Hand-in</td><td><input type="checkbox" name="early_handin" /><small>User will be able to stop working anytime, after which submission is disabled. Useful for ranking by time spent.</td></tr>
 <tr><td>Automatically start at scheduled time</td><td><input type="checkbox" name="auto_start" /></td></tr>
-
 </table>
 </div>
 <h3><a href='#'>Registration & Problems</a></h3>

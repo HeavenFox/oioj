@@ -21,4 +21,5 @@ function addCriterion()
 		"<option value='d'"+(document.getElementById('add-criterion-order').selectedIndex == 1 ? ' selected' : '')+">descending</option>"+
 		"</select></li>"
 	);
+	$('#add-criterion').val("");
 }

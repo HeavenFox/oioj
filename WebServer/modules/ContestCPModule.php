@@ -15,23 +15,31 @@ class ContestCPModule
 	public function startContest()
 	{
 		$this->contest->startContest();
+		// TODO remove cronjob
 	}
 	
 	public function endContest()
 	{
 		$this->contest->endContest();
+		// TODO remove cronjob
 	}
 	
 	public function judge()
 	{
 		$this->contest->judge();
+		// TODO remove cronjob
 	}
 	
 	public function run()
 	{
-		$this->cid = IO::GET('cid',0,'intval');
+		$this->cid = IO::GET('id',0,'intval');
 		
 		$this->contest = Contest::first(array('title','status'),NULL,$this->cid);
+		
+		if (!$this->contest)
+		{
+			throw new Exception('Invalid Contest');
+		}
 		
 		switch (IO::GET('act'))
 		{

@@ -47,7 +47,7 @@ class ContestProblemModule extends ProblemModule
 		{
 			$this->contest->userStart(User::GetCurrent(),$started = time());
 		}
-		OIOJ::$template->assign('user_deadline',min($started + $this->contest->duration,$this->contest->endTime));
+		OIOJ::$template->assign('user_deadline',$this->contest->userDeadline(User::GetCurrent()));
 		OIOJ::$template->assign('c',$this->contest);
 	}
 	
@@ -63,7 +63,7 @@ class ContestProblemModule extends ProblemModule
 		$contID = IO::POST('cid',0,'intval');
 		
 		// Check enrollment status
-		$contest = Contest::first(array('id','endTime','duration'),array(),$contID);
+		$contest = Contest::first(array('id','endTime','duration','status'),array(),$contID);
 		$cu = User::GetCurrent();
 		if (!$contest->checkEnrollment($cu))
 		{
@@ -76,7 +76,7 @@ class ContestProblemModule extends ProblemModule
 			die(json_encode(array('error' => 'You did not register or start working')));
 		}
 		
-		if (time() > $contest->endTime || time() > ($contest->duration + $started))
+		if ($contest->status >= Contest::STATUS_FINISHED || time() > $contest->userDeadline(User::GetCurrent));
 		{
 			die(json_encode(array('error' => 'Deadline has passed')));
 		}

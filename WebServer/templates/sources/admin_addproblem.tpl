@@ -1,5 +1,7 @@
 {extends file="two-column.tpl"}
 {block name="html_head" append}
+<link rel='stylesheet' href='templates/admin_addproblem.css' />
+
 <script type="text/javascript" src="scripts/admin_addproblem.js"></script>
 <script type="text/javascript" src="lib/ckeditor/ckeditor.js"></script>
 <script type="text/javascript" src="lib/ckeditor/adapters/jquery.js"></script>
@@ -19,8 +21,11 @@ $(document).ready(function(){
 </script>
 {/block}
 {block name="column-left"}
+<h3>Add Problem</h3>
 <form method="post" action="index.php?mod=admin_problem&act=add&submit=1" enctype="multipart/form-data" target="console" id="add_form">
-<table>
+<table class='edittable'>
+<tr><td><label for="listing">Public</label></td><td>
+  <input type="checkbox" name="listing" id="listing" checked="checked" /></td></tr>
 <tr><td><label for="title">Title</label></td><td>
   <input type="text" name="title" id="title" /></td></tr>
 <tr><td><label for="input">Body</label></td><td>
@@ -48,7 +53,7 @@ $(document).ready(function(){
     <div id="special_judge" class="hidden"><label for="special_judge">bin name</label>
     <input type="text" name="special_judge" id="special_judge" /></div></td></tr>
 <tr><td>Test Cases</td><td>
-<table>
+<table id='testcases-table'>
 <thead><tr><td>Input</td><td>Answer</td><td>Time (s)</td><td>Mem (MB)</td><td>Score</td><td></td></tr></thead>
 <tbody id="testcases">
 <tr></tr>
@@ -59,7 +64,7 @@ $(document).ready(function(){
 </table>
 <a id='batch_box_link' href='#batch_box'>Batch Add</a>
 </td></tr>
-<tr><td>Data Archive</td><td><input type="file" name="archive" /></td></tr>
+<tr><td>Data Archive</td><td><input type="file" name="archive" /><br /><small>Must be a ZIP archive that contains all test cases</small></td></tr>
 <tr><td colspan="2"><input type='submit' /></td></tr>
 </table>
 </form>

@@ -5,7 +5,7 @@ import('JudgeRecord');
  * @jobname Records
  * @jobdesc Dispatch Records in Waitlist
  */
-class Cronjob_Contest extends Cronjob
+class Cronjob_Records extends Cronjob
 {
 	public function dispatch()
 	{

@@ -1,4 +1,5 @@
 <?php
+import('ActiveRecord');
 import('Settings');
 class Cronjob extends ActiveRecord
 {

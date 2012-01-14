@@ -49,6 +49,21 @@ class AdminManageContestModule
 	
 	public function saveContest()
 	{
+		// Ranking Criteria
+		$criteria = IO::POST('criteria');
+		$criteria_order = IO::POST('criteria-order');
+		
+		if (!count($criteria))
+		{
+			throw new Exception('You must specify at least one ranking criterion');
+		}
+		
+		foreach ($criteria as $k=>$v)
+		{
+			$criteria[$k] = $criteria_order[$k].$v;
+		}
+		
+		
 		$c = new Contest();
 		
 		$c->title = IO::POST('title');
@@ -83,19 +98,7 @@ class AdminManageContestModule
 		$c->addOption('display_preliminary_ranking',IO::POST('display_preliminary_ranking',0,$cbCallback));
 		$c->addOption('display_ranking',IO::POST('display_ranking',0,$cbCallback));
 		
-		// Ranking Criteria
-		$criteria = IO::POST('criteria');
-		$criteria_order = IO::POST('criteria-order');
 		
-		if (!count($criteria))
-		{
-			throw new Exception('You must specify at least one ranking criterion');
-		}
-		
-		foreach ($criteria as $k=>$v)
-		{
-			$criteria[$k] = $criteria_order[$k].$v;
-		}
 		
 		$c->addOption('ranking_criteria',implode(';',$criteria));
 		$c->addOption('ranking_display_params',implode(';',IO::POST('display_params')));

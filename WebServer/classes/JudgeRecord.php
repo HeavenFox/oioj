@@ -36,22 +36,22 @@ class JudgeRecord extends ActiveRecord
 	
 	public static function popWaitlist()
 	{
-		$this->setTokens();
 		$db = Database::Get();
 		$db->beginTransaction();
-		$rec = JudgeRecord::first(array('id','lang','problem','code'),NULL,'WHERE `status` = '.self::STATUS_WAITING.' ORDER BY `timestamp` ASC');
+		$rec = JudgeRecord::first(array('id','lang','code'),array('problem' => array('id')),'WHERE `status` = '.self::STATUS_WAITING.' ORDER BY `timestamp` ASC');
+		$rec->setTokens();
 		$rec->dispatch();
 		$db->commit();
 	}
 	
 	public static function PopAllWaitlist()
 	{
-		$this->setTokens();
 		$db = Database::Get();
 		$db->beginTransaction();
-		$recs = JudgeRecord::find(array('id','lang','problem','code'),NULL,'WHERE `status` = '.self::STATUS_WAITING.' ORDER BY `timestamp` ASC');
+		$recs = JudgeRecord::find(array('id','lang','code'),array('problem' => array('id')),'WHERE `status` = '.self::STATUS_WAITING.' ORDER BY `timestamp` ASC');
 		foreach ($recs as $rec)
 		{
+			$rec->setTokens();
 			if (!$rec->dispatch())
 			{
 				// Likely maximum capacity

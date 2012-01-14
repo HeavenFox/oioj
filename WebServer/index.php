@@ -24,7 +24,7 @@ $availableModules = array(
 	'admin_judgeserver' => 'AdminManageJudgeServerModule',
 	'admin_user' => 'AdminManageUserModule',
 		
-		'admin_home' => 'AdminHomeModule'
+	'admin_home' => 'AdminHomeModule'
 );
 
 // These modules should be autoloaded

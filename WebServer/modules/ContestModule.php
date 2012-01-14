@@ -83,7 +83,7 @@ class ContestModule
 		
 		OIOJ::$template->assign('c',$contest);
 		
-		if ($contest->displayRanking())
+		if ($c->displayRanking())
 		{
 			OIOJ::$template->assign('ranking',array_slice($contest->generateRanking(),0,10));
 			OIOJ::$template->assign('ranking_display_params',array_flip(explode(';',$contest->getOption('ranking_display_params'))));

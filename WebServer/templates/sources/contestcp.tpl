@@ -5,7 +5,7 @@
 
 <h3>Status: Waiting.</h3>
 
-<a href='index.php?mod=contestcp&amp;cid={$contest->id}&amp;act=start'>Begin Now</a>
+<a href='index.php?mod=contestcp&amp;id={$contest->id}&amp;act=start'>Begin Now</a>
 Begin Registration Now
 Stop Registration Now
 {/if}
@@ -13,26 +13,26 @@ Stop Registration Now
 {if $status_code == Contest::STATUS_INPROGRESS}
 <h3>Status: In Progress.</h3>
 
-<a href='index.php?mod=contestcp&amp;cid={$contest->id}&amp;act=end'>End Contest Now</a>
+<a href='index.php?mod=contestcp&amp;id={$contest->id}&amp;act=end'>End Contest Now</a>
 {/if}
 
 {if $status_code == Contest::STATUS_FINISHED}
 Status: Finished
 
-<a href='index.php?mod=contestcp&amp;cid={$contest->id}&amp;act=judge'>Judge Now</a>
+<a href='index.php?mod=contestcp&amp;id={$contest->id}&amp;act=judge'>Judge Now</a>
 {/if}
 
 {if $status_code == Contest::STATUS_JUDGING}
 Status: Judging
 
-<a href='index.php?mod=contestcp&amp;cid={$contest->id}&amp;act=judge'>Judge Now</a>
+<a href='index.php?mod=contestcp&amp;id={$contest->id}&amp;act=judge'>Judge Now</a>
 {/if}
 
 {if $status_code == Contest::STATUS_JUDGED}
 Status: Judged.
 {/if}
 
-<a href='index.php?mod=admin_contest&act=edit&cid={$contest->id}'>Edit Contest</a>
+<a href='index.php?mod=admin_contest&amp;act=edit&amp;id={$contest->id}'>Edit Contest</a>
 
 
 

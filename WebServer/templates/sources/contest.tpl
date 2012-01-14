@@ -2,7 +2,6 @@
 {block name="html_head" append}
 <link rel='stylesheet' href='templates/list.css' />
 <link rel='stylesheet' href='templates/contest.css' />
-
 {/block}
 {block name="column-left"}
 <h2>{$c->title}</h2>
@@ -21,7 +20,7 @@
 <tbody>
 	{foreach $c->problems as $problem}
 	<tr>
-		<td>{if $c->status != 1}<a href="index.php?mod=contestproblem&cid={$c->id}&id={$problem->id}">{/if}{$problem->title}{if $c->status != 1}</a>{/if}</td><td>{$problem->input}</td><td>{$problem->output}</td>
+		<td>{if $c->status > Contest::STATUS_WAITING}<a href="index.php?mod=contestproblem&cid={$c->id}&id={$problem->id}">{/if}{$problem->title}{if $c->status > Contest::STATUS_WAITING}</a>{/if}</td><td>{$problem->input}</td><td>{$problem->output}</td>
 	</tr>
 	{/foreach}
 </tbody>

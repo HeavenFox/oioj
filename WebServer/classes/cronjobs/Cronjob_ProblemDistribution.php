@@ -10,7 +10,6 @@ class Cronjob_ProblemDistribution extends Cronjob
 {
 	public function dispatch()
 	{
-		fprintf(STDOUT,'dispatching..');
 		$db = Database::Get();
 		$problems = array();
 		$problems_server = array();
@@ -54,7 +53,7 @@ class Cronjob_ProblemDistribution extends Cronjob
 					break;
 				}
 			}
-			if ($found)
+			if (!$found)
 			{
 				$failureExists = true;
 			}
@@ -83,6 +82,7 @@ class Cronjob_ProblemDistribution extends Cronjob
 		{
 			return array('next' => time() + 5*60);
 		}
+		return NULL;
 	}
 }
 ?>

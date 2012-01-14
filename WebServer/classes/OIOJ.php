@@ -29,7 +29,6 @@ class OIOJ
 	
 	public static function GlobalMessage($message)
 	{
-		OIOJ::$template->assign('display_global_message',true);
 		OIOJ::$template->assign('global_message',$message);
 		
 	}

@@ -1,5 +1,6 @@
 <?php
 import('Problem');
+import('Cronjob');
 class AdminManageProblemModule
 {
 	public function run()
@@ -41,6 +42,7 @@ class AdminManageProblemModule
 			$prob->title = IO::POST('title');
 			$prob->body = IO::POST('body');
 			$prob->type = IO::POST('type');
+			$prob->listing = IO::POST('listing',0,function($data){return 1;});
 			
 			$prob->input = IO::POST('input_file');
 			$prob->output = IO::POST('output_file');
@@ -122,13 +124,15 @@ class AdminManageProblemModule
 				
 					$insQuery .= "({$prob->id},{$server->id},:archive)";
 				}
-				echo $insQuery;
+				
 				$stmt = $db->prepare($insQuery);
 				$stmt->bindParam('archive',$newloc);
 				$stmt->execute();
 			}
 			
-			echo 'done.';
+			Cronjob::AddJob('ProblemDistribution','dispatch',array(), 0, 3);
+			
+			echo 'done. Problem ID: '.$prob->id;
 			echo '<script type="text/javascript">parent.resetForm();</script>';
 		}catch(Exception $e)
 		{
