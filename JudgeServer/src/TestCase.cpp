@@ -49,7 +49,8 @@ void TestCase::run()
 	// Prepare pipe for IPC
 	int pd[2];
 	pipe(pd);
-        pid_t cld = fork();
+    
+	pid_t cld = fork();
 	if (cld == 0)
 	{
 		// in case of screen input / output, redirect stdio
@@ -467,7 +468,11 @@ void TestCase::addSchema(sqlite3 *db)
 	sqlite3_bind_double(stmt,5,timeLimit);
 	sqlite3_bind_double(stmt,6,memoryLimit);
 	sqlite3_bind_int(stmt,7,score);
-	sqlite3_step(stmt);
+	int code = sqlite3_step(stmt);
+	if (code != SQLITE_OK && code != SQLITE_DONE)
+	{
+		printf("Add Case Error: %d\n",code);
+	}
 	sqlite3_finalize(stmt);
 
 

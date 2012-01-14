@@ -19,6 +19,8 @@
 #include "fileop.h"
 #include "sqlite3.h"
 
+#include <cstdio>
+
 using namespace std;
 
 #define TESTRESULT_INDETERMINE 0

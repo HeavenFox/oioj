@@ -11,6 +11,8 @@
 #include "sqlite3.h"
 #include <string>
 
+#include <cstdio>
+
 using namespace std;
 
 class Problem

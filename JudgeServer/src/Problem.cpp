@@ -18,6 +18,10 @@ void Problem::addSchema(sqlite3* db)
 	sqlite3_bind_text(stmt,3,compare.c_str(),compare.size(),NULL);
 	sqlite3_bind_text(stmt,4,input.c_str(),input.size(),NULL);
 	sqlite3_bind_text(stmt,5,output.c_str(),output.size(),NULL);
-	sqlite3_step(stmt);
+	int code = sqlite3_step(stmt);
+	if (code != SQLITE_OK && code != SQLITE_DONE)
+	{
+		printf("Add Problem Error: %d\n",code);
+	}
 	sqlite3_finalize(stmt);
 }

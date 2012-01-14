@@ -30,6 +30,10 @@ using namespace std;
 #define REQUEST_EVAL 1
 #define REQUEST_ADD 2
 
+#define SERVERCODE_SUCCESS 0
+#define SERVERCODE_FULL 1
+#define SERVERCODE_INTERNAL 2
+
 RunScheduler *scheduler;
 
 int msgQueue;
@@ -153,10 +157,13 @@ int main (int argc, const char * argv[])
             if (action == REQUEST_EVAL)
             {
             	JudgeRecord *currentRecord = new JudgeRecord;
+				
+				
 
             	if (!currentRecord->prepareProblem(str))
             	{
-            		delete currentRecord;
+                    cout<<"failed to parse"<<endl<<str<<endl;
+					delete currentRecord;
             	} else
             	{
             		int code = scheduler->arrangeTask(currentRecord);
