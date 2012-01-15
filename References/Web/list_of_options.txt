@@ -1,0 +1,6 @@
+tmp_dir
+local_judgeserver_data_dir
+token
+backup_token
+recaptcha_public
+recaptcha_private

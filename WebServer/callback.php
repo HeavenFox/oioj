@@ -22,4 +22,6 @@ try {
 	die('Unauthorized access');
 }
 
+JudgeRecord::PopWaitlist();
+
 ?>

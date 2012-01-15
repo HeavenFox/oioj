@@ -25,6 +25,7 @@ class Contest extends ActiveRecord
 		'regBegin' => array('class' => 'int','column' => 'reg_begin'),
 		'regDeadline' => array('class' => 'int','column' => 'reg_deadline'),
 		'duration' => array('class' => 'int'),
+		'publicity' => array('class' => 'int'),
 		'user' => array('class' => 'User','comp' => 'one','column' => 'uid'),
 		'problems' => array('class' => 'Problem', 'comp' => 'many', 'junction' => 'oj_contest_problems', 'column' => array('cid','pid')),
 		'participants' => array('class' => 'User', 'comp' => 'many', 'junction' => 'oj_contest_register', 'column' => array('cid','uid'))
@@ -34,19 +35,29 @@ class Contest extends ActiveRecord
 	
 	public function startContest()
 	{
+		/*
 		$this->getComposite(array('problems' => array('id')));
 		foreach ($this->problems as $p)
 		{
 			$p->listing = 1;
 			$p->submit();
 		}
+		*/
 		$this->status = self::STATUS_INPROGRESS;
+		$this->beginTime = time();
 		$this->submit();
 	}
 	
 	public function endContest()
 	{
 		$this->status = self::STATUS_FINISHED;
+		$this->endTime = time();
+		$this->submit();
+	}
+	
+	public function finishJudge()
+	{
+		$this->status = self::STATUS_JUDGED;
 		$this->submit();
 	}
 	
@@ -69,10 +80,22 @@ class Contest extends ActiveRecord
 		return null;
 	}
 	
+	public function addOption($option, $value)
+	{
+		$db = Database::Get();
+		$stmt = $db->prepare('INSERT INTO `oj_contest_options` (`cid`,`key`,`value`) VALUES (?,?,?)');
+		$stmt->execute(array($this->id,$option,$value));
+	}
+	
+	public function displayRanking()
+	{
+		return $this->status >= self::STATUS_INPROGRESS && intval($this->getOption('display_ranking')) && ($this->status == self::STATUS_JUDGED || intval($this->getOption('display_preliminary_ranking')) );
+	}
+	
 	public function generateRanking()
 	{
 		$suffix = 'FROM `oj_contest_submissions` LEFT JOIN `oj_records` ON (`oj_records`.`id`=`rid`) WHERE `rid` IS NOT NULL AND `oj_contest_submissions`.`cid` = `oj_contest_register`.`cid` AND `oj_contest_submissions`.`uid`=`oj_contest_register`.`uid`';
-		$suffix_right = 'AND `status` = 2';
+		$suffix_right = 'AND `status` = '.JudgeRecord::STATUS_ACCEPTED;
 		$param_sql = array
 		(
 			'num_right' => "(SELECT count(*) {$suffix} {$suffix_right}) AS `num_right`,",
@@ -97,6 +120,7 @@ class Contest extends ActiveRecord
 				$usedParams[] = $k;
 			}
 		}
+		
 		$sql .= '`oj_contest_register`.`uid` AS `id`,`oj_users`.`username` AS `username` FROM `oj_contest_register` LEFT JOIN `oj_users` ON (`oj_users`.`id`=`oj_contest_register`.`uid`) WHERE `cid` = '.intval($this->id);
 		
 		$users = array();
@@ -105,7 +129,7 @@ class Contest extends ActiveRecord
 		$stmt = $db->query($sql);
 		foreach ($stmt as $row)
 		{
-			$n = new ContestParticipant($row['id']);
+			$n = new ContestParticipant(intval($row['id']));
 			$n->username = $row['username'];
 			
 			foreach ($usedParams as $k)
@@ -117,26 +141,37 @@ class Contest extends ActiveRecord
 		
 		$criteria = explode(';',$criteria);
 		
-		usort($users,function($a,$b) use ($criteria,$usedParams){
-			$objs = array($a,$b);
-			foreach ($criteria as $c)
+		$asc = array();
+		
+		foreach ($criteria as $ci => $c)
+		{
+			if ($c[0] == 'd')
 			{
-				$replacedc = array();
-				$asc = 1;
-				if ($c[0] == 'd')
+				$asc[] = -1;
+			}
+			else
+			{
+				$asc[] = 1;
+			}
+			$c = substr($c,1);
+			
+			foreach ($users as $u)
+			{
+				$u->rankingCriteria[$ci] = $c;
+				foreach ($usedParams as $k)
 				{
-					$asc = -1;
+					$u->rankingCriteria[$ci] = str_replace($k,intval($u->rankingParams[$k]),$u->rankingCriteria[$ci]);
 				}
-				$c = substr($asc,1);
-				for ($i=0;$i<2;$i++)
-				{
-					foreach ($usedParams as $k)
-					{
-						$replacedc[$i] = str_replace($k,intval($objs[$i]->rankingParams[$k]),$c);
-					}
-					$replacedc[$i] = eval('return '.$replacedc[$i].';');
-				}
-				if (($diff = $asc*($replacedc[0]-$replacedc[1])) != 0)
+				$u->rankingCriteria[$ci] = eval('return ('.$u->rankingCriteria[$ci].');');
+			}
+			
+		}
+		
+		usort($users,function($a,$b) use ($asc){
+			foreach ($asc as $k => $v)
+			{
+				$diff = $v*($a->rankingCriteria[$k]-$b->rankingCriteria[$k]);
+				if ($diff != 0)
 				{
 					return $diff;
 				}
@@ -150,32 +185,22 @@ class Contest extends ActiveRecord
 		}
 		
 		return $users;
-		
-		/*
-		if (($this->getOption('after_submit') == 'judge' && $this->getOption('show_realtime_rank')) || $this->status == self::STATUS_JUDGED)
-		{
-			// Score, Num Right, Total Time, Num Wrong
-			'SELECT FROM `oj_contest_register` ';
-		}
-		*/
 	}
 	
-	public function judge($callback)
+	public function judge()
 	{
 		if ($this->getOption('after_submit') == 'save')
 		{
 			$db = Database::Get();
 			
-			foreach ($db->query('SELECT `pid`,`uid`,`code`,`lang` FROM `oj_contest_submissions` WHERE `cid` = '.$this->id.' GROUP BY `uid`,`pid` HAVING `timestamp` = MAX(`timestamp`)') as $row)
-			{
-				$rec = new JudgeRecord();
-				$rec->problem = new Problem($row['pid']);
-				$rec->user = new User($row['uid']);
-				$rec->code = $row['code'];
-				$rec->lang = $row['lang'];
-				$rec->dispatch();
-			}
+			$db->exec("CALL contest_judge({$this->id})");
+			
+			JudgeRecord::PopAllWaitlist();
+			
+			$this->status = self::STATUS_JUDGING;
+			$this->submit();
 		}
+		return false;
 	}
 	
 	/**
@@ -235,12 +260,43 @@ class Contest extends ActiveRecord
 		return $beginTime;
 	}
 	
+	/**
+	 * Obtain the user-specific deadline, which is start time + duration or end time, whichever is earlier
+	 * To faciliate changing duration or deadline during contest, this result is not cached
+	 *
+	 * @param User $user User
+	 * @return mixed deadline, or false when user did not register or start.
+	 */
+	public function userDeadline($user)
+	{
+		$start = $this->checkStarted($user);
+		
+		if ($start === false)
+		{
+			return false;
+		}
+		
+		if (!isset($this->duration) || !isset($this->endTime))
+		{
+			$this->fetch(array('duration','endTime'),NULL);
+		}
+		return min($start + $this->duration,$this->endTime);
+	}
+	
+	/**
+	 * Set user to started working
+	 *
+	 * @param User $user User Object
+	 * @param int $time Time
+	 */
 	public function userStart($user,$time)
 	{
 		if ($user->id > 0)
 		{
 			$db = Database::Get();
 			$db->query('UPDATE `oj_contest_register` SET `started` = '.$time.' WHERE `cid` = '.$this->id.' AND `uid` = '.$user->id);
+			
+			IO::SetSession('contest-began-'.$this->id,$time);
 		}
 	}
 	
@@ -254,15 +310,14 @@ class Contest extends ActiveRecord
 			$rec->code = $code;
 			$rec->lang = $lang;
 			$rec->user = $user;
-			$rec->timestamp = time();
-			$rec->submit();
+			$rec->add();
 			
 			$rec->dispatch($servers = $this->getOption('judge_servers') ? array_map(explode(',',$servers),function($c){return new JudgeServer(intval($c));}) : null);
 			
 		case  'save':
 			$db = Database::Get();
 			$stmt = $db->prepare("INSERT INTO `oj_contest_submissions` (cid,uid,pid,code,lang,timestamp,rid) VALUES (?,?,?,?,?,?,".(isset($rec) ? $rec->id : 'NULL').")");
-			$stmt->execute(array($this->id,$problem->id,$user->id,$code,$lang,time()));
+			$stmt->execute(array($this->id,$user->id,$problem->id,$code,$lang,time()));
 			break;
 		}
 	}

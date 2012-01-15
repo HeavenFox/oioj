@@ -1,4 +1,6 @@
 <?php
+defined('IN_OIOJ') || die('Forbidden');
+
 import('JudgeRecord');
 
 class RecordsModule

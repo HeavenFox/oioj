@@ -26,5 +26,25 @@ class OIOJ
 		self::$template->assign('redirect',$redirect);
 		self::$template->display('redirect.tpl');
 	}
+	
+	public static function GlobalMessage($message)
+	{
+		OIOJ::$template->assign('global_message',$message);
+		
+	}
 }
+
+class PermissionException extends Exception
+{
+	public function __construct()
+	{
+		parent::__construct('Access Denied');
+	}
+}
+
+class InputException extends Exception
+{
+	
+}
+
 ?>

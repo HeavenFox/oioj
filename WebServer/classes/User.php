@@ -96,6 +96,20 @@ GROUP BY  `key`';
 		return isset($this->acl[$key]) && $this->acl[$key] > 0;
 	}
 	
+	public function unableTo($key)
+	{
+		if ($this->acl === null)
+		{
+			$this->acl = $this->getACL();
+			$this->createSession();
+		}
+		if (isset($this->acl[self::ACL_OMNIPOTENT]) && $this->acl[self::ACL_OMNIPOTENT] > 0)
+		{
+			return false;
+		}
+		return isset($this->acl[$key]) && $this->acl[$key] < 0;
+	}
+	
 	public function __sleep()
 	{
 		$r = parent::__sleep();

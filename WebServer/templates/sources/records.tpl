@@ -6,7 +6,7 @@
 {/block}
 {block name="body"}
 <table id='records' class='tablist'>
-<thead><tr><td width="20px">ID</td><td>Problem</td><td width="50px">Server</td><td width="100px">Status</td><td width="40px">Score</td><td width="20px">Language</td><td width="100px">Author</td><td width="180px">Time</td></tr></thead>
+<thead><tr><td width="25px">ID</td><td>Problem</td><td width="80px">Server</td><td width="100px">Status</td><td width="40px">Score</td><td width="20px">Language</td><td width="100px">Author</td><td width="170px">Time</td></tr></thead>
 <tbody>
 {foreach $records as $record}
 <tr class='{cycle values="odd,even"}'>

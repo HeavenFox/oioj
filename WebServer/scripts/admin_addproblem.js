@@ -21,6 +21,7 @@ function addCase(input,answer,tl,ml,score)
 function manualAddCase()
 {
 	addCase($("#man-input").val(),$("#man-answer").val(),$("#man-tl").val(),$("#man-ml").val(),$("#man-score").val());
+	$("#man-input").val(""),$("#man-answer").val(""),$("#man-tl").val(""),$("#man-ml").val(""),$("#man-score").val("");
 }
 
 function generateFileList()
@@ -90,7 +91,7 @@ function toggleScreen(obj,box)
 function resetForm()
 {
 	$('#testcases').empty();
-	$('#add_form').reset();
+	$('#add_form')[0].reset();
 }
 
 $(document).ready(function() {
