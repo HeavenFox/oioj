@@ -44,12 +44,20 @@ class Contest extends ActiveRecord
 		}
 		*/
 		$this->status = self::STATUS_INPROGRESS;
+		$this->beginTime = time();
 		$this->submit();
 	}
 	
 	public function endContest()
 	{
 		$this->status = self::STATUS_FINISHED;
+		$this->endTime = time();
+		$this->submit();
+	}
+	
+	public function finishJudge()
+	{
+		$this->status = self::STATUS_JUDGED;
 		$this->submit();
 	}
 	
@@ -112,6 +120,7 @@ class Contest extends ActiveRecord
 				$usedParams[] = $k;
 			}
 		}
+		
 		$sql .= '`oj_contest_register`.`uid` AS `id`,`oj_users`.`username` AS `username` FROM `oj_contest_register` LEFT JOIN `oj_users` ON (`oj_users`.`id`=`oj_contest_register`.`uid`) WHERE `cid` = '.intval($this->id);
 		
 		$users = array();
@@ -120,7 +129,7 @@ class Contest extends ActiveRecord
 		$stmt = $db->query($sql);
 		foreach ($stmt as $row)
 		{
-			$n = new ContestParticipant($row['id']);
+			$n = new ContestParticipant(intval($row['id']));
 			$n->username = $row['username'];
 			
 			foreach ($usedParams as $k)
@@ -148,10 +157,10 @@ class Contest extends ActiveRecord
 			
 			foreach ($users as $u)
 			{
-				
+				$u->rankingCriteria[$ci] = $c;
 				foreach ($usedParams as $k)
 				{
-					$u->rankingCriteria[$ci] = str_replace($k,intval($u->rankingParams[$k]),$c);
+					$u->rankingCriteria[$ci] = str_replace($k,intval($u->rankingParams[$k]),$u->rankingCriteria[$ci]);
 				}
 				$u->rankingCriteria[$ci] = eval('return ('.$u->rankingCriteria[$ci].');');
 			}
@@ -260,7 +269,7 @@ class Contest extends ActiveRecord
 	 */
 	public function userDeadline($user)
 	{
-		$start = $this->userStart($user);
+		$start = $this->checkStarted($user);
 		
 		if ($start === false)
 		{

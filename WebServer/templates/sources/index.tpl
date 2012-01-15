@@ -31,7 +31,7 @@ $(function(){
 </div>
 {if $user->id == 0}
 <div class="homepage_box">
-<div class="homepage_inner_box" id="quicksubmit">
+<div class="homepage_inner_box" id="user_panel">
    <div id="login_panel"><h2>Log in</h2>
 
 <div id="login_traditional">

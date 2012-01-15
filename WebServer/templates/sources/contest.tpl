@@ -35,10 +35,17 @@
 <div class="sidebar-box">
 <h2>At a Glance</h2>
 <ul>
-<li>Reg Begin: {if $c->regBegin > 0}{$c->regBegin|date_format}{else}N/A{/if}</li>
-<li>Reg Deadline: {if $c->regDeadline > 0}{$c->regDeadline|date_format}{else}N/A{/if}</li>
-<li>Contest Begin: {if $c->beginTime > 0}{$c->beginTime|date_format}{else}N/A{/if}</li>
-<li>Contest End: {if $c->endTime > 0}{$c->endTime|date_format}{else}N/A{/if}</li>
+<li>Status:
+{if $c->status == Contest::STATUS_WAITING}Waiting{/if}
+{if $c->status == Contest::STATUS_INPROGRESS}In Progress{/if}
+{if $c->status == Contest::STATUS_FINISHED}Finished{/if}
+{if $c->status == Contest::STATUS_JUDGING}Judging{/if}
+{if $c->status == Contest::STATUS_JUDGED}Judged{/if}
+</li>
+<li>Registration Begin: {if $c->regBegin > 0}<br />{$c->regBegin|datetime_format}{else}N/A{/if}</li>
+<li>Registration Deadline: {if $c->regDeadline > 0}<br />{$c->regDeadline|datetime_format}{else}N/A{/if}</li>
+<li>Contest Begin: {if $c->beginTime > 0}<br />{$c->beginTime|datetime_format}{else}N/A{/if}</li>
+<li>Contest End: {if $c->endTime > 0}<br />{$c->endTime|datetime_format}{else}N/A{/if}</li>
 <li>Duration: {$c->duration|duration_format}</li>
 </ul>
 </div>

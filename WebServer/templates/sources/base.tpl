@@ -20,7 +20,7 @@
 <div id="logo"><a href="index.php"><img src='templates/images/header.png' /></a></div>
 <div id="navbar"><ul><li><a href="index.php?mod=learning">Learning Center</a></li><li><a href="index.php?mod=problemlist">Problems</a></li><li><a href="index.php?mod=records">Records</a></li><li><a href="index.php?mod=contestlist">Arena</a></li></ul></div>
 </div>
-{if isset($global_message)}<div id="global_message">{$global_message}<div>x</div></div>{/if}
+{if isset($global_message)}<div id="global_message">{$global_message}<div id='global_message_close'><a href='#' onclick="$('#global_message').addClass('hidden');return false;">x</a></div></div>{/if}
 <div id="container"><div id="infobar"><div id="breadcrumb">Home</div><div id="userinfo">Welcome, {$user->username}
 {if $user->id != 0}
 {ifable to="admin_cp"}<a href='index.php?mod=admin_home'>Admin CP</a> - {endif} <a href='index.php?mod=user&act=editprofile'>User Center</a> - <a href='index.php?mod=user&act=logout'>Log out</a>
@@ -30,7 +30,7 @@
 </div></div>
 
 <div id="body">{block name="body"}<!-- DEFAULT CONTENT -->{/block}</div>
-<div id="footer">Page Generated at: {$smarty.now|date_format:"%Y-%m-%d %T, Server Timezone %z"}<br />OIOJ Instructional Online Judge (c){$smarty.now|date_format:"%Y"} Zhu Jingsi. All Rights Reserved.</div></div>
+<div id="footer">Page Generated at: {$smarty.now|date_format:"%Y-%m-%d %T, Server Time Zone %z"}<br />OIOJ Instructional Online Judge (c){$smarty.now|date_format:"%Y"} Zhu Jingsi. All Rights Reserved.</div></div>
 
 </body>
 </html>

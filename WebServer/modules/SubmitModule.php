@@ -6,6 +6,10 @@ class SubmitModule
 {
 	public function run()
 	{
+		if (!User::GetCurrent()->ableTo('submit_solution'))
+		{
+			throw new PermissionException();
+		}
 		if (IO::GET('solution'))
 		{
 			$this->submitSolution();

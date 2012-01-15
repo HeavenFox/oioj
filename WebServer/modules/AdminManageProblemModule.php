@@ -1,10 +1,18 @@
 <?php
+defined('IN_OIOJ') || die('Forbidden');
+
 import('Problem');
 import('Cronjob');
 class AdminManageProblemModule
 {
 	public function run()
 	{
+		$user = User::GetCurrent();
+		if (!($user->ableTo('add_problem') || ($user->ableTo('admin_cp') && !$user->unableTo('add_problem'))))
+		{
+			throw new PermissionException();
+		}
+		
 		switch (IO::GET('act'))
 		{
 		case 'add':
@@ -14,10 +22,6 @@ class AdminManageProblemModule
 			}
 			else
 			{
-				if (!User::GetCurrent()->ableTo('add_problem'))
-				{
-					throw new Exception('denied');
-				}
 				OIOJ::$template->display('admin_addproblem.tpl');
 			}
 			

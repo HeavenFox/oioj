@@ -4,7 +4,7 @@ if (!isset($_SERVER['argc']))
 	die('This script can only be run in command line mode');
 }
 
-if ($_SERVER['argc'] != 1)
+if ($_SERVER['argc'] != 2)
 {
 	fprintf(STDOUT,'Usage: php runcronjob.php QOS_LEVEL');
 }

@@ -30,7 +30,9 @@ class ContestModule
 	
 	public function register()
 	{
-		if (User::GetCurrent()->id == 0)
+		$user = User::GetCurrent();
+		
+		if ($user->id == 0)
 		{
 			throw new Exception('Please log in before you register for a contest');
 		}
@@ -40,9 +42,14 @@ class ContestModule
 			throw new Exception('You have registered for this contest');
 		}
 		
+		if ($user->unableTo('register_for_contest'))
+		{
+			throw new Exception('You are not allowed to register');
+		}
+		
 		$this->contest->fetch(array('regBegin', 'regDeadline', 'publicity'),NULL);
 		
-		if ($this->contest->publicity <= 1)
+		if ($this->contest->publicity <= 1 && !$user->ableTo('viewcontest_'.$this->contestId))
 		{
 			throw new Exception('The contest is not open to public');
 		}
@@ -65,6 +72,8 @@ class ContestModule
 		
 		IO::SetSession('contest-registered-'.$this->contestId,true);
 		
+		$this->registered = true;
+		
 		$this->showProfile();
 	}
 	
@@ -72,7 +81,7 @@ class ContestModule
 	{
 		$contest = Contest::first(array('id','title','description','regBegin','regDeadline','beginTime','endTime','duration','status'),array('user'=>array('username')),'WHERE `oj_contests`.`id`='.$this->contestId);
 		
-		if (intval($contest->getOption('display_problem_title_before_start')) || $contest->status != Contest::STATUS_WAITING)
+		if (intval($contest->getOption('display_problem_title_before_start')) || $contest->status > Contest::STATUS_WAITING)
 		{
 			$contest->getComposite(array('problems' => array('id','title','input','output')));
 		}
@@ -83,7 +92,7 @@ class ContestModule
 		
 		OIOJ::$template->assign('c',$contest);
 		
-		if ($c->displayRanking())
+		if ($contest->displayRanking())
 		{
 			OIOJ::$template->assign('ranking',array_slice($contest->generateRanking(),0,10));
 			OIOJ::$template->assign('ranking_display_params',array_flip(explode(';',$contest->getOption('ranking_display_params'))));

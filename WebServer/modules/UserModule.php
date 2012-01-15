@@ -69,7 +69,7 @@ class UserModule
 	public function doRegisterSubmit()
 	{
 		OIOJ::InitDatabase();
-		$suppliedCode = IO::POST('invitation',null,null);
+		$suppliedCode = IO::POST('invitation');
 		
 		$invit = Invitation::first(array('id','user'),null,'WHERE `code` = ?', array($suppliedCode));
 		
@@ -89,14 +89,21 @@ class UserModule
 		$user->password = IO::POST('password');
 		$user->email = IO::POST('email');
 		
-		$user->add();
+		try
+		{
+			$user->add();
+		}
+		catch(PDOException $e)
+		{
+			throw new Exception('Sorry, but the username is taken');
+		}
 		
 		$invit->user = $user;
 		$invit->update();
 		
 		$user->createSession();
 		
-		OIOJ::Redirect('Successfully registered!');
+		OIOJ::Redirect('You have uccessfully registered!');
 	}
 	
 	public function getCAPTCHA()

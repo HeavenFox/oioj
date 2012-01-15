@@ -18,7 +18,7 @@
 	<td><a href="{$r->id}">{$r->username}</a></td>
 	{if isset($ranking_display_params.total_score)}<td>{$r->rankingParams.total_score}</td>{/if}
 	{if isset($ranking_display_params.total_time)}<td>{$r->rankingParams.total_time|duration_format}</td>{/if}
-	{if isset($ranking_display_params.max_time)}<td>{$r->rankingParams.max_time}</td>{/if}
+	{if isset($ranking_display_params.max_time)}<td>{$r->rankingParams.max_time|duration_format}</td>{/if}
 	{if isset($ranking_display_params.num_right)}<td>{$r->rankingParams.num_right}</td>{/if}
 	{if isset($ranking_display_params.num_wrong)}<td>{$r->rankingParams.num_wrong}</td>{/if}
 	{if isset($ranking_display_params.duration)}<td>{$r->rankingParams.duration|duration_format}</td>{/if}

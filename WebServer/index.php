@@ -50,8 +50,14 @@ if (isset($_GET['mod']) && isset($availableModules[$_GET['mod']]))
 	}catch (Exception $e)
 	{
 		// Catch-all
-		OIOJ::$template->assign('message', $e->getMessage());
-		OIOJ::$template->display('error.tpl');
+		if (IO::GET('ajax'))
+		{
+			die(json_encode(array('error' => $e->getMessage())));
+		}else
+		{
+			OIOJ::$template->assign('message', $e->getMessage());
+			OIOJ::$template->display('error.tpl');
+		}
 	}
 }
 else

@@ -16,7 +16,7 @@ function addProblem()
 function addCriterion()
 {
 	$('#criteria-list').append(
-	"<li><input name='criteria[]' value='"+$('#add-criterion').val()+"' /><select name='criteria-order'>"+
+	"<li><input name='criteria[]' value='"+$('#add-criterion').val()+"' /><select name='criteria-order[]'>"+
 		"<option value='a'"+(document.getElementById('add-criterion-order').selectedIndex == 0 ? ' selected' : '')+">ascending</option>"+
 		"<option value='d'"+(document.getElementById('add-criterion-order').selectedIndex == 1 ? ' selected' : '')+">descending</option>"+
 		"</select></li>"

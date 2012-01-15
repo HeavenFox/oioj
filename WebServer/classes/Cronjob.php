@@ -81,5 +81,10 @@ class Cronjob extends ActiveRecord
 		$stmt = $db->prepare('INSERT INTO `oj_cronjobs_log` (`class`,`content`,`timestamp`) VALUES (?,?,UNIX_TIMESTAMP())');
 		$stmt->execute(array(substr(get_class($this),8),$content));
 	}
+	
+	public static function RemoveJob($condition)
+	{
+		Database::Get()->exec('DELETE FROM `oj_cronjobs` WHERE '.$condition);
+	}
 }
 ?>

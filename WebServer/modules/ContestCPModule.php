@@ -1,6 +1,9 @@
 <?php
+defined('IN_OIOJ') || die('Forbidden');
+
 import('Contest');
 import('Problem');
+import('JudgeRecord');
 
 class ContestCPModule
 {
@@ -15,26 +18,38 @@ class ContestCPModule
 	public function startContest()
 	{
 		$this->contest->startContest();
-		// TODO remove cronjob
+		Cronjob::RemoveJob("`class` = 'Contest' AND `method` = 'start' AND `reference` = {$this->contest->id}");
 	}
 	
 	public function endContest()
 	{
 		$this->contest->endContest();
-		// TODO remove cronjob
+		Cronjob::RemoveJob("`class` = 'Contest' AND `method` = 'end' AND `reference` = {$this->contest->id}");
 	}
 	
 	public function judge()
 	{
 		$this->contest->judge();
-		// TODO remove cronjob
+		Cronjob::RemoveJob("`class` = 'Contest' AND `method` = 'judge' AND `reference` = {$this->contest->id}");
+	}
+	
+	public function finishJudge()
+	{
+		$this->contest->finishJudge();
 	}
 	
 	public function run()
 	{
 		$this->cid = IO::GET('id',0,'intval');
 		
-		$this->contest = Contest::first(array('title','status'),NULL,$this->cid);
+		$this->contest = Contest::first(array('title','status','user'),NULL,$this->cid);
+		
+		$user = User::GetCurrent();
+		
+		if (!($user->id == $this->contest->id || !$user->ableTo('contestcp') || ($user->ableTo('admin_cp') && !$user->unableTo('contestcp'))))
+		{
+			throw new PermissionException();
+		}
 		
 		if (!$this->contest)
 		{
@@ -58,6 +73,8 @@ class ContestCPModule
 		
 		$db = Database::Get();
 		
+		
+		// General Statistics
 		$stmt = $db->query('SELECT count(*) FROM `oj_contest_register` WHERE `cid` = '.$this->cid);
 		$row = $stmt->fetch();
 		$this->numberParticipants = $row[0];
@@ -84,13 +101,17 @@ class ContestCPModule
 		OIOJ::$template->assign('num_participants_started',$this->numberParticipantsStarted);
 		OIOJ::$template->assign('num_submissions',$this->numberSubmissions);
 		
+		if ($this->contest->status == Contest::STATUS_JUDGING)
+		{
+			$result = $db->query('SELECT count(*) FROM `oj_contest_submissions` LEFT JOIN `oj_records` ON (`rid` = `oj_records`.`id`) WHERE `status` > '.JudgeRecord::STATUS_DISPATCHED.' AND `cid` = '.$this->cid)->fetch();
+			OIOJ::$template->assign('num_judged',$result[0]);
+			$result = $db->query('SELECT count(*) FROM `oj_contest_submissions` WHERE `rid` IS NOT NULL AND `cid` = '.$this->cid)->fetch();
+			OIOJ::$template->assign('num_tojudge',$result[0]);
+		}
+		
 		if ($this->contest->status == Contest::STATUS_JUDGED || ($this->contest->status >= Contest::STATUS_INPROGRESS && $this->contest->getOption('after_submit') == 'judge'))
 		{
-			OIOJ::$template->assign('show_analysis',true);
 			OIOJ::$template->assign('analysis',$this->analysis());
-		
-		}else
-		{OIOJ::$template->assign('show_analysis',false);
 		}
 		
 		OIOJ::$template->display('contestcp.tpl');

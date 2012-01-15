@@ -1,9 +1,16 @@
 <?php
+defined('IN_OIOJ') || die('Forbidden');
+
 import('User');
 class AdminManageUserModule
 {
 	public function run()
 	{
+		$user = User::GetCurrent();
+		if (!($user->ableTo('manage_user') || ($user->ableTo('admin_cp') && !$user->unableTo('manage_user'))))
+		{
+			throw new PermissionException();
+		}
 		switch (IO::GET('act'))
 		{
 		case 'add':

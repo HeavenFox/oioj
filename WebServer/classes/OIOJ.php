@@ -33,4 +33,18 @@ class OIOJ
 		
 	}
 }
+
+class PermissionException extends Exception
+{
+	public function __construct()
+	{
+		parent::__construct('Access Denied');
+	}
+}
+
+class InputException extends Exception
+{
+	
+}
+
 ?>

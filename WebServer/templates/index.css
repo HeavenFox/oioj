@@ -69,9 +69,9 @@
 
 #blocknav h3 a
 {
-text-decoration: none;
-color: white;
-font-weight: normal;
+	text-decoration: none;
+	color: white;
+	font-weight: normal;
 	font-size: 20px;
 	font-family: 'Segoe UI','Lucida Grande',Verdana,Arial,Helvetica,sans-serif;
 
@@ -85,6 +85,11 @@ font-weight: normal;
 #blocknav li img
 {
 	vertical-align: middle;
+}
+
+#user_panel
+{
+	height: 180px;
 }
 
 #login_panel
