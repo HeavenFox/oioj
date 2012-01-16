@@ -14,12 +14,21 @@ class GuestUser extends User
 	public function ableTo($key)
 	{
 		// Cache Guest ACL, since they're expected to constitute a good portion
-		if ($acl = Cache::MemGet('guest-acl'))
+		if (!($acl = Cache::MemGet('guest-acl')))
 		{
-			return $acl[$key];
+			Cache::MemSet('guest-acl',$acl = $this->getACL());
 		}
-		Cache::MemSet('guest-acl',$acl = $this->getACL());
-		return $acl[$key];
+		return isset($acl[$key]) && $acl[$key] > 0;
+	}
+	
+	public function unableTo($key)
+	{
+		// Cache Guest ACL, since they're expected to constitute a good portion
+		if (!($acl = Cache::MemGet('guest-acl')))
+		{
+			Cache::MemSet('guest-acl',$acl = $this->getACL());
+		}
+		return isset($acl[$key]) && $acl[$key] < 0;
 	}
 }
 ?>

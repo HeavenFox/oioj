@@ -20,6 +20,10 @@ class Settings
 				Cache::MemSet('settings',$p);
 				self::$stored = $p;
 			}
+			else
+			{
+				self::$stored = $p;
+			}
 		}
 		return self::$stored[$param];
 	}

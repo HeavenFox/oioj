@@ -11,8 +11,14 @@ body
 	width: 600px;
 	background-color: white;
 	margin: auto;
-	border: 1px solid #696969;
+	margin-top: 25px;
+	border: 1px solid #a4a4a4;
 	box-shadow: 0 0 10px rgba(25,25,25,0.7);
+}
+
+#message
+{
+	margin: 0 7px 0 7px;
 }
 
 h1

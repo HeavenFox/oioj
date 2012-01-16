@@ -12,3 +12,8 @@
 {
 	color: red !important;
 }
+
+ul
+{
+	list-style: none;
+}

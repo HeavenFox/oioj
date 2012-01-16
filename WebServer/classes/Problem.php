@@ -28,6 +28,7 @@ class Problem extends ActiveRecord
 			'submission' => array('class' => 'int'),
 			'accepted' => array('class' => 'int'),
 			'listing' => array('class' => 'bool'),
+			'dispatched' => array('class' => 'bool'),
 			'user' => array('class' => 'User', 'comp' => 'one', 'column' => 'uid')
 		);
 	public static $tableName = 'oj_problems';
@@ -71,6 +72,10 @@ class Problem extends ActiveRecord
 		$this->testCases[] = $curCase;
 	}
 	
+	public function getCases()
+	{
+		$this->testCases = TestCase::find(array('cid','input','answer','timelimit','memorylimit','score'),NULL,'WHERE `pid` = '.$this->id);
+	}
 	
 	public function createArchive($location = null)
 	{
@@ -112,16 +117,23 @@ class Problem extends ActiveRecord
 			
 			if (!$ftp || !ftp_login($ftp,$server->ftpUsername,$server->ftpPassword))
 			{
-				throw new Exception('Unable to connect');
+				throw new Exception('Unable to connect FTP');
 			}
 			
-			ftp_fput($ftp,$this->id.'.zip',$this->archiveLocation,FTP_BINARY);
+			$file = fopen($this->archiveLocation,'rb');
+			
+			ftp_fput($ftp,$this->id.'.zip',$file,FTP_BINARY);
+			
+			fclose($file);
 			
 			ftp_close($ftp);
 			
 		}
 		
-		$server->dispatch($this->generateDispatchString());
+		if (!$server->dispatch($this->generateDispatchString()))
+		{
+			throw new Exception('Schema');
+		}
 		
 	}
 	
@@ -132,7 +144,8 @@ class Problem extends ActiveRecord
 	
 	private function generateDispatchString()
 	{
-		$str = "1\n{$this->id} {$this->type} {$this->compare} {$this->input} {$this->output}\n";
+		$str = "ADDPB\n";
+		$str .= "1\n{$this->id} {$this->type} {$this->compare} {$this->input} {$this->output}\n";
 		$str .= strval(count($this->testCases)) . "\n";
 		foreach ($this->testCases as $c)
 		{
@@ -140,18 +153,20 @@ class Problem extends ActiveRecord
 		}
 		// TODO add dependency support
 		$str .= "0\n";
+		$str .= "zip\n";
 		
 		return $str;
 	}
 	
-	public function submissionPlusOne()
+	/**
+	 * Update the problem's accept-to-submission ratio
+	 *
+	 * @param int $submission How much to add to submission
+	 * @param int $accepted How much to add to accepted
+	 */
+	public function updateSubmissionStats($submission, $accepted)
 	{
-		Database::Get()->query('UPDATE `oj_problems` SET `submission` = `submission` + 1 WHERE `id` = '.intval($this->id));
-	}
-	
-	public function acceptedPlusOne()
-	{
-		Database::Get()->query('UPDATE `oj_problems` SET `accepted` = `accepted` + 1 WHERE `id` = '.intval($this->id));
+		Database::Get()->query("UPDATE `oj_problems` SET `accepted` = `accepted` + ({$accepted}), `submission` = `submission` + ({$submission})  WHERE `id` = {$this->id}");
 	}
 	
 	public function add()

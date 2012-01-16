@@ -1,0 +1,24 @@
++-------------------------
++ Problem
++-------------------------
+submit_solution
+add_problem
++
++-------------------------
++ Contest
++-------------------------
++viewcontest  Allow
++viewcontest_(*)   Deny
++register_for_contest   Allow
++
++add_contest
++contest_cp_(*)
++contest_cp
++
++-------------------------
++ Admin CP
++-------------------------
++admin_cp
+
+admin_cp
+add_problem

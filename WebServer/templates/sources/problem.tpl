@@ -25,11 +25,10 @@ $(function(){
 <div class="sidebar-box">
 <h2>Problem Info</h2>
 <ul>
-	<li>Author: </li>
-	<li>Submission:</li>
-	<li>Accepted:</li>
-	<li>Source:</li>
-	<li>Rating: </li>
+	<li>Submitter: {$problem->user->username}</li>
+	<li>Submission: {$problem->submission}</li>
+	<li>Accepted: {$problem->accepted}</li>
+	{if $problem->source}$problem->source<li>Source: {$problem->source}</li>{/if}
 </ul>
 </div>
 {block name="problem_submit_box"}

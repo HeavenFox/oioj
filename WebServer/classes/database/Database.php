@@ -38,6 +38,7 @@ class Database
             throw new Exception('Invalid Database Driver!');
         }
         $obj->exec("SET NAMES 'utf8'");
+		$obj->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         return $obj;
     }
 }
