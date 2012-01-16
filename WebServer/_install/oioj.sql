@@ -1,5 +1,4 @@
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
-SET time_zone = "+00:00";
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -7,47 +6,25 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8 */;
 
 
-DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `contest_judge`(contest_id INT)
-BEGIN
-	DECLARE done INT DEFAULT FALSE;
-	DECLARE mid,mpid,muid INT DEFAULT 0;
-	DECLARE mcode TEXT;
-	DECLARE mlang VARCHAR(8);
-	DECLARE cur CURSOR FOR SELECT `id`,`pid`,`uid`,`code`,`lang` FROM `oj_contest_submissions` WHERE `cid` = contest_id AND `timestamp` = (SELECT MAX(`temp`.`timestamp`) FROM `oj_contest_submissions` AS `temp` WHERE `temp`.`uid`=`oj_contest_submissions`.`uid` AND `temp`.`pid`=`oj_contest_submissions`.`pid` AND `temp`.`cid` = contest_id);
-
-	DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
-	OPEN cur;
-
-	ins: LOOP
-		FETCH cur INTO mid,mpid,muid,mcode,mlang;
-		IF done THEN
-		  LEAVE ins;
-		END IF;
-		INSERT INTO `oj_records` (`pid`,`uid`,`code`,`lang`,`timestamp`) VALUES (mpid,muid,mcode,mlang, UNIX_TIMESTAMP());
-		UPDATE `oj_contest_submissions` SET `rid` = LAST_INSERT_ID() WHERE `id` = mid;
-	END LOOP;
-END$$
-
-DELIMITER ;
-
-CREATE TABLE IF NOT EXISTS `oj_articles` (
+CREATE TABLE `oj_articles` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `uid` int(11) NOT NULL,
   `title` varchar(128) NOT NULL,
   `body` mediumtext NOT NULL,
   `attachments` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE IF NOT EXISTS `oj_articles_tags` (
+
+CREATE TABLE `oj_articles_tags` (
   `aid` int(11) NOT NULL,
   `tid` int(11) NOT NULL,
   KEY `aid` (`aid`),
   KEY `tid` (`tid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE IF NOT EXISTS `oj_contests` (
+
+CREATE TABLE `oj_contests` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `uid` int(11) NOT NULL,
   `title` varchar(128) NOT NULL,
@@ -63,14 +40,14 @@ CREATE TABLE IF NOT EXISTS `oj_contests` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
-CREATE TABLE IF NOT EXISTS `oj_contest_options` (
+CREATE TABLE `oj_contest_options` (
   `cid` int(11) NOT NULL,
   `key` varchar(64) NOT NULL,
   `value` varchar(128) NOT NULL,
   KEY `cid` (`cid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE IF NOT EXISTS `oj_contest_problems` (
+CREATE TABLE `oj_contest_problems` (
   `cid` int(11) NOT NULL,
   `pid` int(11) NOT NULL,
   KEY `cid` (`cid`),
@@ -78,7 +55,7 @@ CREATE TABLE IF NOT EXISTS `oj_contest_problems` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
-CREATE TABLE IF NOT EXISTS `oj_contest_register` (
+CREATE TABLE `oj_contest_register` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `cid` int(11) NOT NULL,
   `uid` int(11) NOT NULL,
@@ -89,7 +66,8 @@ CREATE TABLE IF NOT EXISTS `oj_contest_register` (
   KEY `uid` (`uid`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
-CREATE TABLE IF NOT EXISTS `oj_contest_submissions` (
+
+CREATE TABLE `oj_contest_submissions` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `cid` int(11) NOT NULL,
   `uid` int(11) NOT NULL,
@@ -103,37 +81,46 @@ CREATE TABLE IF NOT EXISTS `oj_contest_submissions` (
   KEY `rid` (`rid`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
-CREATE TABLE IF NOT EXISTS `oj_cronjobs` (
+CREATE TABLE `oj_cronjobs` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `class` varchar(32) NOT NULL,
   `method` varchar(32) NOT NULL,
   `arguments` text NOT NULL,
-  `reference` int(11) NOT NULL,
+  `reference` int(11) DEFAULT NULL,
   `next` int(11) NOT NULL,
   `qos` tinyint(4) NOT NULL,
   `enabled` tinyint(4) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
-CREATE TABLE IF NOT EXISTS `oj_dependencies` (
+CREATE TABLE `oj_cronjobs_log` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `class` varchar(32) NOT NULL,
+  `content` text NOT NULL,
+  `timestamp` int(11) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+
+CREATE TABLE `oj_dependencies` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `pid` int(11) NOT NULL,
   `filename` varchar(128) NOT NULL,
   `type` smallint(6) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `pid` (`pid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
-
-CREATE TABLE IF NOT EXISTS `oj_invitations` (
-  `id` int(11) NOT NULL,
-  `code` char(32) NOT NULL,
-  `sender` int(11) NOT NULL,
-  `user` int(11) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `code` (`code`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE IF NOT EXISTS `oj_judgeservers` (
+
+CREATE TABLE `oj_invitations` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `code` char(32) NOT NULL,
+  `sender` int(11) DEFAULT NULL,
+  `user` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `code` (`code`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+
+CREATE TABLE `oj_judgeservers` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(64) NOT NULL,
   `ip` varchar(16) NOT NULL,
@@ -146,7 +133,7 @@ CREATE TABLE IF NOT EXISTS `oj_judgeservers` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
-CREATE TABLE IF NOT EXISTS `oj_probdist_queue` (
+CREATE TABLE `oj_probdist_queue` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `file` varchar(127) NOT NULL,
   `server` int(11) NOT NULL,
@@ -154,9 +141,10 @@ CREATE TABLE IF NOT EXISTS `oj_probdist_queue` (
   PRIMARY KEY (`id`),
   KEY `server` (`server`),
   KEY `pid` (`pid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE IF NOT EXISTS `oj_problems` (
+
+CREATE TABLE `oj_problems` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `title` varchar(255) NOT NULL,
   `body` text NOT NULL,
@@ -175,14 +163,15 @@ CREATE TABLE IF NOT EXISTS `oj_problems` (
   KEY `uid` (`uid`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
-CREATE TABLE IF NOT EXISTS `oj_problems_tags` (
+CREATE TABLE `oj_problems_tags` (
   `pid` int(11) NOT NULL,
   `tid` int(11) NOT NULL,
   KEY `pid` (`pid`),
   KEY `tid` (`tid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE IF NOT EXISTS `oj_records` (
+
+CREATE TABLE `oj_records` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `pid` int(11) NOT NULL,
   `status` smallint(6) NOT NULL DEFAULT '0',
@@ -191,12 +180,12 @@ CREATE TABLE IF NOT EXISTS `oj_records` (
   `uid` int(11) NOT NULL,
   `score` int(11) DEFAULT NULL,
   `code` text NOT NULL,
-  `cases` varchar(1024) DEFAULT NULL,
+  `cases` text,
   `timestamp` int(11) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
-CREATE TABLE IF NOT EXISTS `oj_resources` (
+CREATE TABLE `oj_resources` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `title` varchar(256) NOT NULL,
   `uid` int(11) DEFAULT NULL,
@@ -205,43 +194,44 @@ CREATE TABLE IF NOT EXISTS `oj_resources` (
   `url` varchar(128) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `uid` (`uid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE IF NOT EXISTS `oj_resources_tags` (
+
+CREATE TABLE `oj_resources_tags` (
   `rid` int(11) NOT NULL,
   `tid` int(11) NOT NULL,
   KEY `rid` (`rid`),
   KEY `tid` (`tid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE IF NOT EXISTS `oj_settings` (
+
+CREATE TABLE `oj_settings` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `key` varchar(32) NOT NULL,
   `value` varchar(255) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `key` (`key`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=7 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
-INSERT INTO `oj_settings` (`id`, `key`, `value`) VALUES
-(1, 'local_judgeserver_data_dir', 'D:\\oiojtemp'),
-(2, 'tmp_dir', 'D:\\oiojtemp'),
-(3, 'token', 'nVM)[6Zm@5wBU@My>uQ(tU76Z=6:.d}Mx>8cZ44K!Wyd<Hu*aSn{3~vg,~pM>tmf'),
-(4, 'backup_token', ''),
-(5, 'recaptcha_public', '6Lf85MgSAAAAAJ6wTy4saHVye28O19cvTBw1eRzE'),
-(6, 'recaptcha_private', '6Lf85MgSAAAAALSrX3MkcTibjmv8vOMDTtjxLvWK');
+INSERT INTO `oj_settings` VALUES(1, 'local_judgeserver_data_dir', 'D:\\oiojtemp');
+INSERT INTO `oj_settings` VALUES(2, 'tmp_dir', '/Users/zhujingsi/Documents/oiojtemp/');
+INSERT INTO `oj_settings` VALUES(3, 'token', 'nVM)[6Zm@5wBU@My>uQ(tU76Z=6:.d}Mx>8cZ44K!Wyd<Hu*aSn{3~vg,~pM>tmf');
+INSERT INTO `oj_settings` VALUES(4, 'backup_token', '');
+INSERT INTO `oj_settings` VALUES(5, 'recaptcha_public', '6Lf85MgSAAAAAJ6wTy4saHVye28O19cvTBw1eRzE');
+INSERT INTO `oj_settings` VALUES(6, 'recaptcha_private', '6Lf85MgSAAAAALSrX3MkcTibjmv8vOMDTtjxLvWK');
+INSERT INTO `oj_settings` VALUES(7, 'default_timezone', 'Asia/Shanghai');
 
-CREATE TABLE IF NOT EXISTS `oj_tags` (
+CREATE TABLE `oj_tags` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `tag` varchar(64) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=4 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
-INSERT INTO `oj_tags` (`id`, `tag`) VALUES
-(1, 'Member'),
-(2, 'Admin'),
-(3, 'Instructor');
+INSERT INTO `oj_tags` VALUES(1, 'Member');
+INSERT INTO `oj_tags` VALUES(2, 'Admin');
+INSERT INTO `oj_tags` VALUES(3, 'Instructor');
 
-CREATE TABLE IF NOT EXISTS `oj_tags_acl` (
+CREATE TABLE `oj_tags_acl` (
   `tid` int(11) NOT NULL,
   `key` varchar(32) NOT NULL,
   `permission` tinyint(4) NOT NULL,
@@ -249,13 +239,12 @@ CREATE TABLE IF NOT EXISTS `oj_tags_acl` (
   KEY `key` (`key`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-INSERT INTO `oj_tags_acl` (`tid`, `key`, `permission`) VALUES
-(1, 'submit_solution', 1),
-(2, 'admin_cp', 1),
-(3, 'add_problem', 1),
-(2, 'add_problem', 1);
+INSERT INTO `oj_tags_acl` VALUES(1, 'submit_solution', 1);
+INSERT INTO `oj_tags_acl` VALUES(2, 'admin_cp', 1);
+INSERT INTO `oj_tags_acl` VALUES(3, 'add_problem', 1);
+INSERT INTO `oj_tags_acl` VALUES(2, 'add_problem', 1);
 
-CREATE TABLE IF NOT EXISTS `oj_testcases` (
+CREATE TABLE `oj_testcases` (
   `pid` int(11) NOT NULL,
   `cid` int(11) NOT NULL,
   `input` varchar(64) NOT NULL,
@@ -266,7 +255,7 @@ CREATE TABLE IF NOT EXISTS `oj_testcases` (
   KEY `pid` (`pid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE IF NOT EXISTS `oj_users` (
+CREATE TABLE `oj_users` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `username` varchar(128) NOT NULL,
   `email` varchar(128) NOT NULL,
@@ -276,7 +265,9 @@ CREATE TABLE IF NOT EXISTS `oj_users` (
   UNIQUE KEY `username` (`username`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
-CREATE TABLE IF NOT EXISTS `oj_users_acl` (
+INSERT INTO `oj_users` VALUES(1, 'HeavenFox', 'heavenfox@heavenfox.org', 'cc14565dd5e9a62682133a2f5d33f1ec2c514f05', '1ff8857242d409176f32252014370d8c');
+
+CREATE TABLE `oj_users_acl` (
   `uid` int(11) NOT NULL,
   `key` varchar(32) NOT NULL,
   `permission` tinyint(4) NOT NULL,
@@ -284,13 +275,16 @@ CREATE TABLE IF NOT EXISTS `oj_users_acl` (
   KEY `key` (`key`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+INSERT INTO `oj_users_acl` VALUES(1, 'omnipotent', 10);
 
-CREATE TABLE IF NOT EXISTS `oj_users_tags` (
+CREATE TABLE `oj_users_tags` (
   `uid` int(11) NOT NULL,
   `tid` int(11) NOT NULL,
   KEY `uid` (`uid`),
   KEY `tid` (`tid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
 
 ALTER TABLE `oj_articles_tags`
   ADD CONSTRAINT `oj_articles_tags_ibfk_1` FOREIGN KEY (`aid`) REFERENCES `oj_articles` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
@@ -315,8 +309,8 @@ ALTER TABLE `oj_dependencies`
   ADD CONSTRAINT `oj_dependencies_ibfk_1` FOREIGN KEY (`pid`) REFERENCES `oj_problems` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 ALTER TABLE `oj_probdist_queue`
-  ADD CONSTRAINT `oj_probdist_queue_ibfk_2` FOREIGN KEY (`pid`) REFERENCES `oj_problems` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `oj_probdist_queue_ibfk_1` FOREIGN KEY (`server`) REFERENCES `oj_judgeservers` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `oj_probdist_queue_ibfk_1` FOREIGN KEY (`server`) REFERENCES `oj_judgeservers` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `oj_probdist_queue_ibfk_2` FOREIGN KEY (`pid`) REFERENCES `oj_problems` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 ALTER TABLE `oj_problems`
   ADD CONSTRAINT `oj_problems_ibfk_1` FOREIGN KEY (`uid`) REFERENCES `oj_users` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
@@ -344,7 +338,3 @@ ALTER TABLE `oj_users_acl`
 ALTER TABLE `oj_users_tags`
   ADD CONSTRAINT `oj_users_tags_ibfk_1` FOREIGN KEY (`uid`) REFERENCES `oj_users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `oj_users_tags_ibfk_2` FOREIGN KEY (`tid`) REFERENCES `oj_tags` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
