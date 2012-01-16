@@ -29,7 +29,6 @@ $(function(){
 	<li>Submission: {$problem->submission}</li>
 	<li>Accepted: {$problem->accepted}</li>
 	{if $problem->source}$problem->source<li>Source: {$problem->source}</li>{/if}
-	<li>Rating: </li>
 </ul>
 </div>
 {block name="problem_submit_box"}

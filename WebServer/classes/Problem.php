@@ -158,14 +158,15 @@ class Problem extends ActiveRecord
 		return $str;
 	}
 	
-	public function submissionPlusOne()
+	/**
+	 * Update the problem's accept-to-submission ratio
+	 *
+	 * @param int $submission How much to add to submission
+	 * @param int $accepted How much to add to accepted
+	 */
+	public function updateSubmissionStats($submission, $accepted)
 	{
-		Database::Get()->query('UPDATE `oj_problems` SET `submission` = `submission` + 1 WHERE `id` = '.intval($this->id));
-	}
-	
-	public function acceptedPlusOne()
-	{
-		Database::Get()->query('UPDATE `oj_problems` SET `accepted` = `accepted` + 1 WHERE `id` = '.intval($this->id));
+		Database::Get()->query("UPDATE `oj_problems` SET `accepted` = `accepted` + ({$accepted}), `submission` = `submission` + ({$submission})  WHERE `id` = {$this->id}");
 	}
 	
 	public function add()

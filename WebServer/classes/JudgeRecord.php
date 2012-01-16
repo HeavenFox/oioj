@@ -85,8 +85,8 @@ class JudgeRecord extends ActiveRecord
 			throw new Exception('Unauthorized access.');
 		}
 		
-		$this->id = $gen['RecordID'];
-		$this->status = $gen['Status'];
+		$this->id = intval($gen['RecordID']);
+		$this->status = intval($gen['Status']);
 		
 		array_map("parseProtocol", $cases);
 		
@@ -101,16 +101,15 @@ class JudgeRecord extends ActiveRecord
 		
 		import('JudgeServer');
 		
-		$this->fetch(array(),array('server' => array('id')));
+		$this->fetch(array(),array('server' => array('id'),'problem'=>array('id')));
 		$this->server->addWorkload(-1);
-		
-		
+		$this->problem->updateSubmissionStats(1, $this->status == self::STATUS_ACCEPTED ? 1 : 0);
 	}
 	
 	public function __toString()
 	{
 		$codeBase64 = base64_encode($this->code);
-		return "JUDGE\nProblemID {$this->problem->id}\nRecordID {$this->id}\nLang {$this->lang}\nSubmission {$codeBase64}\nToken {$this->usedToken}";
+		return "JUDGE\nProblemID {$this->problem->id}\nRecordID {$this->id}\nLang {$this->lang}\nSubmission {$codeBase64}\nToken {$this->usedToken}\n";
 	}
 	
 	public function dispatch($server = null)
@@ -120,9 +119,10 @@ class JudgeRecord extends ActiveRecord
 			foreach ($this->tokens as $token)
 			{
 				$this->usedToken = $token;
-				if ($server->dispatch($this))
+				$result = $server->dispatch($this);
+				if ($result && $result['ServerCode'] <= 1)
 				{
-					$server->addWorkload();
+					$server->setWorkload(intval($result['ServerWorkload']));
 					$this->status = JudgeRecord::STATUS_DISPATCHED;
 					$this->server = $server;
 					

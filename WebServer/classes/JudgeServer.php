@@ -4,6 +4,8 @@ class JudgeServer extends ActiveRecord
 {
 	static $tableName = 'oj_judgeservers';
 	
+	const RESPONSE_MAX_LENGTH = 512;
+	
 	static $schema = array(
 		'id' => array('class' => 'int'),
 		'name' => array('class' => 'string'),
@@ -26,28 +28,35 @@ class JudgeServer extends ActiveRecord
 	
 	public function dispatch($task)
 	{
-		$address = "tcp://{$this->ip}:{$this->port}";
-		$fp = stream_socket_client($address,$errno,$errstr);
+		$fp = fsockopen($this->ip,$this->port,$errno,$errstr,10);
 		if (!$fp)
 		{
 			return false;
 		}
-		fwrite($fp,strval($task));
+		$data = strval($task);
+		fwrite($fp,pack('I',strlen($data)).$data);
+		$res = parseProtocol(fread($fp,self::RESPONSE_MAX_LENGTH));
 		fclose($fp);
-		return true;
+		return $res;
 	}
 	
 	public function addWorkload($val = 1)
 	{
 		$DB = Database::Get();
 		
-		$stmt = $DB->prepare("UPDATE `oj_judgeservers` SET `workload` = `workload` + ({$val}) WHERE `id` = ?");
-		$stmt->execute(array($this->id));
+		$stmt = $DB->exec("UPDATE `oj_judgeservers` SET `workload` = `workload` + ({$val}) WHERE `id` = {$this->id}");
+	}
+	
+	public function setWorkload($val)
+	{
+		$DB = Database::Get();
+		
+		$stmt = $DB->exec("UPDATE `oj_judgeservers` SET `workload` = {$val} WHERE `id` = {$this->id}");
 	}
 	
 	public function isLocal()
 	{
-		return $this->ip == '127.0.0.1';
+		return $this->ip == '127.0.0.1' || $this->ip == 'localhost';
 	}
 }
 ?>
