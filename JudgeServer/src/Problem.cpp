@@ -21,7 +21,7 @@ void Problem::addSchema(sqlite3* db)
 	int code = sqlite3_step(stmt);
 	if (code != SQLITE_OK && code != SQLITE_DONE)
 	{
-		printf("Add Problem Error: %d\n",code);
+		syslog(LOG_ERR,"Add Problem Error: %d\n",code);
 	}
 	sqlite3_finalize(stmt);
 }

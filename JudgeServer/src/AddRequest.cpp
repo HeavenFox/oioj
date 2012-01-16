@@ -16,14 +16,14 @@ void AddRequest::processRequest(string &s)
 		int code = sqlite3_open(Configuration::ProblemSchemaDB.c_str(),&db);
 		if (code)
 		{
-			cout<<"Open DB Error: "<<code<<endl;
+			syslog(LOG_ERR,"Open DB Error: %d",code);
 		}
 		int version;
 		Problem p;
 		istringstream sin(s);
 		sin>>version;
 		sin>>p.id>>p.type>>p.compare>>p.input>>p.output;
-		cout<<"Adding Problem "<<p.id<<endl;
+		syslog(LOG_INFO,"Adding Problem %d",p.id);
 		p.addSchema(db);
 		int ncase;
 		sin>>ncase;
@@ -34,7 +34,7 @@ void AddRequest::processRequest(string &s)
 			sin>>c.caseID>>c.input>>c.answer>>c.timeLimit>>c.memoryLimit>>c.score;
 			c.addSchema(db);
 		}
-		cout<<ncase<<" cases added"<<endl;
+		syslog(LOG_INFO,"%d cases added",ncase);
 		int ndep;
 		sin>>ndep;
 		for (int i=0;i<ndep;i++)
@@ -43,7 +43,8 @@ void AddRequest::processRequest(string &s)
 			sin>>dep.filename>>dep.type;
 			dep.addSchema(db,p.id);
 		}
-		cout<<ndep<<" dependencies added"<<endl;
+		syslog(LOG_INFO,"%d dependencies added",ndep);
+		
 		sqlite3_close(db);
 		// Process files
 		// Deprecated. use ftp instead
@@ -67,18 +68,18 @@ void AddRequest::processRequest(string &s)
                 path<<Configuration::TempDirPrefix<<p.id<<"."<<format;
 		ostringstream outputdir;
 		outputdir<<Configuration::DataDirPrefix<<p.id<<'/';
-                pid_t cld = fork();
-		if (cld == 0)
+                
+		if (fork() == 0)
 		{
-			execl("/usr/bin/unzip","unzip","-jqqo",path.str().c_str(),"-d",outputdir.str().c_str(),NULL);
-                        unlink(path.str().c_str());
+			pid_t cld = fork();
+			if (cld == 0)
+			{
+				execl("/usr/bin/unzip","unzip","-jqqo",path.str().c_str(),"-d",outputdir.str().c_str(),NULL);
+			}else
+			{
+				waitpid(cld,NULL,0);
+				unlink(path.str().c_str());
+			}
 		}
-		else
-		{
-			//waitpid(cld,NULL,0);
-			
-		}
-		//exit(0);
-	//}
 
 }

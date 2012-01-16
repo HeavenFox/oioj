@@ -24,6 +24,7 @@
 #include "JudgeRecord.h"
 #include "RunScheduler.h"
 #include "msgEval.h"
+#include <syslog.h>
 
 using namespace std;
 
@@ -31,8 +32,9 @@ using namespace std;
 #define REQUEST_ADD 2
 
 #define SERVERCODE_SUCCESS 0
-#define SERVERCODE_FULL 1
-#define SERVERCODE_INTERNAL 2
+#define SERVERCODE_WAITLISTED 1
+#define SERVERCODE_FULL 2
+#define SERVERCODE_INTERNAL 3
 
 RunScheduler *scheduler;
 
@@ -40,8 +42,24 @@ int msgQueue;
 
 int main (int argc, const char * argv[])
 {
-    cout<<"JudgeServer Initiating"<<endl;
-    cout<<"Reading configuration... "<<endl;
+	/*
+	// Daemonize
+	if (fork())
+	{
+		exit(0);
+	}
+	
+	
+	
+	setsid();
+	chdir("/");
+	umask(0);
+	
+	// Finish daemonizing
+	
+	*/
+	openlog("oiojd",LOG_PID,LOG_DAEMON);
+	syslog(LOG_INFO, "OIOJ Judge Daemon Starting");
     
     Configuration::ReadConfiguration();
 
@@ -52,10 +70,9 @@ int main (int argc, const char * argv[])
     
     if (sock < 0)
     {
-        perror("Create");
+        syslog(LOG_ERR,"Error creating socket connection");
+		exit(1);
     }
-    
-    //fcntl(sock,F_SETFL,O_NONBLOCK);
 
     sockaddr_in sock_address, client_sock_addr;
     socklen_t client_sock_addr_len;
@@ -65,17 +82,17 @@ int main (int argc, const char * argv[])
     sock_address.sin_addr.s_addr = INADDR_ANY;
     sock_address.sin_port = htons(Configuration::PortNumber);
     
-
-
     if (bind(sock, (struct sockaddr*)&sock_address, sizeof(sockaddr_in)) < 0)
     {
-        perror("Error: bind");
+        syslog(LOG_ERR,"Error binding");
+		exit(1);
     }
     
-    cout<<"Listening to connection at "<<Configuration::PortNumber<<endl;
-    
+	
     listen(sock, 5);
-    
+	
+    syslog(LOG_INFO,"Listening port %d", Configuration::PortNumber);
+	
     scheduler = new RunScheduler(Configuration::CPUCount, Configuration::ConcurrentJobs, Configuration::WaitlistSize);
     
     timeval timeout;
@@ -97,7 +114,7 @@ int main (int argc, const char * argv[])
 
     	if (selResult == -1)
     	{
-    		perror("select");
+			syslog(LOG_ERR, "Error selecting file descriptor");
     		continue;
     	}
 
@@ -113,69 +130,65 @@ int main (int argc, const char * argv[])
 
     	client_sock = accept(sock, (struct sockaddr*)&client_sock_addr, &client_sock_addr_len);
 
-    	cout<<"Received request"<<endl;
-        if (scheduler->serverBusy())
-        {
-            char failure[20];
-            sprintf(failure,"%d\n%d", 1001, scheduler->serverWorkload());
-            send(client_sock,failure,strlen(failure),0);
-        }
-        else
-        {
-            const int buffer_size = 500;
-            const int command_size = 6;
-            char actioncmd[command_size+1];
-            int len = recv(client_sock, actioncmd, command_size, 0);
-            actioncmd[len] = '\0';
-            int action;
-            if (strcmp(actioncmd,"JUDGE\n") == 0)
-            {
-            	action = REQUEST_EVAL;
-            }
-            else if (strcmp(actioncmd,"ADDPB\n") == 0)
-            {
-            	action = REQUEST_ADD;
-            }
-            else
-            {
-            	cerr<<"unrecognized command: "<<actioncmd<<endl;
-            	close(client_sock);
-            	continue;
-            }
+		syslog(LOG_INFO, "Request received");
+		const int buffer_size = 500;
+		const int command_size = 6;
+		char actioncmd[command_size+1];
+		int len = recv(client_sock, actioncmd, command_size, 0);
+		actioncmd[len] = '\0';
+		int action;
+		if (strcmp(actioncmd,"JUDGE\n") == 0)
+		{
+			action = REQUEST_EVAL;
+		}
+		else if (strcmp(actioncmd,"ADDPB\n") == 0)
+		{
+			action = REQUEST_ADD;
+		}
+		else
+		{
+			syslog(LOG_ERR,"unrecognized command: %s",actioncmd);
+			close(client_sock);
+			continue;
+		}
 
 
-            char buffer[buffer_size+1];
-            
-            string str;
-            
-            while (long bytes_recv = recv(client_sock, buffer, buffer_size, 0))
-            {
-                buffer[bytes_recv] = '\0';
-                str.append(buffer);
-            }
-            
-            if (action == REQUEST_EVAL)
-            {
-            	JudgeRecord *currentRecord = new JudgeRecord;
-				
-				
+		char buffer[buffer_size+1];
 
-            	if (!currentRecord->prepareProblem(str))
-            	{
-                    cout<<"failed to parse"<<endl<<str<<endl;
-					delete currentRecord;
-            	} else
-            	{
-            		int code = scheduler->arrangeTask(currentRecord);
-            	}
+		string str;
 
-            } else if (action == REQUEST_ADD)
-            {
-            	AddRequest req;
-            	req.processRequest(str);
-            }
-        }
-        cout<<"finished request"<<endl;
+		while (long bytes_recv = recv(client_sock, buffer, buffer_size, 0))
+		{
+			buffer[bytes_recv] = '\0';
+			str.append(buffer);
+		}
+		
+		if (action == REQUEST_EVAL)
+		{
+			syslog(LOG_INFO, "Request type: judge");
+			JudgeRecord *currentRecord = new JudgeRecord;
+
+			char response[512];
+
+			if (!currentRecord->prepareProblem(str))
+			{
+				syslog(LOG_ERR, "Failed to parse problem. Request string %s", str.c_str());
+				delete currentRecord;
+			} else
+			{
+				int code = scheduler->arrangeTask(currentRecord);
+				sprintf(response, "ServerCode %d\nWorkload %d\n\n", code, scheduler->serverWorkload());
+
+
+			}
+
+		} else if (action == REQUEST_ADD)
+		{
+			syslog(LOG_INFO, "Request type: add problem");
+			AddRequest req;
+			req.processRequest(str);
+		}
+		syslog(LOG_INFO, "Request processed");
         close(client_sock);
     }
     

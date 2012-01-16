@@ -13,13 +13,13 @@
 #include <string.h>
 #include <sys/ptrace.h>
 #include <sys/signal.h>
-#include "JudgeRecord.h"
 #include <cmath>
 #include <cstring>
+#include <syslog.h>
+
+#include "JudgeRecord.h"
 #include "fileop.h"
 #include "sqlite3.h"
-
-#include <cstdio>
 
 using namespace std;
 

@@ -67,7 +67,7 @@ void TestCase::run()
 
 		if (getuid() == 0)
 		{
-			chroot(record->workingDirectory.c_str());
+			//chroot(record->workingDirectory.c_str());
 			// relinquish root privilege
 			setuid(Configuration::AgentUID);
 		}
@@ -339,6 +339,10 @@ void TestCase::compare()
 		}
 
 	}
+	else
+	{
+		score = 0;
+	}
 }
 
 void TestCase::cleanup()
@@ -471,7 +475,7 @@ void TestCase::addSchema(sqlite3 *db)
 	int code = sqlite3_step(stmt);
 	if (code != SQLITE_OK && code != SQLITE_DONE)
 	{
-		printf("Add Case Error: %d\n",code);
+		syslog(LOG_ERR,"Add Case Error: %d\n",code);
 	}
 	sqlite3_finalize(stmt);
 

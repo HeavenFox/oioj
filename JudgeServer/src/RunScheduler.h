@@ -17,11 +17,14 @@
 #include <sys/msg.h>
 #include "msgEval.h"
 
+#define SERVERCODE_SUCCESS 0
+#define SERVERCODE_WAITLISTED 1
+#define SERVERCODE_FULL 2
+#define SERVERCODE_INTERNAL 3
+
 using namespace std;
 
 extern int msgQueue;
-
-
 
 class RunScheduler {
     int nCPU;
@@ -36,17 +39,7 @@ class RunScheduler {
     void runTask(JudgeRecord *record);
     
 public:
-    RunScheduler(int _nCPU, int _concurrency, int _waitlistCapacity)
-    {
-        nCPU = _nCPU;
-        concurrency = _concurrency;
-        waitlistCapacity = _waitlistCapacity;
-        
-        cpus = new int[nCPU];
-        
-        runningJobs = 0;
-        
-    }
+    RunScheduler(int _nCPU, int _concurrency, int _waitlistCapacity);
     
     ~RunScheduler()
     {

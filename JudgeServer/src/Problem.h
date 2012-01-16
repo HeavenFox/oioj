@@ -10,8 +10,7 @@
 
 #include "sqlite3.h"
 #include <string>
-
-#include <cstdio>
+#include <syslog.h>
 
 using namespace std;
 

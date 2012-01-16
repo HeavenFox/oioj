@@ -8,6 +8,18 @@
 
 #include "RunScheduler.h"
 
+RunScheduler::RunScheduler(int _nCPU, int _concurrency, int _waitlistCapacity)
+{
+    nCPU = _nCPU;
+    concurrency = _concurrency;
+    waitlistCapacity = _waitlistCapacity;
+        
+    cpus = new int[nCPU];
+        
+    runningJobs = 0;
+        
+}
+
 int RunScheduler::arrangeTask(JudgeRecord* record)
 {
 	JudgeRecord *currentRecord;
@@ -15,10 +27,10 @@ int RunScheduler::arrangeTask(JudgeRecord* record)
 	{
 		if (waitlist.size() >= waitlistCapacity)
 		{
-			return 1001;
+			return SERVERCODE_FULL;
 		}
 		waitlist.push(record);
-		return -1;
+		return SERVERCODE_WAITLISTED;
 	}
 	else
 	{
@@ -31,7 +43,7 @@ int RunScheduler::arrangeTask(JudgeRecord* record)
 		}
 		runTask(currentRecord);
 	}
-	return 0;
+	return SERVERCODE_SUCCESS;
 }
 
 void RunScheduler::runTask(JudgeRecord *record)

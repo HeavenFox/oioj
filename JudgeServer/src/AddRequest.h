@@ -7,12 +7,15 @@
 
 #ifndef _ADDREQUEST_H_
 #define _ADDREQUEST_H_
+#include <sstream>
+#include <syslog.h>
+
 #include "sqlite3.h"
 #include "Configuration.h"
 #include "Problem.h"
 #include "TestCase.h"
 #include "Dependency.h"
-#include <sstream>
+
 
 class AddRequest
 {
