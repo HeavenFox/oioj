@@ -131,11 +131,27 @@ int main (int argc, const char * argv[])
     	client_sock = accept(sock, (struct sockaddr*)&client_sock_addr, &client_sock_addr_len);
 
 		syslog(LOG_INFO, "Request received");
-		const int buffer_size = 500;
+		
+		FILE *sockfile = fdopen(client_sock,"r+");
+		
+		int reqlength;
+		
+		fread(&reqlength,sizeof(int),1,sockfile);
+		
+		// Discard too big requests
+		if (reqlength > 8*1024*1024)
+		{
+			close(client_sock);
+			continue;
+		}
+		
+		syslog(LOG_INFO, "Request length: %d",reqlength);
+		
 		const int command_size = 6;
 		char actioncmd[command_size+1];
-		int len = recv(client_sock, actioncmd, command_size, 0);
-		actioncmd[len] = '\0';
+		fread(actioncmd,sizeof(char),command_size,sockfile);
+		actioncmd[command_size] = '\0';
+		
 		int action;
 		if (strcmp(actioncmd,"JUDGE\n") == 0)
 		{
@@ -152,16 +168,11 @@ int main (int argc, const char * argv[])
 			continue;
 		}
 
-
-		char buffer[buffer_size+1];
-
-		string str;
-
-		while (long bytes_recv = recv(client_sock, buffer, buffer_size, 0))
-		{
-			buffer[bytes_recv] = '\0';
-			str.append(buffer);
-		}
+		reqlength -= command_size;
+		char *buffer = new char[reqlength];
+		fread(buffer,sizeof(char),reqlength,sockfile);
+		string str(buffer,reqlength);
+		delete buffer;
 		
 		if (action == REQUEST_EVAL)
 		{
@@ -169,18 +180,18 @@ int main (int argc, const char * argv[])
 			JudgeRecord *currentRecord = new JudgeRecord;
 
 			char response[512];
-
+			int code;
 			if (!currentRecord->prepareProblem(str))
 			{
 				syslog(LOG_ERR, "Failed to parse problem. Request string %s", str.c_str());
+				code = SERVERCODE_INTERNAL;
 				delete currentRecord;
 			} else
 			{
-				int code = scheduler->arrangeTask(currentRecord);
-				sprintf(response, "ServerCode %d\nWorkload %d\n\n", code, scheduler->serverWorkload());
-
-
+				code = scheduler->arrangeTask(currentRecord);
 			}
+			sprintf(response, "ServerCode %d\nWorkload %d\n\n", code, scheduler->serverWorkload());
+			send(client_sock,response,strlen(response),0);
 
 		} else if (action == REQUEST_ADD)
 		{
