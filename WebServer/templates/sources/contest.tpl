@@ -20,7 +20,7 @@
 <tbody>
 	{foreach $c->problems as $problem}
 	<tr>
-		<td>{if $c->status > Contest::STATUS_WAITING}<a href="index.php?mod=contestproblem&cid={$c->id}&id={$problem->id}">{/if}{$problem->title}{if $c->status > Contest::STATUS_WAITING}</a>{/if}</td><td>{$problem->input}</td><td>{$problem->output}</td>
+		<td>{if $c->status > Contest::STATUS_WAITING}<a href="index.php?mod=contestproblem&amp;cid={$c->id}&amp;id={$problem->id}">{/if}{$problem->title}{if $c->status > Contest::STATUS_WAITING}</a>{/if}</td><td>{$problem->input}</td><td>{$problem->output}</td>
 	</tr>
 	{/foreach}
 </tbody>
@@ -62,7 +62,7 @@
 {else}
 <p>You have not registered.</p>
 <p>{if $user->id != 0}
-<a href="index.php?mod=contest&act=register&id={$c->id}">Register now</a>
+<a href="index.php?mod=contest&amp;act=register&amp;id={$c->id}">Register now</a>
 {else}
 <a href="javascript:;" onclick="globalShowLoginBox();return false;">Log in</a> to register
 {/if}</p>

@@ -8,7 +8,7 @@
 <tbody>
 {foreach $problems as $problem}
 <tr class="{cycle values="odd,even"}">
-<td>{$problem->id}</td><td><a href="index.php?mod=problem&id={$problem->id}">{$problem->title}</a></td><td>{$problem->accepted}/{$problem->submission}
+<td>{$problem->id}</td><td><a href="index.php?mod=problem&amp;id={$problem->id}">{$problem->title}</a></td><td>{$problem->accepted}/{$problem->submission}
 {if $problem->submission > 0}
  ({($problem->accepted/$problem->submission*100)|string_format:"%.1f"}%)
 {/if}</td>

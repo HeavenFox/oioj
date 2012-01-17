@@ -11,7 +11,7 @@
 {foreach $records as $record}
 <tr class='{cycle values="odd,even"}'>
   <td>{$record->id}</td>
-  <td><a href="index.php?mod=problem&id={$record->problem->id}">{$record->problem->title}</a></td>
+  <td><a href="index.php?mod=problem&amp;id={$record->problem->id}">{$record->problem->title}</a></td>
   <td>{$record->server->name}</td>
   <td class='{$record->statusClass}'><a href='javascript:showCaseInfo({$record->id});'>{$record->status}</a></td>
   <td>{$record->score}</td>

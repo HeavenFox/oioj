@@ -20,14 +20,12 @@ $(function(){
 {block name="body"}
 <div id="blocknav">
 <div id="bn_banners">
-<img src='templates/images/index/banner_1.jpg' /><img src='templates/images/index/banner_2.jpg' />
+<img src='templates/images/index/banner_1.jpg' alt='First Math Tournament' /><img src='templates/images/index/banner_2.jpg' alt='First AI Contest' />
 </div>
-
-
 </div>
 <div id="bn_links">
-<a href='#' onclick='moveBannerTo(1);return false;'><img src='templates/images/index/bullet.png' /></a>
-<a href='#' onclick='moveBannerTo(2);return false;'><img src='templates/images/index/bullet.png' /></a>
+<a href='#' onclick='moveBannerTo(1);return false;'><img src='templates/images/index/bullet.png' alt='Banner 1' /></a>
+<a href='#' onclick='moveBannerTo(2);return false;'><img src='templates/images/index/bullet.png' alt='Banner 2' /></a>
 </div>
 {if $user->id == 0}
 <div class="homepage_box">
@@ -35,27 +33,27 @@ $(function(){
    <div id="login_panel"><h2>Log in</h2>
 
 <div id="login_traditional">
+<form action="index.php?mod=user&amp;act=login" method="post">
 <table>
-<form action="index.php?mod=user&act=login" method="post">
 <tr><td>Username</td><td><input name="username" /></td></tr>
 <tr><td>Password</td><td><input type="password" name="password" /></td></tr>
 <tr><td>Remember?</td><td><input type="checkbox" name="remember" /></td></tr>
 <tr><td colspan="2"><input type='submit' value='Submit' /></td></tr>
-</form>
 </table>
+</form>
 </div>
    </div>
    <div id="register_panel"><h2>Register</h2>
+<form action="index.php?mod=user&amp;act=register_submit" method="post">
 <table>
-<form action="index.php?mod=user&act=register_submit" method="post">
 <tr><td>Username</td><td><input name="username" onclick="showCAPTCHA()" /></td></tr>
 <tr><td>Password</td><td><input type="password" name="password" /></td></tr>
 <tr><td>Confirm</td><td><input type="password" name="password_confirm" /></td></tr>
 <tr><td>Email</td><td><input name="email" /></td></tr>
 <tr><td>Invitation</td><td><input name="invitation" /></td></tr>
 <tr><td colspan="2"><input type='submit' value='Submit' /></td></tr>
-</form>
 </table>
+</form>
 </div>
 </div>
 </div>

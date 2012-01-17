@@ -15,7 +15,7 @@ $(function(){
 {/block}
 {block name="column-left"}
 <h2>Add Contest</h2>
-<form action="index.php?mod=admin_contest&act=save" method="post">
+<form action="index.php?mod=admin_contest&amp;act=save" method="post">
 <div id="prefs">
 <h3><a href='#'>Contest Basics</a></h3>
 <div id="sec-1">
@@ -29,7 +29,7 @@ $(function(){
 <tr><td>Automatically start at scheduled time</td><td><input type="checkbox" name="auto_start" /></td></tr>
 </table>
 </div>
-<h3><a href='#'>Registration & Problems</a></h3>
+<h3><a href='#'>Registration &amp; Problems</a></h3>
 <div>
 <table>
 <tr><td>Publicity Level</td><td>
@@ -53,7 +53,7 @@ $(function(){
 
 </table>
 </div>
-<h3><a href='#'>Judging & Ranking</a></h3>
+<h3><a href='#'>Judging &amp; Ranking</a></h3>
 <div>
 <table>
 <tr><td>After Submission</td><td>

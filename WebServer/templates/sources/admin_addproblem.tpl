@@ -22,7 +22,7 @@ $(document).ready(function(){
 {/block}
 {block name="column-left"}
 <h3>Add Problem</h3>
-<form method="post" action="index.php?mod=admin_problem&act=add&submit=1" enctype="multipart/form-data" target="console" id="add_form">
+<form method="post" action="index.php?mod=admin_problem&amp;act=add&amp;submit=1" enctype="multipart/form-data" target="console" id="add_form">
 <table class='edittable'>
 <tr><td><label for="listing">Public</label></td><td>
   <input type="checkbox" name="listing" id="listing" checked="checked" /></td></tr>
