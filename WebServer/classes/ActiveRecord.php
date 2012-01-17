@@ -19,7 +19,6 @@ class ActiveRecord
 		}
 	}
 	
-	
 	public function submit()
 	{
 		if (isset($this->_propValues[static::$keyProperty])) {
@@ -57,6 +56,11 @@ class ActiveRecord
 		}
 	}
 	
+	public function propertyExists($prop)
+	{
+		return isset($this->_propValues[$prop]);
+	}
+	
 	public function add()
 	{
 		$queryStr = 'INSERT INTO `';
@@ -89,34 +93,6 @@ class ActiveRecord
 		$this->_propValues[static::$keyProperty] = Database::Get()->lastInsertId();
 	}
 	
-	public function propertyExists($prop)
-	{
-		return isset($this->_propValues[$prop]);
-	}
-	
-	public static function _getDatabaseColumn($k)
-	{
-		if (isset(static::$schema[$k]['column']))
-		{
-			return static::$schema[$k]['column'];
-		}
-		return $k;
-	}
-	
-	private function getDatabaseRepresentation($k)
-	{
-		if (isset(static::$schema[$k]['comp']))
-		{
-			$className = static::$schema[$k]['class'];
-			$idprop = $className::$keyProperty;
-			return $this->_propValues[$k]->$idprop;
-		}
-		else
-		{
-			return $this->_preprocessGet($k);
-		}
-	}
-	
 	public function update()
 	{
 		if (count($this->_propUpdated) > 0)
@@ -140,6 +116,214 @@ class ActiveRecord
 		$stmt = Database::Get()->prepare($queryStr);
 		
 		$stmt->execute($arr);
+	}
+	
+	
+	
+	/**
+	 * Find records matching specific criteria
+	 * 
+	 * @param array $properties
+	 * @param array $composites
+	 * @param string $suffix
+	 */
+	public static function find($properties, $composites = null, $suffix = '', $data = array())
+	{
+		$queryStr = self::_makeQueryString($properties, $composites, $suffix);
+		$resultSet = array();
+		$stmt = Database::Get()->prepare($queryStr);
+		$stmt->execute($data);
+		
+		foreach($stmt as $row)
+		{
+			$obj = new static;
+			/*
+			for ($i = 0; $i < count($properties); $i++)
+			{
+				$obj->_propValues[$properties[$i]] = $row[$i];
+			}*/
+			$obj->_fillRow($row, $properties, $composites);
+			$resultSet[] = $obj;
+		}
+		return $resultSet;
+	}
+	
+	public static function first($properties, $composites, $suffix = '', $data = array())
+	{
+		$obj = new static;
+		return $obj->fetch($properties, $composites, $suffix, $data);
+	}
+	
+	
+	
+	public function fetch($properties, $composites, $suffix = null, $data = array())
+	{
+		if ($suffix === null)
+		{
+			$suffix = $this->_makeIdClause($this->_propValues[static::$keyProperty]);
+		}
+		else if (is_int($suffix))
+		{
+			$this->_propValues[static::$keyProperty] = $suffix;
+			$suffix = $this->_makeIdClause($suffix);
+		}
+		
+		$queryStr = self::_makeQueryString($properties, $composites, $suffix . ' LIMIT 0,1');
+		
+		$stmt = Database::Get()->prepare($queryStr);
+		$stmt->execute($data);
+		$row = $stmt->fetch(PDO::FETCH_NUM);
+		
+		if ($row) {
+			$this->_fillRow($row, $properties, $composites);
+			return $this;
+		} else {
+			return null;
+		}
+		
+		//return static::first($query, $properties, 'WHERE `'.static::$keyProperty . "` = '{$id}'");
+	}
+	
+	public static function findByQuery($query, $properties, $composites)
+	{
+	}
+	
+	public function fetchByQuery($properties, $composites, $query)
+	{
+		
+	}
+	
+	public function validate()
+	{
+		$wrong = array();
+		foreach ($this->_propUpdated as $k => $v)
+		{
+			if (($call = static::$schema[$k]['validator']) && !$call($this->_propValues[$k]))
+			{
+				$wrong[] = $k;
+			}
+		}
+		return $wrong;
+	}
+	
+	public function sanitize()
+	{
+		foreach ($this->_propUpdated as $k => $v)
+		{
+			if ($call = static::$schema[$k]['sanitizer'])
+			{
+				$this->_propValues[$k] = $call($this->_propValues[$k]);
+			}
+		}
+	}
+	
+	public function _setProp($param, $value)
+	{
+		if (isset(static::$schema[$param]['comp']) && !($value instanceof ActiveRecord))
+		{
+			$className = static::$schema[$param];
+			$value = new $className($value);
+		} else if (!isset(static::$schema[$param]['getter']))
+		{
+			$value = $this->toPropertyType($param, $value);
+		}
+		
+		$this->_propValues[$param] = $value;
+	}
+	
+	public function _fillRow($row, $properties, $composites)
+	{
+		$i = 0;
+		if (is_array($properties))
+		{
+			foreach ($properties as $v)
+			{
+				$this->_preprocessSet($v,$row[$i]);
+				$i++;
+			}
+		}
+		if (is_array($composites))
+		{
+			foreach ($composites as $prop => $comp)
+			{
+				if (!isset($this->_propValues[$prop]) || !($this->_propValues[$prop] instanceof ActiveRecord))
+				{
+					$className = static::$schema[$prop]['class'];
+					$this->_propValues[$prop] = new $className;
+				}
+				foreach ($comp as $v)
+				{
+					$this->_propValues[$prop]->_preprocessSet($v,$row[$i]);
+					$i++;
+				}
+			}
+		}
+	}
+	
+	private function _makeIdClause($id)
+	{
+		return 'WHERE `'.static::$tableName.'`.`'.static::_getDatabaseColumn(static::$keyProperty).'` = '.$id;
+	}
+	
+	public function _preprocessGet($param)
+	{
+		if (isset(static::$schema[$param]['setter']))
+		{
+			$call = static::$schema[$param]['setter'];
+			return $call($this->_propValues[$param]);
+		}
+		return $this->_propValues[$param];
+	}
+	
+	protected function toPropertyType($prop, $value)
+	{
+		$processFunc = array(
+			'int' => 'intval',
+			'double' => 'floatval',
+			'string' => 'strval',
+			'text' => 'strval'
+		);
+		
+		if (isset($processFunc[static::$schema[$prop]['class']]))
+		{
+			$func = $processFunc[static::$schema[$prop]['class']];
+			$value = $func($value);
+		}
+		return $value;
+	}
+	
+	public function _preprocessSet($param, $value)
+	{
+		$value = $this->toPropertyType($param, $value);
+		
+		if (isset(static::$schema[$param]['getter']))
+		{
+			$call = static::$schema[$param]['getter'];
+			$this->_propValues[$param] = $call($value);
+		}
+		else
+		{
+			$this->_propValues[$param] = $value;
+		}
+	}
+	
+	/**
+	 * Remove current record
+	 * Enter description here ...
+	 * @param array $composites list of composites that need to be deleted
+	 */
+	public function remove($composites = null)
+	{
+		$kp = static::$keyProperty;
+		$this->_db->query('DELETE FROM `'.self::$tableName.'` WHERE `'.$kp.'` = '.$this->$kp);
+		/*if (is_array($composites))
+		{
+			foreach($composites as $composite)
+			{
+				
+			}
+		}*/
+		unset($this->_propValues[static::$keyProperty]);
 	}
 	
 	protected static function _makeQueryString($properties, $composites, $suffix)
@@ -201,174 +385,27 @@ class ActiveRecord
 		return $queryStr;
 	}
 	
-	/**
-	 * Find records matching specific criteria
-	 * 
-	 * @param array $properties
-	 * @param array $composites
-	 * @param string $suffix
-	 * @todo finish composite function
-	 */
-	public static function find($properties, $composites = null, $suffix = '', $data = array())
+	public static function _getDatabaseColumn($k)
 	{
-		$queryStr = self::_makeQueryString($properties, $composites, $suffix);
-		$resultSet = array();
-		$stmt = Database::Get()->prepare($queryStr);
-		$stmt->execute($data);
-		
-		foreach($stmt as $row)
+		if (isset(static::$schema[$k]['column']))
 		{
-			$obj = new static;
-			/*
-			for ($i = 0; $i < count($properties); $i++)
-			{
-				$obj->_propValues[$properties[$i]] = $row[$i];
-			}*/
-			$obj->_fillRow($row, $properties, $composites);
-			$resultSet[] = $obj;
+			return static::$schema[$k]['column'];
 		}
-		return $resultSet;
+		return $k;
 	}
 	
-	public static function first($properties, $composites, $suffix = '', $data = array())
+	private function getDatabaseRepresentation($k)
 	{
-		$obj = new static;
-		return $obj->fetch($properties, $composites, $suffix, $data);
-	}
-	
-	private function _makeIdClause($id)
-	{
-		return 'WHERE `'.static::$tableName.'`.`'.static::_getDatabaseColumn(static::$keyProperty).'` = '.$id;
-	}
-	
-	public function fetch($properties, $composites, $suffix = null, $data = array())
-	{
-		if ($suffix === null)
+		if (isset(static::$schema[$k]['comp']))
 		{
-			$suffix = $this->_makeIdClause($this->_propValues[static::$keyProperty]);
-		}
-		else if (is_int($suffix))
-		{
-			$this->_propValues[static::$keyProperty] = $suffix;
-			$suffix = $this->_makeIdClause($suffix);
-		}
-		
-		$queryStr = self::_makeQueryString($properties, $composites, $suffix . ' LIMIT 0,1');
-		
-		$stmt = Database::Get()->prepare($queryStr);
-		$stmt->execute($data);
-		$row = $stmt->fetch(PDO::FETCH_NUM);
-		
-		if ($row) {
-			$this->_fillRow($row, $properties, $composites);
-			return $this;
-		} else {
-			return null;
-		}
-		
-		//return static::first($query, $properties, 'WHERE `'.static::$keyProperty . "` = '{$id}'");
-	}
-	
-	public static function findByQuery($query, $properties, $composites)
-	{
-	}
-	
-	public function fetchByQuery($properties, $composites, $query)
-	{
-		
-	}
-	
-	public function _setProp($param, $value)
-	{
-		if (isset(static::$schema[$param]['comp']) && !($value instanceof ActiveRecord))
-		{
-			$className = static::$schema[$param];
-			$value = new $className($value);
-		}
-		
-		
-		$this->_propValues[$param] = $value;
-		
-	}
-	
-	
-	public function _fillRow($row, $properties, $composites)
-	{
-		$i = 0;
-		if (is_array($properties))
-		{
-			foreach ($properties as $v)
-			{
-				$this->_preprocessSet($v,$row[$i]);
-				$i++;
-			}
-		}
-		if (is_array($composites))
-		{
-			foreach ($composites as $prop => $comp)
-			{
-				if (!isset($this->_propValues[$prop]) || !($this->_propValues[$prop] instanceof ActiveRecord))
-				{
-					$className = static::$schema[$prop]['class'];
-					$this->_propValues[$prop] = new $className;
-				}
-				foreach ($comp as $v)
-				{
-					$this->_propValues[$prop]->_preprocessSet($v,$row[$i]);
-					$i++;
-				}
-			}
-		}
-	}
-	
-	public function _preprocessGet($param)
-	{
-		if (isset(static::$schema[$param]['setter']))
-		{
-			$call = static::$schema[$param]['setter'];
-			return $call($this->_propValues[$param]);
-		}
-		return $this->_propValues[$param];
-	}
-	
-	public function _preprocessSet($param, $value)
-	{
-		$processFunc = array(
-			'int' => 'intval',
-			'double' => 'floatval',
-		);
-		if (isset($processFunc[static::$schema[$param]['class']]))
-		{
-			$func = $processFunc[static::$schema[$param]['class']];
-			$value = $func($value);
-		}
-		if (isset(static::$schema[$param]['getter']))
-		{
-			$call = static::$schema[$param]['getter'];
-			$this->_propValues[$param] = $call($value);
+			$className = static::$schema[$k]['class'];
+			$idprop = $className::$keyProperty;
+			return $this->_propValues[$k]->$idprop;
 		}
 		else
 		{
-			$this->_propValues[$param] = $value;
+			return $this->_preprocessGet($k);
 		}
-	}
-	
-	/**
-	 * Remove current record
-	 * Enter description here ...
-	 * @param array $composites list of composites that need to be deleted
-	 */
-	public function remove($composites = null)
-	{
-		$kp = static::$keyProperty;
-		$this->_db->query('DELETE FROM `'.self::$tableName.'` WHERE `'.$kp.'` = '.$this->$kp);
-		/*if (is_array($composites))
-		{
-			foreach($composites as $composite)
-			{
-				
-			}
-		}*/
 	}
 	
 	public function __get($param)

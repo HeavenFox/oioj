@@ -13,7 +13,7 @@
   <td>{$record->id}</td>
   <td><a href="index.php?mod=problem&amp;id={$record->problem->id}">{$record->problem->title}</a></td>
   <td>{$record->server->name}</td>
-  <td class='{$record->statusClass}'><a href='javascript:showCaseInfo({$record->id});'>{$record->status}</a></td>
+  <td class='{$record->statusClass}'>{if $record->status > JudgeRecord::STATUS_DISPATCHED}<a href='javascript:showCaseInfo({$record->id});'>{/if}{$record->statusString}{if $record->status > JudgeRecord::STATUS_DISPATCHED}</a>{/if}</td>
   <td>{$record->score}</td>
   <td>{$record->lang}</td>
   <td><a href="user.php?uid={$record->user->id}">{$record->user->username}</a></td>

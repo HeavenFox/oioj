@@ -106,15 +106,14 @@ class RecordsModule
 						break;
 				}
 				$v->statusClass = $statusClass;
-				$v->status = $statusStr[intval($v->status)];
+				$v->statusString = $statusStr[$v->status];
+				
 				$detailList = array();
-				//$score = 0;
+				
 				if ($v->cases)
 				{
 					foreach ($v->cases as $li)
 					{
-						//$score += intval($li['CaseScore']);
-						
 						$detailList[] = $this->formatCaseResult($li);
 					}
 				}

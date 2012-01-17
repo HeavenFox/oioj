@@ -34,6 +34,9 @@ class JudgeRecord extends ActiveRecord
 	
 	public $localUrl = null;
 	
+	public $statusClass;
+	public $statusString;
+	
 	public static function popWaitlist()
 	{
 		$db = Database::Get();
