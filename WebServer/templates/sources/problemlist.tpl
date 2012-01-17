@@ -4,7 +4,7 @@
 {/block}
 {block name="body"}
 <table id='problems' class='tablist'>
-<thead><tr><td width="50px">ID</td><td>Title</td><td width="100px">Acceptance</td></tr></thead>
+<thead><tr><td style="width: 50px;">ID</td><td>Title</td><td style="width: 100px;">Acceptance</td></tr></thead>
 <tbody>
 {foreach $problems as $problem}
 <tr class="{cycle values="odd,even"}">

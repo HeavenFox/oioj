@@ -6,7 +6,7 @@
 {/block}
 {block name="body"}
 <table id='records' class='tablist'>
-<thead><tr><td width="25px">ID</td><td>Problem</td><td width="80px">Server</td><td width="100px">Status</td><td width="40px">Score</td><td width="20px">Language</td><td width="100px">Author</td><td width="170px">Time</td></tr></thead>
+<thead><tr><td style="width: 25px;">ID</td><td>Problem</td><td style="width: 80px;">Server</td><td style="width: 100px;">Status</td><td style="width: 40px;">Score</td><td style="width: 20px;">Language</td><td style="width: 100px;">Author</td><td style="width: 170px;">Time</td></tr></thead>
 <tbody>
 {foreach $records as $record}
 <tr class='{cycle values="odd,even"}'>
@@ -19,7 +19,7 @@
   <td><a href="user.php?uid={$record->user->id}">{$record->user->username}</a></td>
   <td>{$record->timestamp|datetime_format}</td>
 </tr>
-<tr class="caseinfo" id="caseinfo-{$record->id}"><td colspan="7">
+<tr class="caseinfo" id="caseinfo-{$record->id}"><td colspan="8">
 <ul>
 {foreach $record->cases as $list}
 <li>{$list}</li>
