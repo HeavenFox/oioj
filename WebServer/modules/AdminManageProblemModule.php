@@ -81,12 +81,6 @@ class AdminManageProblemModule
 				throw new Exception('error reading archive');
 			}
 			
-			$newloc = Settings::Get('tmp_dir').'cases/'.md5(rand());
-			
-			move_uploaded_file($_FILES['archive']['tmp_name'],$newloc);
-			
-			$prob->archiveLocation = $newloc;
-			
 			foreach ($scores as $k => $v)
 			{
 				$c = new TestCase();
@@ -105,34 +99,17 @@ class AdminManageProblemModule
 			
 			$prob->add();
 			
+			$newloc = Settings::Get('tmp_dir').DIRECTORY_SEPARATOR.'cases'.DIRECTORY_SEPARATOR.$prob->id.'.zip';
+			
+			move_uploaded_file($_FILES['archive']['tmp_name'],$newloc);
+			
+			$prob->archiveLocation = $newloc;
+			
 			$db = Database::Get();
 			
 			echo 'Adding problem to dispatch queue<br />';
 			
-			$servers = JudgeServer::find(array('id'));
-			
-			if ($servers)
-			{
-				$insQuery = 'INSERT INTO `oj_probdist_queue` (`pid`,`server`,`file`) VALUES ';
-			
-				$first = true;
-				foreach ($servers as $server)
-				{
-					if ($first)
-					{
-						$first = false;
-					}else
-					{
-						$insQuery .= ',';
-					}
-				
-					$insQuery .= "({$prob->id},{$server->id},:archive)";
-				}
-				
-				$stmt = $db->prepare($insQuery);
-				$stmt->bindParam('archive',$newloc);
-				$stmt->execute();
-			}
+			$prob->queueForDispatch();
 			
 			Cronjob::AddJob('ProblemDistribution','dispatch',array(), 0, 3);
 			

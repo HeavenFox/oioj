@@ -81,7 +81,8 @@ class Problem extends ActiveRecord
 	{
 		if (!$location)
 		{
-			$location = tempnam(sys_get_temp_dir(),'PBA');
+			//$location = tempnam(sys_get_temp_dir(),'PBA');
+			$location = Settings::Get('tmp_dir'). DIRECTORY_SEPARATOR . 'cases' . DIRECTORY_SEPARATOR . $this->id . '.zip';
 		}
 		$this->archiveLocation = $location;
 		$zip = new ZipArchive();
@@ -135,6 +136,34 @@ class Problem extends ActiveRecord
 			throw new Exception('Schema');
 		}
 		
+	}
+	
+	public function queueForDispatch()
+	{
+		$servers = JudgeServer::find(array('id'));
+		
+		if ($servers)
+		{
+			$insQuery = 'INSERT INTO `oj_probdist_queue` (`pid`,`server`,`file`) VALUES ';
+			
+			$first = true;
+			foreach ($servers as $server)
+			{
+				if ($first)
+				{
+					$first = false;
+				}else
+				{
+					$insQuery .= ',';
+				}
+				
+				$insQuery .= "({$this->id},{$server->id},:archive)";
+			}
+			
+			$stmt = Database::Get()->prepare($insQuery);
+			$stmt->bindParam('archive',$this->archiveLocation);
+			$stmt->execute();
+		}
 	}
 	
 	public function purge()

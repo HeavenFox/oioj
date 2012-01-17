@@ -28,7 +28,7 @@ $(function(){
 	<li>Submitter: {$problem->user->username}</li>
 	<li>Submission: {$problem->submission}</li>
 	<li>Accepted: {$problem->accepted}</li>
-	{if $problem->source}$problem->source<li>Source: {$problem->source}</li>{/if}
+	{if $problem->source}<li>Source: {$problem->source}</li>{/if}
 </ul>
 </div>
 {block name="problem_submit_box"}

@@ -7,6 +7,7 @@ if (!isset($_SERVER['argc']))
 if ($_SERVER['argc'] != 2)
 {
 	fprintf(STDOUT,'Usage: php runcronjob.php QOS_LEVEL');
+	die();
 }
 
 set_time_limit(0);

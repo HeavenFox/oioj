@@ -25,7 +25,7 @@ class FreeProblemSet
 		$this->filename = $file;
 	}
 	
-	public function parse()
+	public function parse($handler = NULL)
 	{
 		$reader = new XMLReader();
 		$reader->open($this->filename);
@@ -147,6 +147,10 @@ class FreeProblemSet
 					
 					$cur->compare = $this->defaultCompare;
 					$this->problems[] = $cur;
+					if ($handler)
+					{
+						$handler($cur);
+					}
 				}
 				break;
 			}
@@ -171,6 +175,20 @@ class FreeProblemSet
 				$p->submit();
 				$p->createArchive();
 				$p->dispatch($server);
+			}
+		}
+	}
+	
+	public function queueForDispatch($handler = NULL)
+	{
+		foreach ($this->problems as $p)
+		{
+			$p->submit();
+			$p->createArchive();
+			$p->queueForDispatch();
+			if ($handler)
+			{
+				$handler($p);
 			}
 		}
 	}
