@@ -3,6 +3,10 @@ class OIOJ
 {
 	public static $template;
 	
+	private static $breadcrumbHandlerAdded = false;
+	
+	public static $breadcrumb = array();
+	
 	public static function InitTemplate()
 	{
 		import('template.Template');
@@ -30,7 +34,23 @@ class OIOJ
 	public static function GlobalMessage($message)
 	{
 		OIOJ::$template->assign('global_message',$message);
+	}
+	
+	public static function AddBreadcrumb($breadcrumb, $url = NULL)
+	{
+		if (!self::$breadcrumbHandlerAdded)
+		{
+			self::$breadcrumbHandlerAdded = true;
+			self::$template->addDisplayHandler(function(){
+				OIOJ::$template->assign('breadcrumb',OIOJ::$breadcrumb);
+			});
+		}
 		
+		if (is_string($breadcrumb))
+		{
+			$breadcrumb = array($breadcrumb => $url);
+		}
+		self::$breadcrumb = array_merge(self::$breadcrumb, $breadcrumb);
 	}
 }
 

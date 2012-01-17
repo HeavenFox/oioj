@@ -11,6 +11,7 @@ class ContestListModule
 	
 	public function showHomePage()
 	{
+		OIOJ::AddBreadcrumb('Arena');
 		$paramList = array('id','title','beginTime','endTime','regBegin','regDeadline','duration');
 		$compList = array('user' => array('id','username'));
 		$commonSuffix = ' LIMIT 0,5';

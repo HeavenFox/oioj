@@ -81,6 +81,13 @@ class ContestModule
 	{
 		$contest = Contest::first(array('id','title','description','regBegin','regDeadline','beginTime','endTime','duration','status'),array('user'=>array('username')),'WHERE `oj_contests`.`id`='.$this->contestId);
 		
+		if (!$contest)
+		{
+			throw new Exception('Invalid Contest');
+		}
+		
+		OIOJ::AddBreadcrumb(array('Arena' => 'index.php?mod=contestlist', $contest->title => ''));
+		
 		if (intval($contest->getOption('display_problem_title_before_start')) || $contest->status > Contest::STATUS_WAITING)
 		{
 			$contest->getComposite(array('problems' => array('id','title','input','output')));

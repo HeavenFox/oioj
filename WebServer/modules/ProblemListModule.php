@@ -10,8 +10,7 @@ class ProblemListModule
 	
 	public function run()
 	{
-		import('IO');
-		OIOJ::InitDatabase();
+		OIOJ::AddBreadcrumb('Problems');
 		$probPerPage = IO::GET('perpage', self::DEFAULT_PROBLEM_PER_PAGE, 'intval');
 		if ($probPerPage < 1 || $probPerPage > self::MAX_PROBLEM_PER_PAGE)
 		{

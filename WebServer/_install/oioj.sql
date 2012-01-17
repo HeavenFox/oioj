@@ -338,3 +338,25 @@ ALTER TABLE `oj_users_acl`
 ALTER TABLE `oj_users_tags`
   ADD CONSTRAINT `oj_users_tags_ibfk_1` FOREIGN KEY (`uid`) REFERENCES `oj_users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `oj_users_tags_ibfk_2` FOREIGN KEY (`tid`) REFERENCES `oj_tags` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+delimiter ;;
+CREATE PROCEDURE contest_judge(contest_id INT)
+BEGIN
+	DECLARE done INT DEFAULT FALSE;
+	DECLARE mid,mpid,muid INT DEFAULT 0;
+	DECLARE mcode TEXT;
+	DECLARE mlang VARCHAR(8);
+	DECLARE cur CURSOR FOR SELECT `id`,`pid`,`uid`,`code`,`lang` FROM `oj_contest_submissions` WHERE `cid` = contest_id AND `timestamp` = (SELECT MAX(`temp`.`timestamp`) FROM `oj_contest_submissions` AS `temp` WHERE `temp`.`uid`=`oj_contest_submissions`.`uid` AND `temp`.`pid`=`oj_contest_submissions`.`pid` AND `temp`.`cid` = contest_id);
+
+	DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+	OPEN cur;
+
+	ins: LOOP
+		FETCH cur INTO mid,mpid,muid,mcode,mlang;
+		IF done THEN
+		  LEAVE ins;
+		END IF;
+		INSERT INTO `oj_records` (`pid`,`uid`,`code`,`lang`,`timestamp`) VALUES (mpid,muid,mcode,mlang, UNIX_TIMESTAMP());
+		UPDATE `oj_contest_submissions` SET `rid` = LAST_INSERT_ID() WHERE `id` = mid;
+	END LOOP;
+END;;

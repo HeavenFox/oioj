@@ -5,6 +5,7 @@ import('Problem');
 
 class ProblemModule
 {
+	protected $problem;
 	public function run()
 	{
 		$probID = IO::GET('id',0,'intval');
@@ -20,15 +21,17 @@ class ProblemModule
 	
 	public function loadProblem($id)
 	{
-		$obj = Problem::first(array('id','title','body','accepted','submission','source','listing'),array('user' => array('username')),$id);
-		if (!$obj) return false;
+		$this->problem = Problem::first(array('id','title','body','accepted','submission','source','listing'),array('user' => array('username')),$id);
+		if (!$this->problem) return false;
 		OIOJ::$template->assign('pid', $id);
-		OIOJ::$template->assign('problem', $obj);
-		return $obj;
+		OIOJ::$template->assign('problem', $this->problem);
+		return $this->problem;
 	}
 	
 	public function display($probID)
 	{
+		OIOJ::AddBreadcrumb(array('Problems' => 'index.php?mod=problemlist', $this->problem->title => ''));
+		
 		OIOJ::$template->display('problem.tpl',$probID);
 	}
 }

@@ -47,7 +47,7 @@ class RecordsModule
 	{
 		$caseStr = array('Unknown','Time Limit Exceeded','Memory Limit Exceeded','Output Limit Exceeded','Forbidden System Call','Runtime Error','Wrong Answer','OK');
 		
-		$prefix = 'Case '.$li['CaseID'].': '.$caseStr[intval($li['CaseResult'])].'.';
+		$prefix = 'Case '.$li['CaseID'].': '.$caseStr[intval($li['CaseResult'])].'.'.' Score: '.$li['CaseScore'];
 						$timeMemory = ' Time: '.$li['CaseTime'].'s Memory: '.$li['CaseMemory'].'MB';
 						$str = '';
 						switch(intval($li['CaseResult']))
@@ -77,14 +77,14 @@ class RecordsModule
 			}
 		}else
 		{
-			//$db = Database::Get();
-			
+			$this->listRecords();
+		}
+	}
+	
+	public function listRecords()
+	{
+		OIOJ::AddBreadcrumb('Records');
 			$records = JudgeRecord::find(array('id','status','cases','lang','timestamp','score'),array('problem' => array('id','title'),'user' => array('id','username'),'server' => array('name')));
-			
-			//$stmt = $db->prepare('SELECT `oj_records`.`id` AS `id`,`pid`,`oj_problems`.`title` AS `prob_title`,`oj_records`.`uid`,`oj_users`.`username` AS `username`,`status`,`lang`,`server`,`oj_judgeservers`.`name` AS `server_name`, `cases`, `timestamp` FROM `oj_records` LEFT JOIN `oj_judgeservers` ON (`oj_judgeservers`.`id` = `server`) LEFT JOIN `oj_problems` ON (`pid` = `oj_problems`.`id`) LEFT JOIN `oj_users` ON (`oj_records`.`uid` = `oj_users`.`id`) LIMIT 0,50');
-			//$stmt->execute();
-			//$stmt->setFetchMode(PDO::FETCH_ASSOC);
-			//$records = $stmt->fetchAll();
 			
 			$statusStr = array('Waiting','Dispatched','Accepted','Compile Error','Rejected');
 			
@@ -123,7 +123,6 @@ class RecordsModule
 			
 			OIOJ::$template->assign('records',$records);
 			OIOJ::$template->display('records.tpl');
-		}
 	}
 }
 ?>

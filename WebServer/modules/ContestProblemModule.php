@@ -47,7 +47,7 @@ class ContestProblemModule extends ProblemModule
 	
 	public function loadContest()
 	{
-		$this->contest->fetch(array('endTime','duration'),array());
+		$this->contest->fetch(array('endTime','duration','title'),array());
 		$started = $this->contest->checkStarted(User::GetCurrent());
 		if (!$started)
 		{
@@ -60,6 +60,8 @@ class ContestProblemModule extends ProblemModule
 	
 	public function display($probID)
 	{
+		OIOJ::AddBreadcrumb(array('Arena' => 'index.php?mod=problemlist', $this->contest->title => "index.php?mod=contest&id={$this->contest->id}", $this->problem->title => ''));
+		
 		OIOJ::$template->display('contestproblem.tpl',$probID);
 	}
 	
