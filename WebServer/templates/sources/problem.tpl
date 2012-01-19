@@ -37,7 +37,7 @@ $(function(){
 	<div id="dropzone">
 	</div>
 	<div id="manual-upload">
-	<form method="post" enctype="multipart/form-data" action="index.php?mod=submit">
+	<form method="post" enctype="multipart/form-data" action="index.php?mod=submit&amp;solution=1">
 		<input type='hidden' name='id' value='{$problem->id}' />
 		<input type="file" name="source" />
 		<input type="submit" />

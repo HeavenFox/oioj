@@ -37,7 +37,7 @@ class SubmitModule
 			preg_match('/[0-9]+/',$_FILES['source']['name'],$matches);
 			if (!isset($matches[0]))
 			{
-				die(json_encode(array('error' => 'You did not indicate problem no.')));
+				throw new Exception('You did not indicate problem no.');
 			}
 			$problemID = intval($matches[0]);
 		}
@@ -49,7 +49,7 @@ class SubmitModule
 		
 		if (!isset($map[$lang]))
 		{
-			die(json_encode(array('error' => 'Unsupported language. Check if file extension is correct')));
+			throw new Exception('Unsupported language. Check if file extension is correct');
 		}
 		
 		$lang = $map[$lang];
@@ -66,7 +66,14 @@ class SubmitModule
 		
 		$record->dispatch();
 		
-		echo json_encode(array('record_id' => $record->id, 'server_name' => $record->server ? $record->server->name : 'To be determined'));
+		if (IO::GET('ajax'))
+		{
+			echo json_encode(array('record_id' => $record->id, 'server_name' => $record->server ? $record->server->name : 'To be determined'));
+		}
+		else
+		{
+			OIOJ::Redirect('Your submission has been received. Now redirecting to status monitoring page...','index.php?mod=records&id='.$record->id);
+		}
 	}
 	
 	public function showForm()
