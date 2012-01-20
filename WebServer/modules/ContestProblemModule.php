@@ -20,7 +20,7 @@ class ContestProblemModule extends ProblemModule
 			$probID = IO::GET('id',0,'intval');
 			$contID = IO::GET('cid',0,'intval');
 			// Check enrollment status
-			$this->contest = Contest::first(array('id','status'),NULL,$contID);
+			$this->contest = Contest::first(array('id','status'),$contID);
 			
 			if ($this->contest->status <= Contest::STATUS_WAITING)
 			{
@@ -47,7 +47,7 @@ class ContestProblemModule extends ProblemModule
 	
 	public function loadContest()
 	{
-		$this->contest->fetch(array('endTime','duration','title'),array());
+		$this->contest->fetch(array('endTime','duration','title'));
 		$started = $this->contest->checkStarted(User::GetCurrent());
 		if (!$started)
 		{
@@ -71,7 +71,7 @@ class ContestProblemModule extends ProblemModule
 		$contID = IO::POST('cid',0,'intval');
 		
 		// Check enrollment status
-		$contest = Contest::first(array('id','endTime','duration','status'),array(),$contID);
+		$contest = Contest::first(array('id','endTime','duration','status'),$contID);
 		$cu = User::GetCurrent();
 		if (!$contest->checkEnrollment($cu))
 		{

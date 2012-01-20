@@ -23,7 +23,7 @@ class JudgeServer extends ActiveRecord
 	
 	public static function GetAvailableServers()
 	{
-		return self::find(array('id','name','ip','port','workload','maxWorkload'),null,'WHERE workload < maxWorkload AND `online` = 1 ORDER BY workload ASC');
+		return self::find(array('id','name','ip','port','workload','maxWorkload'),'WHERE workload < maxWorkload AND `online` = 1 ORDER BY workload ASC');
 	}
 	
 	public function dispatch($task)

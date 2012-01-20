@@ -47,7 +47,7 @@ class ContestModule
 			throw new Exception('You are not allowed to register');
 		}
 		
-		$this->contest->fetch(array('regBegin', 'regDeadline', 'publicity'),NULL);
+		$this->contest->fetch(array('regBegin', 'regDeadline', 'publicity'));
 		
 		if ($this->contest->publicity <= 1 && !$user->ableTo('viewcontest_'.$this->contestId))
 		{
@@ -79,7 +79,7 @@ class ContestModule
 	
 	public function showProfile()
 	{
-		$contest = Contest::first(array('id','title','description','regBegin','regDeadline','beginTime','endTime','duration','status'),array('user'=>array('username')),'WHERE `oj_contests`.`id`='.$this->contestId);
+		$contest = Contest::first(array('id','title','description','regBegin','regDeadline','beginTime','endTime','duration','status','user'=>array('username')),'WHERE `oj_contests`.`id`='.$this->contestId);
 		
 		if (!$contest)
 		{

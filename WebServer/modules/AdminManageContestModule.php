@@ -30,7 +30,7 @@ class AdminManageContestModule
 	
 	private function getProblemTitle($id)
 	{
-		$p = Problem::first(array('title'),NULL,$id);
+		$p = Problem::first(array('title'),$id);
 		if ($p)
 		return $p->title;
 		else

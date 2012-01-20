@@ -278,7 +278,7 @@ class Contest extends ActiveRecord
 		
 		if (!isset($this->duration) || !isset($this->endTime))
 		{
-			$this->fetch(array('duration','endTime'),NULL);
+			$this->fetch(array('duration','endTime'));
 		}
 		return min($start + $this->duration,$this->endTime);
 	}

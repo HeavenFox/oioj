@@ -21,7 +21,7 @@ class ProblemModule
 	
 	public function loadProblem($id)
 	{
-		$this->problem = Problem::first(array('id','title','body','accepted','submission','source','listing'),array('user' => array('username')),$id);
+		$this->problem = Problem::first(array('id','title','body','accepted','submission','source','listing','user' => array('username')),$id);
 		if (!$this->problem) return false;
 		OIOJ::$template->assign('pid', $id);
 		OIOJ::$template->assign('problem', $this->problem);

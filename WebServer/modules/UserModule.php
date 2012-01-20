@@ -41,7 +41,7 @@ class UserModule
 		$password = IO::POST('password','',null);
 		
 		
-		$obj = User::first(array('id','username','password'),null,'WHERE `username` = ? AND `password` = SHA1(CONCAT(?,`salt`))',array($username,$password));
+		$obj = User::first(array('id','username','password'),'WHERE `username` = ? AND `password` = SHA1(CONCAT(?,`salt`))',array($username,$password));
 		
 		if (!$obj)
 		{
@@ -71,7 +71,7 @@ class UserModule
 		OIOJ::InitDatabase();
 		$suppliedCode = IO::POST('invitation');
 		
-		$invit = Invitation::first(array('id','user'),null,'WHERE `code` = ?', array($suppliedCode));
+		$invit = Invitation::first(array('id','user'),'WHERE `code` = ?', array($suppliedCode));
 		
 		if (!$invit || intval($invit->user))
 		{

@@ -40,7 +40,7 @@ class RecordsModule
 	
 	private function getSingleRecord()
 	{
-		return JudgeRecord::first(array('id','status','cases','score'),array('server' => array('name')),IO::GET('id',0,'intval'));
+		return JudgeRecord::first(array('id','status','cases','score','server' => array('name')),IO::GET('id',0,'intval'));
 	}
 	
 	public function formatCaseResult($li)
@@ -84,7 +84,7 @@ class RecordsModule
 	public function listRecords()
 	{
 		OIOJ::AddBreadcrumb('Records');
-			$records = JudgeRecord::find(array('id','status','cases','lang','timestamp','score'),array('problem' => array('id','title'),'user' => array('id','username'),'server' => array('name')));
+			$records = JudgeRecord::find(array('id','status','cases','lang','timestamp','score','problem' => array('id','title'),'user' => array('id','username'),'server' => array('name')));
 			
 			$statusStr = array('Waiting','Dispatched','Accepted','Compile Error','Rejected');
 			

@@ -19,6 +19,9 @@ class ActiveRecord
 		}
 	}
 	
+	/**
+	 * Submit a record. Depending whether or not its primary key has a value, it will be updated or added
+	 */
 	public function submit()
 	{
 		if (isset($this->_propValues[static::$keyProperty])) {
@@ -28,8 +31,16 @@ class ActiveRecord
 		}
 	}
 	
+	/**
+	 * Get composites of current record
+	 * @param array $composites list of composite properties
+	 */
 	public function getComposite($composites)
 	{
+		if (is_string($composites))
+		{
+			$composites = array($composites);
+		}
 		foreach ($composites as $k => $v)
 		{
 			$className = static::$schema[$k]['class'];
@@ -37,7 +48,7 @@ class ActiveRecord
 			case 'many':
 				if (isset(static::$schema[$k]['junction']))
 				{
-					$this->_propValues[$k] = $className::find($v,null,
+					$this->_propValues[$k] = $className::find($v,
 															  'LEFT JOIN `'.static::$schema[$k]['junction'].
 															  '` ON (`'.$className::$tableName.'`.`'.$className::$keyProperty.'` = `'.static::$schema[$k]['junction'].'`.`'.static::$schema[$k]['column'][1].'`)'.
 															  ' WHERE `'.static::$schema[$k]['junction'].'`.`'. static::$schema[$k]['column'][0] .'` = '.$this->_propValues[static::$keyProperty]);
@@ -45,17 +56,22 @@ class ActiveRecord
 				}
 				else
 				{
-					$this->_propValues[$k] = $className::find($v,null,'WHERE `'. static::$schema[$k]['column'] .'` = '.$this->_propValues[static::$keyProperty]);
+					$this->_propValues[$k] = $className::find($v,'WHERE `'. static::$schema[$k]['column'] .'` = '.$this->_propValues[static::$keyProperty]);
 				}
 				break;
 			case 'one':
-				
-				$this->_propValues[$k] = $className::first($v,null,'WHERE `'. static::$schema[$k]['column'] .'` = '.$this->_propValues[static::$keyProperty]);
+				$this->_propValues[$k] = $className::first($v,'WHERE `'. static::$schema[$k]['column'] .'` = '.$this->_propValues[static::$keyProperty]);
 				break;
 			}
 		}
 	}
 	
+	/**
+	 * Check whether a property exists
+	 * It may be easier to use isset instead
+	 * @param string $prop property
+	 * @return bool
+	 */
 	public function propertyExists($prop)
 	{
 		return isset($this->_propValues[$prop]);
@@ -70,7 +86,7 @@ class ActiveRecord
 		foreach ($this->_propUpdated as $k => $v)
 		{
 			if ($first) {$first = false;} else {$queryStr .= ',';}
-			$queryStr .= "`".self::_getDatabaseColumn($k)."`";
+			$queryStr .= "`".self::Column($k)."`";
 		}
 		$queryStr .= ') VALUES (';
 		$arr = array();
@@ -107,7 +123,7 @@ class ActiveRecord
 				else
 					$queryStr .= ',';
 				
-				$queryStr .= self::_getDatabaseColumn($k);
+				$queryStr .= self::Column($k);
 				$queryStr .= ' = ?';
 				$arr[] = $this->getDatabaseRepresentation($k);
 			}
@@ -118,18 +134,16 @@ class ActiveRecord
 		$stmt->execute($arr);
 	}
 	
-	
-	
 	/**
 	 * Find records matching specific criteria
 	 * 
 	 * @param array $properties
-	 * @param array $composites
 	 * @param string $suffix
+	 * @param array $data
 	 */
-	public static function find($properties, $composites = null, $suffix = '', $data = array())
+	public static function find($properties, $suffix = '', $data = array())
 	{
-		$queryStr = self::_makeQueryString($properties, $composites, $suffix);
+		$queryStr = self::_makeQueryString($properties, $suffix);
 		$resultSet = array();
 		$stmt = Database::Get()->prepare($queryStr);
 		$stmt->execute($data);
@@ -137,26 +151,21 @@ class ActiveRecord
 		foreach($stmt as $row)
 		{
 			$obj = new static;
-			/*
-			for ($i = 0; $i < count($properties); $i++)
-			{
-				$obj->_propValues[$properties[$i]] = $row[$i];
-			}*/
-			$obj->_fillRow($row, $properties, $composites);
+			$obj->_fillRow($row, $properties);
 			$resultSet[] = $obj;
 		}
 		return $resultSet;
 	}
 	
-	public static function first($properties, $composites, $suffix = '', $data = array())
+	public static function first($properties, $suffix = '', $data = array())
 	{
 		$obj = new static;
-		return $obj->fetch($properties, $composites, $suffix, $data);
+		return $obj->fetch($properties, $suffix, $data);
 	}
 	
 	
 	
-	public function fetch($properties, $composites, $suffix = null, $data = array())
+	public function fetch($properties, $suffix = null, $data = array())
 	{
 		if ($suffix === null)
 		{
@@ -168,29 +177,47 @@ class ActiveRecord
 			$suffix = $this->_makeIdClause($suffix);
 		}
 		
-		$queryStr = self::_makeQueryString($properties, $composites, $suffix . ' LIMIT 0,1');
+		$queryStr = self::_makeQueryString($properties, $suffix . ' LIMIT 0,1');
 		
 		$stmt = Database::Get()->prepare($queryStr);
 		$stmt->execute($data);
 		$row = $stmt->fetch(PDO::FETCH_NUM);
 		
 		if ($row) {
-			$this->_fillRow($row, $properties, $composites);
+			$this->_fillRow($row, $properties);
 			return $this;
 		} else {
 			return null;
 		}
-		
-		//return static::first($query, $properties, 'WHERE `'.static::$keyProperty . "` = '{$id}'");
 	}
 	
-	public static function findByQuery($query, $properties, $composites)
-	{
-	}
-	
-	public function fetchByQuery($properties, $composites, $query)
+	public static function firstByQuery($properties, $query, $data)
 	{
 		
+	}
+	
+	public static function findByQuery($properties, $query, $data)
+	{
+		
+	}
+	
+	public function fetchByQuery($properties, $query, $data)
+	{
+		
+	}
+	
+	public static function Table()
+	{
+		return '`'.static::$tableName.'`';
+	}
+	
+	public static function Column($k)
+	{
+		if (isset(static::$schema[$k]['column']))
+		{
+			$k = static::$schema[$k]['column'];
+		}
+		return '`'.static::$tableName.'`.`'.$k.'`';
 	}
 	
 	public function validate()
@@ -231,30 +258,38 @@ class ActiveRecord
 		$this->_propValues[$param] = $value;
 	}
 	
-	public function _fillRow($row, $properties, $composites)
+	public function _fillRow($row, $properties)
 	{
 		$i = 0;
 		if (is_array($properties))
 		{
-			foreach ($properties as $v)
+			foreach ($properties as $prop => $v)
 			{
-				$this->_preprocessSet($v,$row[$i]);
-				$i++;
+				if (is_int($prop))
+				{
+					$this->_preprocessSet($v,$row[$i]);
+					$i++;
+				}else
+				{
+/*
 			}
 		}
 		if (is_array($composites))
 		{
 			foreach ($composites as $prop => $comp)
 			{
-				if (!isset($this->_propValues[$prop]) || !($this->_propValues[$prop] instanceof ActiveRecord))
-				{
-					$className = static::$schema[$prop]['class'];
-					$this->_propValues[$prop] = new $className;
-				}
-				foreach ($comp as $v)
-				{
-					$this->_propValues[$prop]->_preprocessSet($v,$row[$i]);
-					$i++;
+*/
+					$comp = is_array($v) ? $v : array($v);
+					if (!isset($this->_propValues[$prop]) || !($this->_propValues[$prop] instanceof ActiveRecord))
+					{
+						$className = static::$schema[$prop]['class'];
+						$this->_propValues[$prop] = new $className;
+					}
+					foreach ($comp as $v)
+					{
+						$this->_propValues[$prop]->_preprocessSet($v,$row[$i]);
+						$i++;
+					}
 				}
 			}
 		}
@@ -262,7 +297,7 @@ class ActiveRecord
 	
 	private function _makeIdClause($id)
 	{
-		return 'WHERE `'.static::$tableName.'`.`'.static::_getDatabaseColumn(static::$keyProperty).'` = '.$id;
+		return 'WHERE '.static::Column(static::$keyProperty).' = '.$id;
 	}
 	
 	public function _preprocessGet($param)
@@ -326,41 +361,46 @@ class ActiveRecord
 		unset($this->_propValues[static::$keyProperty]);
 	}
 	
-	protected static function _makeQueryString($properties, $composites, $suffix)
+	protected static function _makeQueryString($properties, $suffix)
 	{
 		$queryStr = 'SELECT ';
 		$first = true;
 		if ($properties)
 		{
-			foreach ($properties as $prop)
+			foreach ($properties as $k => $v)
 			{
-				if ($first){
-					$first = false;
-				}else
+				if (is_int($k))
 				{
-					$queryStr .= ',';
-				}
-				$queryStr .= "`".static::$tableName."`.`".self::_getDatabaseColumn($prop)."`";
-			}
-		}
-		
-		if ($composites)
-		{
-			foreach ($composites as $k => $v)
-			{
-				if (static::$schema[$k]['comp'] == 'one')
-				{
-					$className = static::$schema[$k]['class'];
+					// It is a normal property
+					$prop = $v;
 					
-					foreach ($v as $prop)
+					if ($first){
+						$first = false;
+					}else
 					{
-						if ($first){
-							$first = false;
-						}else
+						$queryStr .= ',';
+					}
+					$queryStr .= self::Column($prop);
+				}
+				else
+				{
+					// It is a composite
+					$v = is_array($v) ? $v : array($v);
+					
+					if (static::$schema[$k]['comp'] == 'one')
+					{
+						$className = static::$schema[$k]['class'];
+						
+						foreach ($v as $prop)
 						{
-							$queryStr .= ',';
+							if ($first){
+								$first = false;
+							}else
+							{
+								$queryStr .= ',';
+							}
+							$queryStr.= $className::Column($prop);
 						}
-						$queryStr.='`'.$className::$tableName.'`.`'.$className::_getDatabaseColumn($prop).'`';
 					}
 				}
 			}
@@ -368,30 +408,24 @@ class ActiveRecord
 		
 		$queryStr .= " FROM `".static::$tableName."` ";
 		
-		if ($composites)
+		if ($properties)
 		{
-			foreach ($composites as $k => $v)
+			foreach ($properties as $k => $v)
 			{
-				if (static::$schema[$k]['comp'] == 'one')
+				if (is_string($k))
 				{
-					$className = static::$schema[$k]['class'];
-				
-					$queryStr.='LEFT JOIN `'.$className::$tableName.'` ON `'.$className::$tableName.'`.`'.$className::$keyProperty.'`=`'.static::$tableName.'`.`'.static::$schema[$k]['column'].'` ';
+					if (static::$schema[$k]['comp'] == 'one')
+					{
+						$className = static::$schema[$k]['class'];
 					
+						$queryStr.='LEFT JOIN `'.$className::$tableName.'` ON `'.$className::$tableName.'`.`'.$className::$keyProperty.'`='.static::Column($k).' ';
+						
+					}
 				}
 			}
 		}
 		$queryStr .= $suffix;
 		return $queryStr;
-	}
-	
-	public static function _getDatabaseColumn($k)
-	{
-		if (isset(static::$schema[$k]['column']))
-		{
-			return static::$schema[$k]['column'];
-		}
-		return $k;
 	}
 	
 	private function getDatabaseRepresentation($k)

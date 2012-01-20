@@ -23,7 +23,7 @@ class ProblemListModule
 			$pageNum = 1;
 		}
 		$lowerLimit = ($pageNum-1)*$probPerPage;
-		$problems = Problem::find(array('id','title','submission','accepted'), null, "WHERE `listing` > 0 LIMIT {$lowerLimit},{$probPerPage}");
+		$problems = Problem::find(array('id','title','submission','accepted'), "WHERE `listing` > 0 LIMIT {$lowerLimit},{$probPerPage}");
 		
 		OIOJ::$template->assign('problems',$problems);
 		OIOJ::$template->display('problemlist.tpl');

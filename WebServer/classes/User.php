@@ -26,7 +26,7 @@ class User extends ActiveRecord
 		if (IO::Cookie('uid'))
 		{
 			// Log in automatically
-			$obj = self::first(array('id','username','password'),null,'WHERE `id` = '.IO::Cookie('uid',0,'intval'));
+			$obj = self::first(array('id','username','password'),'WHERE `id` = '.IO::Cookie('uid',0,'intval'));
 			if ($obj && IO::Cookie('password') == $obj->password)
 			{
 				return self::$currentUser = $obj;

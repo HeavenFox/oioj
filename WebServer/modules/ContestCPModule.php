@@ -42,7 +42,7 @@ class ContestCPModule
 	{
 		$this->cid = IO::GET('id',0,'intval');
 		
-		$this->contest = Contest::first(array('title','status','user'),NULL,$this->cid);
+		$this->contest = Contest::first(array('title','status','user'),$this->cid);
 		
 		$user = User::GetCurrent();
 		

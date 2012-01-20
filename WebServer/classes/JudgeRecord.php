@@ -41,7 +41,7 @@ class JudgeRecord extends ActiveRecord
 	{
 		$db = Database::Get();
 		$db->beginTransaction();
-		$rec = JudgeRecord::first(array('id','lang','code'),array('problem' => array('id')),'WHERE `status` = '.self::STATUS_WAITING.' ORDER BY `timestamp` ASC');
+		$rec = JudgeRecord::first(array('id','lang','code','problem' => array('id')),'WHERE `status` = '.self::STATUS_WAITING.' ORDER BY `timestamp` ASC');
 		$rec->setTokens();
 		$rec->dispatch();
 		$db->commit();
@@ -51,7 +51,7 @@ class JudgeRecord extends ActiveRecord
 	{
 		$db = Database::Get();
 		$db->beginTransaction();
-		$recs = JudgeRecord::find(array('id','lang','code'),array('problem' => array('id')),'WHERE `status` = '.self::STATUS_WAITING.' ORDER BY `timestamp` ASC');
+		$recs = JudgeRecord::find(array('id','lang','code','problem' => array('id')),'WHERE `status` = '.self::STATUS_WAITING.' ORDER BY `timestamp` ASC');
 		foreach ($recs as $rec)
 		{
 			$rec->setTokens();
@@ -104,7 +104,7 @@ class JudgeRecord extends ActiveRecord
 		
 		import('JudgeServer');
 		
-		$this->fetch(array(),array('server' => array('id'),'problem'=>array('id')));
+		$this->fetch(array('server' => array('id'),'problem'=>array('id')));
 		$this->server->addWorkload(-1);
 		$this->problem->updateSubmissionStats(1, $this->status == self::STATUS_ACCEPTED ? 1 : 0);
 	}

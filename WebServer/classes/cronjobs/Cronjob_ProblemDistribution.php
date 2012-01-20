@@ -14,7 +14,7 @@ class Cronjob_ProblemDistribution extends Cronjob
 		$problems = array();
 		$problems_server = array();
 		
-		$servers = JudgeServer::find(array('id','name','ip','port','ftpUsername','ftpPassword'),null,'WHERE `online` = 1');
+		$servers = JudgeServer::find(array('id','name','ip','port','ftpUsername','ftpPassword'),'WHERE `online` = 1');
 		
 		$toRemove = array();
 		
@@ -25,7 +25,7 @@ class Cronjob_ProblemDistribution extends Cronjob
 			$pid = intval($row['pid']);
 			if (!isset($problems[$pid]))
 			{
-				$problems[$pid] = Problem::first(array('id','type','input','output','compare'),NULL,$pid);
+				$problems[$pid] = Problem::first(array('id','type','input','output','compare'),$pid);
 				$problems[$pid]->getCases();
 				$problems[$pid]->archiveLocation = $row['file'];
 			}

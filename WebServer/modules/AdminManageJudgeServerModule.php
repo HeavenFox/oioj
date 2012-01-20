@@ -38,7 +38,7 @@ class AdminManageJudgeServerModule
 	
 	public function edit()
 	{
-		$obj = JudgeServer::first(array('id','name','ip','port','maxWorkload','ftpUsername','online'),NULL,IO::GET('id',0,'intval'));
+		$obj = JudgeServer::first(array('id','name','ip','port','maxWorkload','ftpUsername','online'),IO::GET('id',0,'intval'));
 		OIOJ::$template->assign('server',$obj);
 		OIOJ::$template->display('admin_editjudgeserver.tpl');
 	}

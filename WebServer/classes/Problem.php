@@ -74,7 +74,7 @@ class Problem extends ActiveRecord
 	
 	public function getCases()
 	{
-		$this->testCases = TestCase::find(array('cid','input','answer','timelimit','memorylimit','score'),NULL,'WHERE `pid` = '.$this->id);
+		$this->testCases = TestCase::find(array('cid','input','answer','timelimit','memorylimit','score'),'WHERE `pid` = '.$this->id);
 	}
 	
 	public function createArchive($location = null)
