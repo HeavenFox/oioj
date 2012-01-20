@@ -57,6 +57,15 @@ class User extends ActiveRecord
 		
 		parent::add();
 		
+		$tags = explode(';',Settings::Get('user_default_tags'));
+		foreach ($tags as $k => $tagid)
+		{
+			$tagid = intval($tagid);
+			$tags[$k] = "({$this->id},{$tagid})";
+		}
+		
+		Database::Get()->query('INSERT INTO `oj_user_tags` (`uid`,`tid`) VALUES '.implode(',',$tags));
+		
 		$this->createSession();
 	}
 	
@@ -66,10 +75,10 @@ class User extends ActiveRecord
 		
 		$str = 'SELECT  `key` , SUM( `permission`) FROM (
 SELECT  `key` ,  `permission` 
-FROM  `oj_users_acl` WHERE `uid` = ?
+FROM  `oj_user_acl` WHERE `uid` = ?
 UNION ALL 
 SELECT  `key` ,  `permission` 
-FROM  `oj_tags_acl` LEFT JOIN `oj_users_tags` USING (tid) WHERE `oj_users_tags`.`uid` = ?
+FROM  `oj_tag_acl` LEFT JOIN `oj_user_tags` USING (tid) WHERE `oj_user_tags`.`uid` = ?
 ) AS `perm_temp`
 GROUP BY  `key`';
 		$db = Database::Get();

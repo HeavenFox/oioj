@@ -231,7 +231,7 @@ INSERT INTO `oj_tags` VALUES(1, 'Member');
 INSERT INTO `oj_tags` VALUES(2, 'Admin');
 INSERT INTO `oj_tags` VALUES(3, 'Instructor');
 
-CREATE TABLE `oj_tags_acl` (
+CREATE TABLE `oj_tag_acl` (
   `tid` int(11) NOT NULL,
   `key` varchar(32) NOT NULL,
   `permission` tinyint(4) NOT NULL,
@@ -239,10 +239,10 @@ CREATE TABLE `oj_tags_acl` (
   KEY `key` (`key`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-INSERT INTO `oj_tags_acl` VALUES(1, 'submit_solution', 1);
-INSERT INTO `oj_tags_acl` VALUES(2, 'admin_cp', 1);
-INSERT INTO `oj_tags_acl` VALUES(3, 'add_problem', 1);
-INSERT INTO `oj_tags_acl` VALUES(2, 'add_problem', 1);
+INSERT INTO `oj_tag_acl` VALUES(1, 'submit_solution', 1);
+INSERT INTO `oj_tag_acl` VALUES(2, 'admin_cp', 1);
+INSERT INTO `oj_tag_acl` VALUES(3, 'add_problem', 1);
+INSERT INTO `oj_tag_acl` VALUES(2, 'add_problem', 1);
 
 CREATE TABLE `oj_testcases` (
   `pid` int(11) NOT NULL,
@@ -267,7 +267,7 @@ CREATE TABLE `oj_users` (
 
 INSERT INTO `oj_users` VALUES(1, 'HeavenFox', 'heavenfox@heavenfox.org', 'cc14565dd5e9a62682133a2f5d33f1ec2c514f05', '1ff8857242d409176f32252014370d8c');
 
-CREATE TABLE `oj_users_acl` (
+CREATE TABLE `oj_user_acl` (
   `uid` int(11) NOT NULL,
   `key` varchar(32) NOT NULL,
   `permission` tinyint(4) NOT NULL,
@@ -275,9 +275,9 @@ CREATE TABLE `oj_users_acl` (
   KEY `key` (`key`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-INSERT INTO `oj_users_acl` VALUES(1, 'omnipotent', 10);
+INSERT INTO `oj_user_acl` VALUES(1, 'omnipotent', 10);
 
-CREATE TABLE `oj_users_tags` (
+CREATE TABLE `oj_user_tags` (
   `uid` int(11) NOT NULL,
   `tid` int(11) NOT NULL,
   KEY `uid` (`uid`),
@@ -315,7 +315,7 @@ ALTER TABLE `oj_probdist_queue`
 ALTER TABLE `oj_problems`
   ADD CONSTRAINT `oj_problems_ibfk_1` FOREIGN KEY (`uid`) REFERENCES `oj_users` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
-ALTER TABLE `oj_problems_tags`
+ALTER TABLE `oj_problem_tags`
   ADD CONSTRAINT `oj_problems_tags_ibfk_1` FOREIGN KEY (`pid`) REFERENCES `oj_problems` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `oj_problems_tags_ibfk_2` FOREIGN KEY (`tid`) REFERENCES `oj_tags` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
@@ -326,18 +326,18 @@ ALTER TABLE `oj_resources_tags`
   ADD CONSTRAINT `oj_resources_tags_ibfk_1` FOREIGN KEY (`rid`) REFERENCES `oj_resources` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `oj_resources_tags_ibfk_2` FOREIGN KEY (`tid`) REFERENCES `oj_tags` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
-ALTER TABLE `oj_tags_acl`
-  ADD CONSTRAINT `oj_tags_acl_ibfk_1` FOREIGN KEY (`tid`) REFERENCES `oj_tags` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `oj_tag_acl`
+  ADD CONSTRAINT `oj_tag_acl_ibfk_1` FOREIGN KEY (`tid`) REFERENCES `oj_tags` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 ALTER TABLE `oj_testcases`
   ADD CONSTRAINT `oj_testcases_ibfk_1` FOREIGN KEY (`pid`) REFERENCES `oj_problems` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
-ALTER TABLE `oj_users_acl`
-  ADD CONSTRAINT `oj_users_acl_ibfk_1` FOREIGN KEY (`uid`) REFERENCES `oj_users` (`id`) ON DELETE CASCADE;
+ALTER TABLE `oj_user_acl`
+  ADD CONSTRAINT `oj_user_acl_ibfk_1` FOREIGN KEY (`uid`) REFERENCES `oj_users` (`id`) ON DELETE CASCADE;
 
-ALTER TABLE `oj_users_tags`
-  ADD CONSTRAINT `oj_users_tags_ibfk_1` FOREIGN KEY (`uid`) REFERENCES `oj_users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `oj_users_tags_ibfk_2` FOREIGN KEY (`tid`) REFERENCES `oj_tags` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `oj_user_tags`
+  ADD CONSTRAINT `oj_user_tags_ibfk_1` FOREIGN KEY (`uid`) REFERENCES `oj_users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `oj_user_tags_ibfk_2` FOREIGN KEY (`tid`) REFERENCES `oj_tags` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 delimiter ;;
 CREATE PROCEDURE contest_judge(contest_id INT)
