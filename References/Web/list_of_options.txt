@@ -4,3 +4,4 @@ token
 backup_token
 recaptcha_public
 recaptcha_private
+user_default_tags
