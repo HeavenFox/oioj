@@ -87,7 +87,7 @@ class RecordsModule
 		OIOJ::AddBreadcrumb('Records');
 		
 		$perPage = IO::GET('perpage', 20, 'intval');
-		$pageNum = IO::GET('page', 1, 'intval');
+		$pageNum = IO::REQUEST('page', 1, 'intval');
 		$maxPage = 1;
 		
 		$selector = new RecordSelector('JudgeRecord');

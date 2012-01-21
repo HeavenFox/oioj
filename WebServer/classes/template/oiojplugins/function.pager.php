@@ -12,7 +12,7 @@ function smarty_function_pager($params, Smarty_Internal_Template $smarty)
 		}
 	}
 	
-	$html = '<ul class="pager">';
+	$html = '<div class="pager"><ul>';
 	
 	$beg = $params['cur'] - $params['adj'];
 	if ($beg < 1)
@@ -28,7 +28,8 @@ function smarty_function_pager($params, Smarty_Internal_Template $smarty)
 	
 	$t = function ($val) use ($params)
 	{
-		$html = '<li>';
+		$html = '<li'.($val == $params['cur'] ? ' class="current"' : '').'>';
+		
 		if ($val != $params['cur'])
 		{
 			$html .= '<a href="'.sprintf($params['url'],$val).'">';
@@ -62,7 +63,7 @@ function smarty_function_pager($params, Smarty_Internal_Template $smarty)
 	$html .= '</ul>';
 	if (isset($params['form']))
 	{
-		$html .= '<form action="'.$params['form'].'" method="POST"><input type="number" name="'.$params['var'].'" min="1" max="'.$params['max'].'" step="1" /><input type="submit" value="Go" /></form>';
+		$html .= '<form action="'.$params['form'].'" method="POST"><input type="number" name="'.$params['var'].'" min="1" max="'.$params['max'].'" step="1" /><input type="submit" value="Go" /></form></div>';
 	}
 	return $html;
 }

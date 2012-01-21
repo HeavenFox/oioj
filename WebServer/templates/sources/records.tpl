@@ -3,6 +3,7 @@
 <script type="text/javascript" src="scripts/records.js"></script>
 <link rel='stylesheet' href='templates/list.css' />
 <link rel="stylesheet" href="templates/records.css" />
+<link rel="stylesheet" href="templates/pager.css" />
 {/block}
 {block name="body"}
 <table id='records' class='tablist'>

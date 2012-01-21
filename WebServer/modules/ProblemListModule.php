@@ -18,7 +18,7 @@ class ProblemListModule
 			$probPerPage = self::DEFAULT_PROBLEM_PER_PAGE;
 		}
 		
-		$pageNum = IO::GET('page', 1, 'intval');
+		$pageNum = IO::REQUEST('page', 1, 'intval');
 		
 		$maxPage = 1;
 		

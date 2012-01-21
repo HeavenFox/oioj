@@ -1,6 +1,7 @@
 {extends file="base.tpl"}
 {block name="html_head" append}
 <link rel='stylesheet' href='templates/list.css' />
+<link rel='stylesheet' href='templates/pager.css' />
 {/block}
 {block name="body"}
 <table id='problems' class='tablist'>
