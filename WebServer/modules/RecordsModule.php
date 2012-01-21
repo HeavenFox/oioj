@@ -2,6 +2,7 @@
 defined('IN_OIOJ') || die('Forbidden');
 
 import('JudgeRecord');
+import('RecordSelector');
 
 class RecordsModule
 {
@@ -84,7 +85,13 @@ class RecordsModule
 	public function listRecords()
 	{
 		OIOJ::AddBreadcrumb('Records');
-			$records = JudgeRecord::find(array('id','status','cases','lang','timestamp','score','problem' => array('id','title'),'user' => array('id','username'),'server' => array('name')));
+		
+		$perPage = IO::GET('perpage', 20, 'intval');
+		$pageNum = IO::GET('page', 1, 'intval');
+		$maxPage = 1;
+		
+		$selector = new RecordSelector('JudgeRecord');
+			$records = $selector->findAtPage($pageNum, $perPage, $maxPage, array('id','status','cases','lang','timestamp','score','problem' => array('id','title'),'user' => array('id','username'),'server' => array('name')));
 			
 			$statusStr = array('Waiting','Dispatched','Accepted','Compile Error','Rejected');
 			
@@ -119,7 +126,8 @@ class RecordsModule
 				}
 				$v->cases = $detailList;
 			}
-			
+			OIOJ::$template->assign('page_cur',$pageNum);
+		OIOJ::$template->assign('page_max',$maxPage);
 			OIOJ::$template->assign('records',$records);
 			OIOJ::$template->display('records.tpl');
 	}

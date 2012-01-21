@@ -29,4 +29,5 @@
 {/foreach}
 </tbody>
 </table>
+{pager cur=$page_cur max=$page_max url="index.php?mod=records&page=%d" form="index.php?mod=records" var="page"}
 {/block}

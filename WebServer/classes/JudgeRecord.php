@@ -23,7 +23,9 @@ class JudgeRecord extends ActiveRecord
 		'cases' => array('class' => 'string', 'setter' => 'serialize', 'getter' => 'unserialize'),
 		'code' => array('class' => 'text'),
 		'score' => array('class' => 'int'),
-		'timestamp' => array('class' => 'int')
+		'timestamp' => array('class' => 'int'),
+		
+		'count' => array('class' => 'int', 'query' => 'count(`id`)')
 	);
 		
 	static $keyProperty = 'id';
