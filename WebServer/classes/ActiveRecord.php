@@ -86,7 +86,7 @@ class ActiveRecord
 		foreach ($this->_propUpdated as $k => $v)
 		{
 			if ($first) {$first = false;} else {$queryStr .= ',';}
-			$queryStr .= "`".self::Column($k)."`";
+			$queryStr .= self::Column($k);
 		}
 		$queryStr .= ') VALUES (';
 		$arr = array();
