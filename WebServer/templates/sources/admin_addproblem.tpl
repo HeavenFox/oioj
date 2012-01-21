@@ -12,10 +12,12 @@ $(document).ready(function(){
 		toolbar: [
 			{ name: 'document', items : [ 'Preview' ] },
 			{ name: 'basicstyles', items : [ 'Bold','Italic','Subscript','Superscript','-','RemoveFormat' ] },
-			{ name: 'paragraph', items : [ 'NumberedList','BulletedList' ] },
+			{ name: 'paragraph', items : [ 'NumberedList','BulletedList','Image' ] },
 			{ name: 'links', items : [ 'Link','Unlink' ] },
 			{ name: 'tools', items : [ 'Maximize' ] }
-		]
+		],
+		filebrowserBrowseUrl : 'test.html',
+        filebrowserUploadUrl : 'test.php'
 	});
 });
 </script>

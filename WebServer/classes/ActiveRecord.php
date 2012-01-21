@@ -380,7 +380,15 @@ class ActiveRecord
 					{
 						$queryStr .= ',';
 					}
-					$queryStr .= self::Column($prop);
+					if (isset(static::$schema[$prop]['query']))
+					{
+						$queryStr .= '('.static::$schema[$prop]['query'].')';
+					}
+					else
+					{
+						$queryStr .= self::Column($prop);
+					}
+					
 				}
 				else
 				{

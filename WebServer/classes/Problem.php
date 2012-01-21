@@ -29,7 +29,9 @@ class Problem extends ActiveRecord
 			'accepted' => array('class' => 'int'),
 			'listing' => array('class' => 'bool'),
 			'dispatched' => array('class' => 'bool'),
-			'user' => array('class' => 'User', 'comp' => 'one', 'column' => 'uid')
+			'user' => array('class' => 'User', 'comp' => 'one', 'column' => 'uid'),
+		
+			'count' => array('class' => 'int', 'query' => 'count(`id`)')
 		);
 	public static $tableName = 'oj_problems';
 	public static $keyProperty = 'id';

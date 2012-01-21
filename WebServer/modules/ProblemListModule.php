@@ -2,6 +2,7 @@
 defined('IN_OIOJ') || die('Forbidden');
 
 import('Problem');
+import('RecordSelector');
 
 class ProblemListModule
 {
@@ -17,15 +18,18 @@ class ProblemListModule
 			$probPerPage = self::DEFAULT_PROBLEM_PER_PAGE;
 		}
 		
-		$pageNum = IO::GET('page', 1, 'intval');
-		if ($pageNum < 1)
-		{
-			$pageNum = 1;
-		}
-		$lowerLimit = ($pageNum-1)*$probPerPage;
-		$problems = Problem::find(array('id','title','submission','accepted'), "WHERE `listing` > 0 LIMIT {$lowerLimit},{$probPerPage}");
+		$pageNum = IO::REQUEST('page', 1, 'intval');
+		
+		$maxPage = 1;
+		
+		$selector = new RecordSelector('Problem');
+		
+		$problems = $selector->findAtPage($pageNum, $probPerPage, $maxPage, array('id','title','submission','accepted'), "WHERE `listing` > 0 AND `dispatched` > 0");
 		
 		OIOJ::$template->assign('problems',$problems);
+		OIOJ::$template->assign('page_cur',$pageNum);
+		OIOJ::$template->assign('page_max',$maxPage);
+		
 		OIOJ::$template->display('problemlist.tpl');
 	}
 }

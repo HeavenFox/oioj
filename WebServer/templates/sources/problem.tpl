@@ -13,6 +13,7 @@ $(function(){
 	});
 });
 </script>
+<script type="text/javascript" src="scripts/mathjax/MathJax.js?config=default"></script>
 {/block}
 {/block}
 {block name="column-left"}
