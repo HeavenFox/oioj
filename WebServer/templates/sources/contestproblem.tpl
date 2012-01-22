@@ -12,7 +12,6 @@ $(document).ready(function(){
 </script>
 {/nocache}
 {/block}
-
 {block name="submit_script"}
 <script type="text/javascript" src="scripts/submitsoln/submitsoln_contest.js"></script>
 <script type="text/javascript">
@@ -39,8 +38,6 @@ $(function(){
 {block name="problem_submit_box"}
 <div class="sidebar-box" id="problem-submit-box">
 	<h2>Submit</h2>
-	<div id="dropzone">
-	</div>
 	<div id="manual-upload">
 	<form method="post" enctype="multipart/form-data" action="index.php?mod=contestproblem&amp;act=submit">
 		<input type="file" name="source" />
@@ -48,6 +45,8 @@ $(function(){
 <input type='hidden' name='cid' value='{$c->id}' />
 		<input type="submit" />
 	</form>
+	</div>
+	<div id="dropzone">
 	</div>
 </div>
 {/block}

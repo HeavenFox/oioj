@@ -62,7 +62,8 @@ $(function(){
 <div class="homepage_inner_box" id="quicksubmit">
 <div id="drop_instructions">
 <h2>Quick Submit</h2>
-Submit by choosing source file or dragging your solution to the dropbox. Please indicate problem ID and use proper extension. Example: 1895.cpp, P3421.pas
+<p>Submit by choosing source file or dragging your solution to the dropbox. Please indicate problem ID and use proper extension. Example: 1895.cpp, P3421.pas</p>
+<p>Or, you can paste your code to <a href='index.php?mod=submit'>Submission Form</a></p>
 <form>
 <input id="submitsoln" type="file" name="source" />
 </form>

@@ -16,8 +16,8 @@ $(function(){
 	});
 });
 </script>
-<script type="text/javascript" src="scripts/mathjax/MathJax.js?config=default"></script>
 {/block}
+<script type="text/javascript" src="scripts/mathjax/MathJax.js?config=default"></script>
 {/block}
 {block name="column-left"}
 <h2>{$problem->title}</h2>
