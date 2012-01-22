@@ -12,11 +12,15 @@
 {/if}
 {if $sample_input}
 <h2>Sample Input</h2>
+<div class='sample_input'>
 {$sample_input}
+</div>
 {/if}
 {if $sample_output}
 <h2>Sample Output</h2>
+<div class='sample_output'>
 {$sample_output}
+</div>
 {/if}
 {if $hint}
 <h2>Hint</h2>
@@ -24,3 +28,6 @@
 {$hint}
 </div>
 {/if}
+<h1>Source</h1>
+<div class='source'>
+</div>
