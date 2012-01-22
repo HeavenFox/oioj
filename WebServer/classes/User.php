@@ -11,6 +11,24 @@ class User extends ActiveRecord
 	
 	const ACL_OMNIPOTENT = 'omnipotent';
 	
+	// Password was iterated this amount and stored in Cookie
+	const COOKIE_ITERATION = 3000;
+	// Processed password in Cookies are iterated this amount and stored in database
+	const SERVER_ITERATION = 3000;
+	
+	/**
+	 * Encrypt password to store in database
+	 * 
+	 */
+	private static function EncryptPassword($password, $salt, $it)
+	{
+		while ($it--)
+		{
+			$password = sha1($password . $salt);
+		}
+		return $password;
+	}
+	
 	public static function GetCurrent()
 	{
 		if (self::$currentUser)
@@ -26,14 +44,41 @@ class User extends ActiveRecord
 		if (IO::Cookie('uid'))
 		{
 			// Log in automatically
-			$obj = self::first(array('id','username','password'),'WHERE `id` = '.IO::Cookie('uid',0,'intval'));
-			if ($obj && IO::Cookie('password') == $obj->password)
+			$obj = self::first(array('id','username','password','salt'),'WHERE `id` = '.IO::Cookie('uid',0,'intval'));
+			if ($obj && self::EncryptPassword(IO::Cookie('password'), $obj->salt, self::SERVER_ITERATION) == $obj->password)
 			{
 				return self::$currentUser = $obj;
 			}
 		}
 		
 		return self::$currentUser = new GuestUser();
+	}
+	
+	public static function Login($username, $password, $remember = false)
+	{
+		$obj = User::first(array('id','username','password','salt'),'WHERE `username` = ?',array($username));
+		
+		if (!$obj)
+		{
+			throw new Exception('User does not exist');
+		}
+		
+		$cookieKey = self::EncryptPassword($password, $obj->salt, self::COOKIE_ITERATION);
+		
+		if ($remember)
+		{
+			IO::SetCookie('uid',$obj->id,14*24*3600);
+			IO::SetCookie('password',$obj->password,14*24*3600);
+		}
+		
+		$dbKey = self::EncryptPassword($cookieKey, $obj->salt, self::SERVER_ITERATION);
+		
+		if ($obj->password != $dbKey)
+		{
+			throw new Exception('Wrong password');
+		}
+		
+		$obj->createSession();
 	}
 	
 	public static function DestroySession()
@@ -53,7 +98,7 @@ class User extends ActiveRecord
 	public function add()
 	{
 		$this->salt = md5(rand());
-		$this->password = sha1($this->password.$this->salt);
+		$this->password = self::EncryptPassword($this->password,$this->salt,self::COOKIE_ITERATION+self::SERVER_ITERATION);
 		
 		parent::add();
 		
