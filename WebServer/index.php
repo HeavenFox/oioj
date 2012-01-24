@@ -40,28 +40,31 @@ foreach ($autoloadModules as $module)
 	$mod->autoload();
 }
 
-if (isset($_GET['mod']) && isset($availableModules[$_GET['mod']]))
+$mod = IO::GET('mod',null);
+if (!isset($availableModules[$mod]))
 {
-	require_once MODULE_DIR . $availableModules[$_GET['mod']] . '.php';
-	$module = new $availableModules[$_GET['mod']];
-	try
+	$mod = 'HomeModule';
+}else
+{
+	$mod = $availableModules[$mod];
+}
+
+require_once MODULE_DIR . $mod . '.php';
+$module = new $mod;
+try
+{
+	$module->run();
+}catch (Exception $e)
+{
+	// Catch-all
+	if (IO::GET('ajax'))
 	{
-		$module->run();
-	}catch (Exception $e)
+		die(json_encode(array('error' => $e->getMessage())));
+	}else
 	{
-		// Catch-all
-		if (IO::GET('ajax'))
-		{
-			die(json_encode(array('error' => $e->getMessage())));
-		}else
-		{
-			OIOJ::$template->assign('message', $e->getMessage());
-			OIOJ::$template->display('error.tpl');
-		}
+		OIOJ::$template->assign('message', $e->getMessage());
+		OIOJ::$template->display('error.tpl');
 	}
 }
-else
-{
-	OIOJ::$template->display('index.tpl');
-}
+
 ?>

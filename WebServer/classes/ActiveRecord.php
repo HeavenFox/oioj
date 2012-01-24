@@ -220,19 +220,46 @@ class ActiveRecord
 		return '`'.static::$tableName.'`.`'.$k.'`';
 	}
 	
-	public function validate()
+	/**
+	 * Validate a record or property
+	 */
+	public function validate($prop = null)
 	{
-		$wrong = array();
-		foreach ($this->_propUpdated as $k => $v)
+		if ($prop)
 		{
-			if (($call = static::$schema[$k]['validator']) && !$call($this->_propValues[$k]))
+			if (($call = static::$schema[$k]['validator']))
 			{
-				$wrong[] = $k;
+				
+					$call($this->_propValues[$k]);
+				
 			}
+			return true;
 		}
-		return $wrong;
+		else
+		{
+			$wrong = array();
+			foreach ($this->_propUpdated as $k => $v)
+			{
+				try
+				{
+					$this->validate($k);
+				}
+				catch(InputException $e)
+				{
+					$wrong[$k] = $e;
+				}
+			}
+			if (count($wrong) == 0)
+			{
+				return false;
+			}
+			return $wrong;
+		}
 	}
 	
+	/**
+	 * Sanitize a record
+	 */
 	public function sanitize()
 	{
 		foreach ($this->_propUpdated as $k => $v)
