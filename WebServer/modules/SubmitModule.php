@@ -26,9 +26,11 @@ class SubmitModule
 		
 		$record = new JudgeRecord;
 		
-		$record->code = file_get_contents($_FILES['source']['tmp_name']);
-		
-		unlink($_FILES['source']['tmp_name']);
+		if (!($record->code = IO::POST('code')))
+		{
+			$record->code = file_get_contents($_FILES['source']['tmp_name']);
+			unlink($_FILES['source']['tmp_name']);
+		}
 		
 		$problemID = 0;
 		
@@ -42,8 +44,10 @@ class SubmitModule
 			$problemID = intval($matches[0]);
 		}
 		
-		$uid = IO::Session('uid');
-		$lang = strtolower(pathinfo($_FILES['source']['name'], PATHINFO_EXTENSION));
+		if (!($lang = IO::POST('lang')))
+		{
+			$lang = strtolower(pathinfo($_FILES['source']['name'], PATHINFO_EXTENSION));
+		}
 		
 		$map = Problem::$LanguageMap;
 		
@@ -78,6 +82,10 @@ class SubmitModule
 	
 	public function showForm()
 	{
+		if ($t = IO::GET('id'))
+		{
+			OIOJ::$template->assign('id',$t);
+		}
 		OIOJ::$template->display('submit.tpl');
 	}
 }

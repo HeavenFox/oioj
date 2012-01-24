@@ -11,9 +11,26 @@
 .pager li
 {
 	float: left;
-	border: 1px solid black;
+	border: 1px solid #818181;
+	background-color: #e9ecff;
 	padding: 4px;
 	margin-right: 3px;
+}
+
+.pager li.current
+{
+	background-color: white;
+}
+
+.pager li a
+{
+	color: black;
+	text-decoration: none;
+}
+
+.pager li a:hover
+{
+	text-decoration: underline;
 }
 
 .pager li.ellipsis

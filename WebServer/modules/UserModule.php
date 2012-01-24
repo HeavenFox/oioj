@@ -40,21 +40,12 @@ class UserModule
 		$username = IO::POST('username','',null);
 		$password = IO::POST('password','',null);
 		
-		
-		$obj = User::first(array('id','username','password'),'WHERE `username` = ? AND `password` = SHA1(CONCAT(?,`salt`))',array($username,$password));
-		
-		if (!$obj)
+		if (!$username || !$password)
 		{
-			throw new Exception('Username or password incorrect');
+			throw new Exception('You have to provide password');
 		}
 		
-		if (IO::POST('remember'))
-		{
-			IO::SetCookie('uid',$obj->id,14*24*3600);
-			IO::SetCookie('password',$obj->password,14*24*3600);
-		}
-		
-		$obj->createSession();
+		User::Login($username, $password, IO::POST('remember'));
 		
 		OIOJ::Redirect('You have been logged in.');
 		
@@ -103,7 +94,7 @@ class UserModule
 		
 		$user->createSession();
 		
-		OIOJ::Redirect('You have uccessfully registered!');
+		OIOJ::Redirect('You have successfully registered!');
 	}
 	
 	public function getCAPTCHA()

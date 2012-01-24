@@ -1,5 +1,6 @@
 {extends file="base.tpl"}
 {block name="html_head" append}
+<link rel='stylesheet' href='templates/index.css' />
 <script type="text/javascript" src="scripts/index.js"></script>
 <script type="text/javascript" src="scripts/popup_record.js"></script>
 <script type="text/javascript" src="scripts/jquery-ui-1.8.16.custom.min.js"></script>
@@ -15,7 +16,6 @@ $(function(){
 	});
 });
 </script>
-<link rel='stylesheet' href='templates/index.css' />
 {/block}
 {block name="body"}
 <div id="blocknav">
@@ -62,7 +62,8 @@ $(function(){
 <div class="homepage_inner_box" id="quicksubmit">
 <div id="drop_instructions">
 <h2>Quick Submit</h2>
-Submit by choosing source file or dragging your solution to the dropbox. Please indicate problem ID and use proper extension. Example: 1895.cpp, P3421.pas
+<p>Submit by choosing source file or dragging your solution to the dropbox. Please indicate problem ID and use proper extension. Example: 1895.cpp, P3421.pas</p>
+<p>Or, you can paste your code to <a href='index.php?mod=submit'>Submission Form</a></p>
 <form>
 <input id="submitsoln" type="file" name="source" />
 </form>
