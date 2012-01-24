@@ -1,7 +1,14 @@
-.edittable
+#main
 {
-	margin: 3px;
-	width: 100%;
+	width: 740px;
+	float: left;
+	margin: 8px;
+}
+
+#aside
+{
+	width: 200px;
+	float: right;
 }
 
 #testcases-table tbody input
@@ -14,4 +21,15 @@ input[name="title"]
 {
 	font-size: 14px;
 	width: 90%;
+}
+
+fieldset
+{
+	border: 1px solid #a6a6a6;
+	border-radius: 3px;
+}
+
+fieldset legend
+{
+	margin-left: 5px;
 }
