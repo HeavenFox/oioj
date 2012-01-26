@@ -1,10 +1,10 @@
 <?php
-import('ActiveRecord');
+import('TaggedRecord');
 import('TestCase');
 import('JudgeServer');
 import('Settings');
 
-class Problem extends ActiveRecord
+class Problem extends TaggedRecord
 {
 	const TYPE_CLASSIC = 1;
 	const TYPE_OUTPUT = 2;
@@ -35,6 +35,8 @@ class Problem extends ActiveRecord
 		);
 	public static $tableName = 'oj_problems';
 	public static $keyProperty = 'id';
+	
+	public static $tagAssocTable = array('oj_problem_tags','pid','tid');
 	
 	public static $LanguageMap = array(
 			'c' => 'c',
