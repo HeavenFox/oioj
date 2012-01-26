@@ -1,5 +1,6 @@
 <?php
 import('ActiveRecord');
+import('Tag');
 
 class TaggedRecord extends TaggedRecord
 {
@@ -22,26 +23,29 @@ class TaggedRecord extends TaggedRecord
 	}
 	
 	/**
-	 * Query records with tags matching certain condition
+	 * Query records with tags using Unioned-Intersect query
 	 *
 	 * @param array $properties Properties
-	 * @param array $composites Composites
-	 * @param string $cond Condition string
+	 * @param array $cond Condition array: 
 	 */
-	public static function queryByTags($properties, $composites = null, $cond)
+	public static function queryByTags($properties, $cond)
 	{
-		$cond = preg_replace('/[^0-9()|&! ]+/','',$cond)
-		$suffix = 'LEFT JOIN `'.static::$tagAssocTable[0].'` USING `'.static::$tableName.'`.`'.static::$keyProperty.'` = `'.static::$tagAssocTable[2].'` WHERE ';
-		$where = str_replace('||',' OR ',$cond);
-		$where = str_replace('&&',' AND ',$cond);
-		$where = str_replace('!',' NOT ',$cond);
-		$suffix .= preg_replace('/([0-9]+)/','`'.static::$tagAssocTable[0].'`.`'.static::$tagAssocTable[3].'` = \1',$where);
-		return static::find($properties,$composites,$suffix);
+		$queries = array();
+		// Squash all single items
+		foreach ($
+		
+		
+		return static::find($properties,$suffix);
 	}
 	
 	public static function getTags()
 	{
 		return Tag::find(array('id','tag'),null,'LEFT JOIN `'.static::$tagAssocTable[0].'` ON (`'.static::$tagAssocTable[0].'`.`'.static::$tagAssocTable[2].'` = `'.static::$tableName.'`.`'.static::$keyProperty.'`) WHERE `'.static::$tagAssocTable[0].'`.`'.static::$tagAssocTable[1].'` IS NOT NULL GROUP BY `'.Tag::$tableName.'`.`'.Tag::$keyProperty.'` ORDER BY count(*) DESC');
+	}
+	
+	protected static function _makeAllInSetQueryString($properties, $tags)
+	{
+		
 	}
 }
 ?>
