@@ -64,9 +64,9 @@ class TaggedRecord extends ActiveRecord
 		return $resultSet;
 	}
 	
-	public static function getTags()
+	public static function GetPopularTags($num = null)
 	{
-		return Tag::find(array('id','tag','count'),'LEFT JOIN `'.static::$tagAssocTable[0].'` ON (`'.static::$tagAssocTable[0].'`.`'.static::$tagAssocTable[2].'` = `'.static::$tableName.'`.`'.static::$keyProperty.'`) WHERE `'.static::$tagAssocTable[0].'`.`'.static::$tagAssocTable[1].'` IS NOT NULL GROUP BY `'.Tag::$tableName.'`.`'.Tag::$keyProperty.'` ORDER BY count(*) DESC');
+		return Tag::find(array('id','tag','count'),'INNER JOIN `'.static::$tagAssocTable[0].'` ON (`'.static::$tagAssocTable[0].'`.`'.static::$tagAssocTable[2].'` = `'.Tag::$tableName.'`.`'.Tag::$keyProperty.'`) GROUP BY `'.Tag::$tableName.'`.`'.Tag::$keyProperty.'` ORDER BY count(*) DESC'.($num ? " LIMIT 0,{$num}" : ''));
 	}
 	
 	protected static function _makeAllInSetQueryString($properties, $tags)

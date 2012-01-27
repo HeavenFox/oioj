@@ -27,8 +27,13 @@ class ProblemListModule
 		$problems = $selector->findAtPage($pageNum, $probPerPage, $maxPage, array('id','title','submission','accepted'), "WHERE `listing` > 0 AND `dispatched` > 0");
 		
 		OIOJ::$template->assign('problems',$problems);
+		
+		// Paging System
 		OIOJ::$template->assign('page_cur',$pageNum);
 		OIOJ::$template->assign('page_max',$maxPage);
+		
+		// Tags System
+		OIOJ::$template->assign('tags',Problem::GetPopularTags(8));
 		
 		OIOJ::$template->display('problemlist.tpl');
 	}
