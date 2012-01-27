@@ -24,7 +24,19 @@ class ProblemListModule
 		
 		$selector = new RecordSelector('Problem');
 		
-		$problems = $selector->findAtPage($pageNum, $probPerPage, $maxPage, array('id','title','submission','accepted'), "WHERE `listing` > 0 AND `dispatched` > 0");
+		if (IO::GET('tag'))
+		{
+			$problems = $selector->findAtPage($pageNum, $probPerPage, $maxPage, array('id','title','submission','accepted'), IO::GET('tag'), null, function($prop, $tagid, $suffix){return Problem::GetByTag($prop, $tagid, $suffix);});
+		
+		}else if (IO::GET('tagquery'))
+		{
+			$problems = Problem::queryByTags(array('id','title','submission','accepted'),json_decode(IO::GET('tagquery')));
+		}
+		else
+		{
+		
+			$problems = $selector->findAtPage($pageNum, $probPerPage, $maxPage, array('id','title','submission','accepted'), "WHERE `listing` > 0 AND `dispatched` > 0");
+		}
 		
 		OIOJ::$template->assign('problems',$problems);
 		

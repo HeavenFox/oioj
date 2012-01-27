@@ -6,25 +6,19 @@ class TaggedRecord extends ActiveRecord
 {
 	public static $tagAssocTable = array('_table_name','record_column','tag_column');
 	
-	public static function getByTag($properties, $composites = null, $tagId = null)
+	public static function GetByTag($properties, $tagId, $suffix = '')
 	{
-		if (is_int($tagId))
-		{
-			return static::queryByTags($properties,$composites,strval($tagId));
-		}
-		if (is_array($tagId))
-		{
-			return static::queryByTags($properties,$composites,implode(' || '));
-		}
+		return static::queryByTags($properties,array($tagId),$suffix);
 	}
 	
 	/**
 	 * Query records with tags using Unioned-Intersect query
 	 *
 	 * @param array $properties Properties
-	 * @param array $cond Condition array: 
+	 * @param array $cond Condition array
+	 * @param string $suffix Query suffix, like LIMIT or ORDER BY
 	 */
-	public static function queryByTags($properties, $cond)
+	public static function queryByTags($properties, $cond, $suffix = '')
 	{
 		$queries = array();
 		$single = array();
@@ -50,6 +44,7 @@ class TaggedRecord extends ActiveRecord
 		
 		$query = implode(' UNION ', $queries);
 		
+		$query .= (' '.$suffix);
 		$stmt = Database::Get()->query($query);
 		
 		$resultSet = array();
@@ -85,7 +80,7 @@ class TaggedRecord extends ActiveRecord
 		
 		for ($i = 1; $i <= count($tags); $i++)
 		{
-			$query .= ' INNER JOIN `' . static::$tagAssocTable[0] . "` AS `_assoc_{$i}` ON (`".static::$tagAssocTable[0].'`.`'.static::$tagAssocTable[2]."` = `_tag_{$i}`.`id` ";
+			$query .= ' INNER JOIN `' . static::$tagAssocTable[0] . "` AS `_assoc_{$i}` ON (`_assoc_{$i}`.`".static::$tagAssocTable[2]."` = `_tag_{$i}`.`id` ";
 			if ($i > 1)
 			{
 				$query .= " AND `_assoc_{$i}`.`".static::$tagAssocTable[1]."` = `_assoc_1`.`".static::$tagAssocTable[1]."`";
@@ -93,7 +88,7 @@ class TaggedRecord extends ActiveRecord
 			$query .= ')';
 		}
 		
-		$query .= ' INNER JOIN `'.static::Table().'` ON (`'. static::$tagAssocTable[0] .'`.`'.static::$tagAssocTable[1].'` = '.static::Column(static::$keyProperty).') ';
+		$query .= ' INNER JOIN '.static::Table().' ON (`_assoc_1`.`'.static::$tagAssocTable[1].'` = '.static::Column(static::$keyProperty).') ';
 		
 		$query .= ' WHERE ';
 		for ($i = 1; $i <= count($tags); $i++)
@@ -110,7 +105,7 @@ class TaggedRecord extends ActiveRecord
 	protected static function _makeAnyInSetQueryString($properties, $tags)
 	{
 		if (is_int($tags))$tags = array($tags);
-		return parent::_makeQueryString($properties, ' RIGHT JOIN `'.static::$tagAssocTable.'` ON (`'.static::$tagAssocTable[0].'`.`'.static::$tagAssocTable[1].'` = '.static::Column(static::$keyProperty).') WHERE `'.static::$tagAssocTable[0].'`.`'.static::$tagAssocTable[2]. (count($tags) == 1 ? (' = '.$tags[0]) : '` IN ('.implode(',',$tags).')'));
+		return parent::_makeQueryString($properties, ' RIGHT JOIN `'.static::$tagAssocTable[0].'` ON (`'.static::$tagAssocTable[0].'`.`'.static::$tagAssocTable[1].'` = '.static::Column(static::$keyProperty).') WHERE `'.static::$tagAssocTable[0].'`.`'.static::$tagAssocTable[2]. (count($tags) == 1 ? ('` = '.$tags[0]) : '` IN ('.implode(',',$tags).')'));
 	}
 }
 ?>

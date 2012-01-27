@@ -1,0 +1,74 @@
+#tag_query
+{
+	height: 195px;
+	overflow: hidden;
+}
+
+.intersect_group
+{
+	width: 125px;
+	height: 170px;
+	background: url('images/tagging/intersec.png') #eaeaea no-repeat center center;
+	border: 1px solid #949494;
+	float: left;
+	
+	border-radius: 4px;
+	
+	margin: 10px;
+	transition: width 1s, height 1s;
+	-moz-transition: width 1s, height 1s;
+	-o-transition: width 1s, height 1s;
+	-webkit-transition: width 1s, height 1s;
+}
+
+.intersect_group ul
+{
+	margin: 5px;
+	list-style: none;
+}
+.intersect_group li
+{
+	margin-bottom: 9px;
+}
+.ig_new
+{
+	width: 100px;
+	height: 170px;
+	
+	background: url('images/tagging/new.png') #eaeaea no-repeat center center;
+}
+
+.union
+{
+	width: 33px;
+	height: 50px;
+	margin-top: 70px;
+	float: left;
+	background: url('images/tagging/union.png');
+}
+
+#tagquery_right
+{
+	width: 95px;
+	height: 190px;
+	float: right;
+	z-index: -10;
+	text-align: center;
+	margin-right: 10px;
+}
+
+#trash
+{
+	width: 95px;
+	height: 95px;
+	margin-top: 48px;
+	margin-right: 10px;
+	border: 1px solid #949494;
+	border-radius:3px;
+	background: url('images/tagging/trashcan.png') #f3f3f3 no-repeat top left;
+}
+
+#trash.hover
+{
+	background-position: 0 -95px;
+}
