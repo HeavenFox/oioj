@@ -14,12 +14,25 @@
 				if ($(this).hasClass('ig_new'))
 				{
 					$(this).after('<div class="union"></div><div class="intersect_group ig_new"></div>');
-					$(this).nextAll().css({ 'marginLeft' : 50, 'opacity': 0.0 }).animate({ 'marginLeft' : 5, 'opacity': 1 },1000);
+					$(this).nextAll().css({ 'marginLeft' : 50, 'opacity': 0.0 }).animate({ 'marginLeft' : 10, 'opacity': 1 },1000);
 					$(this).next().next().intersectGroup();
 					$(this).removeClass('ig_new');
 				}
 			}
 		});
+	};
+	
+	$.fn.intersectGroupData = function()
+	{
+		var data = new Array();
+		this.children('.intersect_group').each(function(){
+			var cur = new Array();
+			$(this).children('.tag').each(function(){
+				cur.push(parseInt($(this).data('tid')));
+			});
+			data.push(cur);
+		});
+		return data;
 	};
 })(jQuery);
 $(function(){
@@ -57,6 +70,8 @@ $(function(){
 	border: 1px solid #949494;
 	float: left;
 	
+	border-radius: 4px;
+	
 	margin: 10px;
 	transition: width 1s, height 1s;
 	-moz-transition: width 1s, height 1s;
@@ -67,15 +82,18 @@ $(function(){
 .ig_new
 {
 	width: 100px;
-	height: 150px;
+	height: 170px;
+	
+	background: url('templates/images/tagging/new.png') #eaeaea no-repeat center center;
+
 }
 
 .union
 {
-	width: 50px;
-	height: 100px;
-	background-color: green;
+	width: 33px;
+	height: 50px;
 	float: left;
+	background: url('templates/images/tagging/union.png');
 }
 
 #trash
@@ -98,7 +116,8 @@ $(function(){
 <div class='intersect_group ig_new'></div>
 <div id='trash'></div>
 </div>
-<div>Popular Tags: 
+<div>Popular Tags:
+<span class='tag' data-tid='1'>Tag</span>
 {foreach $tags as $tag}
 <div class='tag' data-tid='{$tag->id}'>{$tag->tag}</div>
 {/foreach}
