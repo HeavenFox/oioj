@@ -11,6 +11,19 @@ class ProblemListModule
 	
 	public function run()
 	{
+		if (IO::GET('act') == 'tagcomplete')
+		{
+			$tags = Problem::SearchTags('%'.IO::REQUEST('term').'%', 10);
+			$result = array();
+			foreach ($tags as $tag)
+			{
+				$n = array();
+				$n['label'] = $tag->tag;
+				$n['value'] = $tag->id;
+				$result[] = $n;
+			}
+			die(json_encode($result));
+		}
 		OIOJ::AddBreadcrumb('Problems');
 		$probPerPage = IO::GET('perpage', self::DEFAULT_PROBLEM_PER_PAGE, 'intval');
 		if ($probPerPage < 1 || $probPerPage > self::MAX_PROBLEM_PER_PAGE)
