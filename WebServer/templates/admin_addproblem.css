@@ -1,14 +1,16 @@
 #main
 {
-	width: 740px;
+	width: 680px;
 	float: left;
 	margin: 8px;
 }
 
 #aside
 {
-	width: 200px;
+	width: 255px;
 	float: right;
+	margin: 8px;
+	margin-left: 0;
 }
 
 #testcases-table tbody input
@@ -19,14 +21,15 @@
 
 input[name="title"]
 {
-	font-size: 14px;
-	width: 90%;
+	font-size: 18px;
+	width: 100%;
 }
 
 fieldset
 {
 	border: 1px solid #a6a6a6;
 	border-radius: 3px;
+	padding: 5px;
 }
 
 fieldset legend

@@ -28,7 +28,7 @@ $(document).ready(function(){
 <div id="main">
 	<fieldset>
 	<legend>Problem</legend>
-	<p>Title<input type="text" name="title" id="title" /></p>
+	<p><input type="text" name="title" id="title" placeholder='Enter title here...' /></p>
 	<p><textarea name="body" id="prob_body"></textarea></p>
 	</fieldset>
 
@@ -38,7 +38,7 @@ $(document).ready(function(){
 	<tbody id="testcases">
 	</tbody>
 	<tfoot>
-	<tr><td><input type="text" id="man-input" size="8" /></td><td><input type="text" id="man-answer" size="8" /></td><td><input type="text" id="man-tl" size="4" /></td><td><input type="text" id="man-ml" size="4" /></td><td><input type="text" id="man-score" size="4" /></td><td><a href="javascript:;" onclick="manualAddCase();return false;">[+]</a></td></tr>
+	<tr><td><input type="text" id="man-input" size="12" /></td><td><input type="text" id="man-answer" size="12" /></td><td><input type="text" id="man-tl" size="4" /></td><td><input type="text" id="man-ml" size="4" /></td><td><input type="text" id="man-score" size="4" /></td><td><a href="javascript:;" onclick="manualAddCase();return false;">[+]</a></td></tr>
 	</tfoot>
 	</table><a id='batch_box_link' href='#batch_box'>Batch Add</a>
 	Data Archive<input type="file" name="archive" /><br /><small>Must be a ZIP archive that contains all test cases</small>
@@ -52,30 +52,46 @@ $(document).ready(function(){
 		<input type="checkbox" name="listing" id="listing" checked="checked" /><label for="listing">Public</label>
 	</fieldset>
 	<fieldset>
+		<legend>Attachments</legend>
+		<input type='file' name='attach' />
+	</fieldset>
+	<fieldset>
 	<legend>Input, Output</legend>
-	
-	<label for="input_file">Input</label>
-	    <input type="text" name="input_file" id="input_file" />
+	<table>
+	<tr>
+	<td><label for="input_file">Input</label></td>
+	    <td><input type="text" name="input_file" id="input_file" size="9" />
 	    <input type="checkbox" name="screen_input" id="screen_input" onchange="toggleScreen(this,'#input_file')" />
-	    <label for="screen_input">Screen</label>
-	<label for="output_file">Output</label>
-	    <input type="text" name="output_file" id="output_file" />
+	    <label for="screen_input">Screen</label></td>
+	</tr>
+	<tr>
+	<td><label for="output_file">Output</label></td>
+	<td>
+	    <input type="text" name="output_file" id="output_file" size="9" />
 	    <input type="checkbox" name="screen_output" id="screen_output" onchange="toggleScreen(this,'#output_file')" />
-	    <label for="screen_output">Screen</label>
-	    <label for="type">Type</label>
+	    <label for="screen_output">Screen</label></td>
+	</tr>
+	<tr>
+	    <td><label for="type">Type</label></td>
+	    <td>
 	    <select name="type" id="type">
 	      <option value="1" selected="selected">Traditional</option>
 	      <option value="2">Interactive</option>
 	      <option value="3">Output</option>
 	    </select>
-	<label for="comp_method">Compare Method</label>
-	    <select name="comp_method" id="comp_method" onchange="compareBox(this)">
+	    </td>
+	 </tr>
+	 <tr>
+		<td><label for="comp_method">Compare</label></td>
+	    <td><select name="comp_method" id="comp_method" onchange="compareBox(this)">
 	      <option value="/FULLTEXT/" selected="selected">Full Text</option>
-	      <option value="/OMITSPACE/">Omit Spaces at Line Ends</option>
+	      <option value="/OMITSPACE/">Omit Spaces at EOL</option>
 	      <option value="special">Special Judge</option>
 	    </select>
 	    <div id="special_judge" class="hidden"><label for="special_judge_input">bin name</label>
-	    <input type="text" name="special_judge" id="special_judge_input" /></div>
+	    <input type="text" name="special_judge" id="special_judge_input" /></div></td>
+	</tr>
+	</table>
 	</fieldset>
 </div>
 </form>

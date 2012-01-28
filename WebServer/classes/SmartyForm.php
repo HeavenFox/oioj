@@ -39,6 +39,9 @@ class SmartyForm
 	 */
 	public $valid;
 	
+	/**
+	 * Prefix for HTML IDs to prevent conflict
+	 */
 	const HTML_ID_PREFIX = 'id-';
 	
 	public function __construct($id, $action)
@@ -69,6 +72,11 @@ class SmartyForm
 		return $this->elements[$id];
 	}
 	
+	/**
+	 * Validate a form
+	 *
+	 * @return bool
+	 */
 	public function validate()
 	{
 		$this->valid = true;
@@ -83,6 +91,7 @@ class SmartyForm
 				$v->triggerError($e);
 			}
 		}
+		return $this->valid;
 	}
 	
 	public function getFormOpeningHTML()
@@ -90,7 +99,7 @@ class SmartyForm
 		$html = "<form id='sf_{$this->id}' method='post' action='".htmlspecialchars($this->action)."'>";
 		foreach ($this->elements as $v)
 		{
-			if ($v instanceof SF_Hidden)
+			if ($v->autoAttach)
 			{
 				$html .= $v->html();
 			}
@@ -98,8 +107,9 @@ class SmartyForm
 		return $html;
 	}
 	
-	public function getHTML($ele)
+	public function getHTML($ele, $subgroup, $attr)
 	{
+		$this->elements[$ele]->setAttribute($attr);
 		return $this->elements[$ele]->html();
 	}
 	
@@ -108,13 +118,17 @@ class SmartyForm
 		return '<label for="'.$this->elements[$ele]->getHTMLID() .'">'.$this->elements[$ele]->label.'</label>';
 	}
 	
-	public function addRecord($id, $record)
+	/**
+	 * Add ActiveRecord
+	 */
+	public function addRecord($id, ActiveRecord $record)
 	{
 		$this->activeRecords[$id] = $record;
 	}
 	
 	/**
 	 * Bind an element with a property of ActiveRecord
+	 * Validators and Sanitizers are automatically transferred
 	 */
 	public function bind($elementID, $objID, $property = null)
 	{
@@ -151,7 +165,10 @@ class SmartyForm
 	 */
 	public function gatherFromSession()
 	{
-		$this->elements = unserialize(IO::Session('sf-'.$this->id));
+		foreach ($this->elements as $v)
+		{
+			$v->gatherFromSession();
+		}
 	}
 	
 	/**
@@ -167,14 +184,6 @@ class SmartyForm
 		}
 	}
 	
-	/**
-	 * Save gathered data to session
-	 * Useful for multi-staged form
-	 */
-	public function saveToSession()
-	{
-		IO::SetSession('sf-'.$this->id, serialize($this->elements));
-	}
 	
 	/**
 	 * Save to ActiveRecord
@@ -193,6 +202,10 @@ abstract class SF_Element
 {
 	private $validators;
 	private $sanitizers;
+	
+	protected $attributes;
+	
+	public $autoAttach = false;
 	
 	/**
 	 * @var SmartyForm
@@ -272,6 +285,26 @@ abstract class SF_Element
 		$this->data = IO::POST($this->id, null);
 	}
 	
+	public function gatherFromSession()
+	{
+		$this->data = IO::Session('sf_'.$this->form->getID() . '_' . $this->getID(),null,'unserialize');
+	}
+	
+	/**
+	 * Save gathered data to session
+	 * Useful for multi-staged form
+	 */
+	public function saveToSession()
+	{
+		if ($this->data)
+			IO::SetSession('sf_'.$this->form->getID() . '_' . $this->getID(), serialize($this->data));
+	}
+	
+	/**
+	 * Add a Validator
+	 *
+	 * @param callback $v Sanitizer function
+	 */
 	public function addSanitizer($s)
 	{
 		$this->sanitizers[] = $s;
@@ -314,6 +347,36 @@ abstract class SF_Element
 		}
 	}
 	
+	public function setAttribute($key, $value = null)
+	{
+		if (is_array($key))
+		{
+			foreach ($key as $k=>$v)
+			{
+				$this->attributes[$k] = $v;
+			}
+		} else
+		{
+			if ($value === null)
+			{
+				unset($this->attributes[$key]);
+			}else
+			{
+				$this->attributes[$key] = $value;
+			}
+		}
+	}
+	
+	protected function generateAtrributes()
+	{
+		$attr = '';
+		foreach ($this->attributes as $k => $v)
+		{
+			$attr .= (' '.$k.'="'.htmlspecialchars($v).'"');
+		}
+		return $attr;
+	}
+	
 	abstract function html();
 	
 	protected function appendedErrorMessage()
@@ -329,6 +392,7 @@ abstract class SF_GroupElement extends SF_Element
 
 class SF_Hidden extends SF_Element
 {
+	public $autoAttach = false;
 	public function html()
 	{
 		return "<input type='hidden' name='{$this->id}' value='{$this->data}' />";
@@ -345,13 +409,6 @@ class SF_TextArea extends SF_Element
 
 abstract class SF_TextBased extends SF_Element
 {
-	protected $htmltype;
-	
-	protected function extraAttributes()
-	{
-		return '';
-	}
-	
 	public function html()
 	{
 		return "<input type='{$this->htmltype}' id='".$this->getHTMLID()."' name='{$this->id}' " . ($this->data ? (' value="'.htmlspecialchars($this->data).'"') : '') . $this->extraAttributes() . " />" . $this->appendedErrorMessage();
@@ -360,10 +417,14 @@ abstract class SF_TextBased extends SF_Element
 
 class SF_TextField extends SF_TextBased
 {
-	protected $htmltype = 'text';
-	
 	public $minLength;
 	public $maxLength;
+	
+	public function __construct()
+	{
+		parent::__construct();
+		$this->attributes['type'] = 'text';
+	}
 	
 	public function validate()
 	{
@@ -377,6 +438,12 @@ class SF_TextField extends SF_TextBased
 
 class SF_Password extends SF_TextField
 {
+	public function __construct()
+	{
+		parent::__construct();
+		$this->attributes['type'] = 'password';
+	}
+	
 	public function html()
 	{
 		// Password need and should never be displayed again
@@ -386,7 +453,11 @@ class SF_Password extends SF_TextField
 
 class SF_EMail extends SF_TextBased
 {
-	protected $htmltype = 'email';
+	public function __construct()
+	{
+		parent::__construct();
+		$this->attributes['type'] = 'email';
+	}
 }
 
 class SF_Number extends SF_TextBased
@@ -395,7 +466,11 @@ class SF_Number extends SF_TextBased
 	public $max;
 	public $step = 1;
 	
-	protected $htmltype = 'number';
+	public function __construct()
+	{
+		parent::__construct();
+		$this->attributes['type'] = 'number';
+	}
 	
 	public function gatherFromPOST()
 	{
@@ -412,41 +487,34 @@ class SF_Number extends SF_TextBased
 		}
 	}
 	
-	protected function extraAttributes()
+	public function html()
 	{
-		$html = '';
-		if ($this->min)
-		{
-			$html .= " min='{$this->min}'";
-		}
-		if ($this->max)
-		{
-			$html .= " max='{$this->max}'";
-		}
-		if ($this->step)
-		{
-			$html .= " step='{$this->step}'";
-		}
-		return $html;
+		$this->attributes['min'] = $this->min;
+		$this->attributes['max'] = $this->max;
+		$this->attributes['step'] = $this->step;
+		
+		return parent::html();
 	}
 }
 
 
 class SF_Date extends SF_TextBased
 {
-	protected $htmltype = 'date';
-	protected function extraAttributes()
+	public function __construct()
 	{
-		return '';
+		parent::__construct();
+		$this->attributes['type'] = 'date';
 	}
 }
 
 
 class SF_DateTime extends SF_Date
 {
-	protected $htmltype = 'datetime';
-	// Data is timestamp
-	
+	public function __construct()
+	{
+		parent::__construct();
+		$this->attributes['type'] = 'datetime';
+	}
 }
 
 class SF_Checkbox extends SF_Element
@@ -472,10 +540,20 @@ class SF_CheckboxGroup extends SF_GroupElement
 {
 	
 }
-
-class SF_Select extends SF_GroupElement
-{
-	
-}
 */
+class SF_Select extends SF_Element
+{
+	private $options;
+	
+	public function html()
+	{
+		$html = '<select' . $this->generateAtrributes() . ">\n";
+		foreach ($options as $label => $value)
+		{
+			$html .= '<option value="'.htmlspecialchars($value).'">'.htmlspecialchars($label).'</option>';
+		}
+		$html .= "\n</select>";
+	}
+}
+
 ?>

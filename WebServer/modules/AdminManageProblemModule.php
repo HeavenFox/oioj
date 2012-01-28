@@ -30,6 +30,19 @@ class AdminManageProblemModule
 		
 	}
 	
+	public function generateProblemForm()
+	{
+		$form = new SmartyForm('problem', '');
+		
+		$form->add(new SF_TextField('title'));
+		$form->add(new SF_TextArea('body'));
+		
+		$form->add(new SF_TextField('input_file'));
+		$form->add(new SF_TextField('output_file'));
+		
+		return $form;
+	}
+	
 	public function addProblemSubmit()
 	{
 		try
