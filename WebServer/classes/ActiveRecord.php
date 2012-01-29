@@ -163,8 +163,13 @@ class ActiveRecord
 		return $obj->fetch($properties, $suffix, $data);
 	}
 	
-	
-	
+	/**
+	 * Fetch properties for existing or a newly-initialized record object
+	 *
+	 * @param array $properties properties
+	 * @param mixed $suffix ID or suffix clause. Leave blank to fetch into current
+	 * @param array $data data for prepared query
+	 */
 	public function fetch($properties, $suffix = null, $data = array())
 	{
 		if ($suffix === null)
@@ -361,9 +366,9 @@ class ActiveRecord
 		unset($this->_propValues[static::$keyProperty]);
 	}
 	
-	protected static function _makeQueryString($properties, $suffix)
+	protected static function _makeColumnList($properties)
 	{
-		$queryStr = 'SELECT ';
+		$queryStr = '';
 		$first = true;
 		if ($properties)
 		{
@@ -413,6 +418,14 @@ class ActiveRecord
 				}
 			}
 		}
+		return $queryStr;
+	}
+	
+	protected static function _makeQueryString($properties, $suffix)
+	{
+		$queryStr = 'SELECT ';
+		
+		$queryStr .= self::_makeColumnList($properties);
 		
 		$queryStr .= " FROM `".static::$tableName."` ";
 		

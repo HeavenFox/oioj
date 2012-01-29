@@ -10,7 +10,7 @@ class Database
     /**
      * Get a database connection object
      *
-     * @return object database connection
+     * @return PDO database connection
      */
     public static function Get($params = NULL)
     {

@@ -11,6 +11,19 @@ class ProblemListModule
 	
 	public function run()
 	{
+		if (IO::GET('act') == 'tagcomplete')
+		{
+			$tags = Problem::SearchTags('%'.IO::REQUEST('term').'%', 10);
+			$result = array();
+			foreach ($tags as $tag)
+			{
+				$n = array();
+				$n['label'] = $tag->tag;
+				$n['value'] = $tag->id;
+				$result[] = $n;
+			}
+			die(json_encode($result));
+		}
 		OIOJ::AddBreadcrumb('Problems');
 		$probPerPage = IO::GET('perpage', self::DEFAULT_PROBLEM_PER_PAGE, 'intval');
 		if ($probPerPage < 1 || $probPerPage > self::MAX_PROBLEM_PER_PAGE)
@@ -24,11 +37,28 @@ class ProblemListModule
 		
 		$selector = new RecordSelector('Problem');
 		
-		$problems = $selector->findAtPage($pageNum, $probPerPage, $maxPage, array('id','title','submission','accepted'), "WHERE `listing` > 0 AND `dispatched` > 0");
+		if (IO::GET('tag'))
+		{
+			$problems = $selector->findAtPage($pageNum, $probPerPage, $maxPage, array('id','title','submission','accepted'), IO::GET('tag'), null, function($prop, $tagid, $suffix){return Problem::GetByTag($prop, $tagid, $suffix);});
+		
+		}else if (IO::GET('tagquery'))
+		{
+			$problems = Problem::queryByTags(array('id','title','submission','accepted'),json_decode(IO::GET('tagquery')));
+		}
+		else
+		{
+		
+			$problems = $selector->findAtPage($pageNum, $probPerPage, $maxPage, array('id','title','submission','accepted'), "WHERE `listing` > 0 AND `dispatched` > 0");
+		}
 		
 		OIOJ::$template->assign('problems',$problems);
+		
+		// Paging System
 		OIOJ::$template->assign('page_cur',$pageNum);
 		OIOJ::$template->assign('page_max',$maxPage);
+		
+		// Tags System
+		OIOJ::$template->assign('tags',Problem::GetPopularTags(8));
 		
 		OIOJ::$template->display('problemlist.tpl');
 	}

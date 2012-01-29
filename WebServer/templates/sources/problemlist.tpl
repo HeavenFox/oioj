@@ -2,8 +2,90 @@
 {block name="html_head" append}
 <link rel='stylesheet' href='templates/list.css' />
 <link rel='stylesheet' href='templates/pager.css' />
+<link rel='stylesheet' href='templates/tagquery.css' />
+<link rel="stylesheet" href="scripts/jquery-ui-css/ui-lightness/jquery-ui-1.8.16.custom.css" />
+<script type='text/javascript' src='scripts/jquery-ui-1.8.16.custom.min.js'></script>
+<script type='text/javascript' src='scripts/tagquery.js'></script>
+<script type='text/javascript'>
+$(function(){
+	$('.tag').draggable({
+		revert: 'invalid'
+	});
+	$('.intersect_group').intersectGroup();
+	$('#trash').droppable(
+	{
+		drop: function(event, ui)
+		{
+			ui.helper.remove();
+		},
+		hoverClass: 'hover'
+	}
+	);
+	//$('#tag_search').autocomplete({ source: function(req, callback){
+	//	$.post('index.php?mod=problemlist&act=tagcomplete&ajax=1',req,callback,'json');
+	//} });
+	$('#tag_search').autocomplete({ source: 'index.php?mod=problemlist&act=tagcomplete&ajax=1', select:function(event, ui){ 
+		event.preventDefault();
+		$('<span class="tag" data-tid="'+ui.item.value+'"><a href="index.php?mod=problemlist&tag='+ui.item.value+'">'+ui.item.label+'</a></span>').draggable({ revert: 'invalid' }).appendTo($('#popular_tags_list'));
+		$(this).val('');
+		
+	} });
+});
+function tagQuerySubmit()
+{
+	window.location="index.php?mod=problemlist&tagquery="+escape(JSON.stringify($('#tag_query').intersectGroupData()));
+}
+</script>
+<style type='text/css'>
+.tag
+{
+	font-size: 12px;
+	padding: 3px;
+	background-color: #dbdbdb;
+	border: 1px solid #c2c2c2;
+	border-radius: 3px;
+	width:30px;
+}
+
+#popular_tags
+{
+	height: 30px;
+}
+
+#popular_tags_list
+{
+	float: left;
+	height: 30px;
+	line-height: 30px;
+}
+
+#popular_tags_search
+{
+	float: right;
+	line-height: 30px;
+}
+
+</style>
 {/block}
 {block name="body"}
+<div id='popular_tags'>
+<div id='popular_tags_list'>
+Popular Tags: 
+{foreach $tags as $tag}
+<span class='tag' data-tid='{$tag->id}'><a href='index.php?mod=problemlist&amp;tag={$tag->id}'>{$tag->tag}</a></span>
+{/foreach}
+</div>
+<div id='popular_tags_search'>
+	<label for='tag_search'>Search Tag</label> <input id='tag_search' size='5' /><a href='javascript:;' onclick='$("#tag_query").toggle(1000)'>Advanced</a>
+</div>
+</div>
+<div id='tag_query' class='hidden'>
+<div class='intersect_group ig_new'><ul></ul></div>
+<div id='tagquery_right'>
+<div id='trash'></div>
+<input type='button' onclick='tagQuerySubmit();' value='Submit' />
+</div>
+</div>
 <table id='problems' class='tablist'>
 <thead><tr><td style="width: 50px;">ID</td><td>Title</td><td style="width: 100px;">Acceptance</td></tr></thead>
 <tbody>
