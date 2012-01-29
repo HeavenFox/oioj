@@ -29,7 +29,7 @@ function smarty_compiler_sinput($params, Smarty $smarty)
         {
             $paramstr .= ',';
         }
-        $paramstr .= $k;
+        $paramstr .= "'{$k}'";
         $paramstr .= ' => ';
         $paramstr .= $v;
     }

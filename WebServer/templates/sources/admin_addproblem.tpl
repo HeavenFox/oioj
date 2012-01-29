@@ -8,7 +8,7 @@
 
 <script type='text/javascript'>
 $(document).ready(function(){
-	CKEDITOR.replace("prob_body",{
+	CKEDITOR.replace("sf_problem_body",{
 		toolbar: [
 			{ name: 'document', items : [ 'Preview' ] },
 			{ name: 'basicstyles', items : [ 'Bold','Italic','Subscript','Superscript','-','RemoveFormat' ] },
@@ -24,12 +24,12 @@ $(document).ready(function(){
 {/block}
 {block name="body"}
 <h2>Add Problem</h2>
-<form method="post" action="index.php?mod=admin_problem&amp;act=add&amp;submit=1" enctype="multipart/form-data" id="add_form">
+{sform obj=$sf_problem enctype="multipart/form-data"}
 <div id="main">
 	<fieldset>
 	<legend>Problem</legend>
-	<p><input type="text" name="title" id="title" placeholder='Enter title here...' /></p>
-	<p><textarea name="body" id="prob_body"></textarea></p>
+	<p>{sinput id="title" placeholder='Enter title here...'}</p>
+	<p>{sinput id="body"}</p>
 	</fieldset>
 
 	<fieldset><legend>Test Cases</legend>
@@ -41,7 +41,7 @@ $(document).ready(function(){
 	<tr><td><input type="text" id="man-input" size="12" /></td><td><input type="text" id="man-answer" size="12" /></td><td><input type="text" id="man-tl" size="4" /></td><td><input type="text" id="man-ml" size="4" /></td><td><input type="text" id="man-score" size="4" /></td><td><a href="javascript:;" onclick="manualAddCase();return false;">[+]</a></td></tr>
 	</tfoot>
 	</table><a id='batch_box_link' href='#batch_box'>Batch Add</a>
-	Data Archive<input type="file" name="archive" /><br /><small>Must be a ZIP archive that contains all test cases</small>
+	<p>Data Archive<input type="file" name="archive" /><br /><small>Must be a ZIP archive that contains all test cases</small></p>
 	</fieldset>
 
 	<input type='submit' value='Submit' />
@@ -49,7 +49,7 @@ $(document).ready(function(){
 <div id="aside">
 	<fieldset>
 		<legend>Basic</legend>
-		<input type="checkbox" name="listing" id="listing" checked="checked" /><label for="listing">Public</label>
+		{sinput id='listing'}{slabel id='listing'}
 	</fieldset>
 	<fieldset>
 		<legend>Attachments</legend>
@@ -59,42 +59,34 @@ $(document).ready(function(){
 	<legend>Input, Output</legend>
 	<table>
 	<tr>
-	<td><label for="input_file">Input</label></td>
-	    <td><input type="text" name="input_file" id="input_file" size="9" />
-	    <input type="checkbox" name="screen_input" id="screen_input" onchange="toggleScreen(this,'#input_file')" />
+	<td>{slabel id="input_file"}</td>
+	    <td>{sinput id="input_file" size="9"}
+	    <input type="checkbox" name="screen_input" id="screen_input" onchange="toggleScreen(this,'#sf_problem_input_file')" />
 	    <label for="screen_input">Screen</label></td>
 	</tr>
 	<tr>
-	<td><label for="output_file">Output</label></td>
+	<td>{slabel id="output_file"}</td>
 	<td>
-	    <input type="text" name="output_file" id="output_file" size="9" />
-	    <input type="checkbox" name="screen_output" id="screen_output" onchange="toggleScreen(this,'#output_file')" />
+	    {sinput id="output_file" size="9"}
+	    <input type="checkbox" name="screen_output" id="screen_output" onchange="toggleScreen(this,'#sf_problem_output_file')" />
 	    <label for="screen_output">Screen</label></td>
 	</tr>
 	<tr>
-	    <td><label for="type">Type</label></td>
+	    <td><label for="type">{slabel id="type"}</label></td>
 	    <td>
-	    <select name="type" id="type">
-	      <option value="1" selected="selected">Traditional</option>
-	      <option value="2">Interactive</option>
-	      <option value="3">Output</option>
-	    </select>
+	    {sinput id='type'}
 	    </td>
 	 </tr>
 	 <tr>
-		<td><label for="comp_method">Compare</label></td>
-	    <td><select name="comp_method" id="comp_method" onchange="compareBox(this)">
-	      <option value="/FULLTEXT/" selected="selected">Full Text</option>
-	      <option value="/OMITSPACE/">Omit Spaces at EOL</option>
-	      <option value="special">Special Judge</option>
-	    </select>
+		<td>{slabel id="comp_method"}</td>
+	    <td>{sinput id='comp_method'}
 	    <div id="special_judge" class="hidden"><label for="special_judge_input">bin name</label>
 	    <input type="text" name="special_judge" id="special_judge_input" /></div></td>
 	</tr>
 	</table>
 	</fieldset>
 </div>
-</form>
+{/sform}
 <div class="hidden">
 <div id="batch_box"><h3>Batch Add Test Cases</h3><p>Use (*) to represent serial number</p>
 <p>Input: <input id="bat-input" value="data(*).in" onkeyup='caseShowPreview()' /> Answer: <input id="bat-answer" value="data(*).out" onkeyup='caseShowPreview()' /> Time Limit: <input id="bat-tl" value="1" /> Memory Limit: <input id="bat-ml" value="128" /> Score: <input id="bat-score" value="10" /></p>

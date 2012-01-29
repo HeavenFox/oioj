@@ -6,14 +6,17 @@
  */
 class SmartyForm
 {
-	private $id;
 	
-	private $elements;
+	/**
+	 * Prefix for HTML IDs to prevent conflict
+	 */
+	const HTML_ID_PREFIX = 'sf_';
 	
-	private $activeRecords;
-	
-	private $recordAssoc;
-	
+	/**
+	 * Form Action attribute
+	 *
+	 * @var string
+	 */
 	public $action;
 	
 	/**
@@ -25,24 +28,33 @@ class SmartyForm
 	
 	/**
 	 * Whether or not to automatically append error message
+	 *
+	 * @var bool
 	 */
 	public $appendErrorMessage = true;
 	
 	/**
 	 * Whether or not to validate fields on client side
+	 *
+	 * @var array
 	 */
 	public $validateClientSide = false;
 	
 	/**
 	 * Is current data valid?
-	 * Value is defined only after validate method called
+	 * The value is defined only after when validate method is called
+	 *
+	 * @var bool
 	 */
 	public $valid;
 	
-	/**
-	 * Prefix for HTML IDs to prevent conflict
-	 */
-	const HTML_ID_PREFIX = 'id-';
+	private $id;
+	
+	private $elements;
+	
+	private $activeRecords;
+	
+	private $recordAssoc;
 	
 	public function __construct($id, $action)
 	{
@@ -94,9 +106,14 @@ class SmartyForm
 		return $this->valid;
 	}
 	
-	public function getFormOpeningHTML()
+	public function getFormOpeningHTML($params)
 	{
-		$html = "<form id='sf_{$this->id}' method='post' action='".htmlspecialchars($this->action)."'>";
+		$html = "<form id='".self::HTML_ID_PREFIX."{$this->id}' method='post' action='".htmlspecialchars($this->action)."'";
+		foreach ($params as $k => $v)
+		{
+			$html .= (' '.$k.'="'.htmlspecialchars($v).'"');
+		}
+		$html .= ">";
 		foreach ($this->elements as $v)
 		{
 			if ($v->autoAttach)
@@ -203,7 +220,7 @@ abstract class SF_Element
 	private $validators;
 	private $sanitizers;
 	
-	protected $attributes;
+	protected $attributes = array();
 	
 	public $autoAttach = false;
 	
@@ -377,6 +394,14 @@ abstract class SF_Element
 		return $attr;
 	}
 	
+	protected function setDefaultAttributes()
+	{
+		$this->attributes['id'] = $this->getHTMLID();
+		$this->attributes['name'] = $this->id;
+		if ($this->data)
+			$this->attributes['value'] = $this->data;
+	}
+	
 	abstract function html();
 	
 	protected function appendedErrorMessage()
@@ -411,7 +436,8 @@ abstract class SF_TextBased extends SF_Element
 {
 	public function html()
 	{
-		return "<input type='{$this->htmltype}' id='".$this->getHTMLID()."' name='{$this->id}' " . ($this->data ? (' value="'.htmlspecialchars($this->data).'"') : '') . $this->extraAttributes() . " />" . $this->appendedErrorMessage();
+		$this->setDefaultAttributes();
+		return "<input " . $this->generateAtrributes() . " />" . $this->appendedErrorMessage();
 	}
 }
 
@@ -420,9 +446,9 @@ class SF_TextField extends SF_TextBased
 	public $minLength;
 	public $maxLength;
 	
-	public function __construct()
+	protected function setDefaultAttributes()
 	{
-		parent::__construct();
+		parent::setDefaultAttributes();
 		$this->attributes['type'] = 'text';
 	}
 	
@@ -440,14 +466,17 @@ class SF_Password extends SF_TextField
 {
 	public function __construct()
 	{
-		parent::__construct();
-		$this->attributes['type'] = 'password';
+		call_user_func_array('parent::__construct',func_get_args());
+		
 	}
 	
-	public function html()
+	protected function setDefaultAttributes()
 	{
+		parent::setDefaultAttributes();
+		$this->attributes['type'] = 'password';
+		
 		// Password need and should never be displayed again
-		return "<input type='password' id='".$this->getHTMLID()."' name='{$this->id}' />" . $this->appendedErrorMessage();
+		unset($this->attributes['value']);
 	}
 }
 
@@ -455,7 +484,7 @@ class SF_EMail extends SF_TextBased
 {
 	public function __construct()
 	{
-		parent::__construct();
+		call_user_func_array('parent::__construct',func_get_args());
 		$this->attributes['type'] = 'email';
 	}
 }
@@ -468,7 +497,7 @@ class SF_Number extends SF_TextBased
 	
 	public function __construct()
 	{
-		parent::__construct();
+		call_user_func_array('parent::__construct',func_get_args());
 		$this->attributes['type'] = 'number';
 	}
 	
@@ -500,9 +529,9 @@ class SF_Number extends SF_TextBased
 
 class SF_Date extends SF_TextBased
 {
-	public function __construct()
+	protected function setDefaultAttributes()
 	{
-		parent::__construct();
+		parent::setDefaultAttributes();
 		$this->attributes['type'] = 'date';
 	}
 }
@@ -510,9 +539,9 @@ class SF_Date extends SF_TextBased
 
 class SF_DateTime extends SF_Date
 {
-	public function __construct()
+	protected function setDefaultAttributes()
 	{
-		parent::__construct();
+		parent::setDefaultAttributes();
 		$this->attributes['type'] = 'datetime';
 	}
 }
@@ -526,7 +555,7 @@ class SF_Checkbox extends SF_Element
 	
 	public function html()
 	{
-		return "<input type='checkbox' id='".$this->getHTMLID()."' name='{$this->id}' " . ($this->data ? (' checked="checked"') : '') . " />" . $this->appendedErrorMessage();
+		return "<input type='checkbox' id='".$this->getHTMLID()."' name='{$this->id}' " . ($this->data ? (' checked="checked"') : '') . $this->generateAtrributes() . " />" . $this->appendedErrorMessage();
 	}
 }
 
@@ -543,16 +572,19 @@ class SF_CheckboxGroup extends SF_GroupElement
 */
 class SF_Select extends SF_Element
 {
-	private $options;
+	protected $options;
 	
 	public function html()
 	{
+		$this->setDefaultAttributes();
+		unset($this->attributes['value']);
 		$html = '<select' . $this->generateAtrributes() . ">\n";
-		foreach ($options as $label => $value)
+		foreach ($this->options as $label => $value)
 		{
-			$html .= '<option value="'.htmlspecialchars($value).'">'.htmlspecialchars($label).'</option>';
+			$html .= '<option value="'.htmlspecialchars($value).'"'.($value == $this->data ? ' selected="selected"':'').'>'.htmlspecialchars($label).'</option>';
 		}
 		$html .= "\n</select>";
+		return $html;
 	}
 }
 

@@ -3,6 +3,7 @@ defined('IN_OIOJ') || die('Forbidden');
 
 import('Problem');
 import('Cronjob');
+import('SmartyForm');
 class AdminManageProblemModule
 {
 	public function run()
@@ -22,6 +23,7 @@ class AdminManageProblemModule
 			}
 			else
 			{
+				OIOJ::$template->assign('sf_problem',$this->generateProblemForm());
 				OIOJ::$template->display('admin_addproblem.tpl');
 			}
 			
@@ -32,14 +34,19 @@ class AdminManageProblemModule
 	
 	public function generateProblemForm()
 	{
-		$form = new SmartyForm('problem', '');
+		$form = new SmartyForm('problem', 'index.php?mod=admin_problem&act=add&submit=1');
+		
+		$form->add(new SF_Checkbox('id','listing','label','Public'));
 		
 		$form->add(new SF_TextField('title'));
 		$form->add(new SF_TextArea('body'));
 		
-		$form->add(new SF_TextField('input_file'));
-		$form->add(new SF_TextField('output_file'));
+		$form->add(new SF_TextField('id','input_file','label','Input'));
+		$form->add(new SF_TextField('id','output_file','label','Output'));
 		
+		$form->add(new SF_Select('id','type','label','Type','options',array('Traditional' => '1', 'Interactive' => '2', 'Output' => '3')));
+		$form->add(new SF_Select('id','comp_method','label','Compare','options',array('Full Text'=>'/FULLTEXT/','Omit Space at EOL'=>'/OMITSPACE/','Special Judge' => 'special')));
+		$form->add(new SF_TextField('id','special_judge','label','bin'));
 		return $form;
 	}
 	
@@ -47,7 +54,6 @@ class AdminManageProblemModule
 	{
 		try
 		{
-			Settings::Flush();
 			// Check permission
 			if (!User::GetCurrent()->ableTo('add_problem'))
 			{
@@ -69,7 +75,6 @@ class AdminManageProblemModule
 				$prob->compare = IO::POST('special_judge');
 			}
 			
-			
 			$inputs = IO::POST('case-in');
 			$outputs = IO::POST('case-out');
 			$tls = IO::POST('case-tl');
@@ -79,15 +84,19 @@ class AdminManageProblemModule
 			// Check if archive valid
 			echo "Checking if archive file is legal...<br />\n";
 			$zip = new ZipArchive();
+			
+			$legalFiles = array();
+			
 			if (is_uploaded_file($_FILES['archive']['tmp_name']))
 			{
 				$zip->open($_FILES['archive']['tmp_name']);
 				foreach ($scores as $k => $v)
 				{
-					if ($zip->locateName($inputs[$k],ZIPARCHIVE::FL_NODIR) === false || $zip->locateName($outputs[$k],ZIPARCHIVE::FL_NODIR) === false)
+					if (($idx1 = $zip->locateName($inputs[$k],ZIPARCHIVE::FL_NODIR)) === false || ($idx2 = $zip->locateName($outputs[$k],ZIPARCHIVE::FL_NODIR)) === false)
 					{
 						throw new Exception('wrong archive');
 					}
+					$legalFiles[$idx1] = $legalFiles[$idx2] = true;
 				}
 				$zip->close();
 			}else{
