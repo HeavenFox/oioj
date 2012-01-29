@@ -24,7 +24,12 @@ $(function(){
 	//$('#tag_search').autocomplete({ source: function(req, callback){
 	//	$.post('index.php?mod=problemlist&act=tagcomplete&ajax=1',req,callback,'json');
 	//} });
-	$('#tag_search').autocomplete({ source: 'index.php?mod=problemlist&act=tagcomplete&ajax=1', select:function(event, ui){ console.log(ui); } });
+	$('#tag_search').autocomplete({ source: 'index.php?mod=problemlist&act=tagcomplete&ajax=1', select:function(event, ui){ 
+		event.preventDefault();
+		$('<span class="tag" data-tid="'+ui.item.value+'"><a href="index.php?mod=problemlist&tag='+ui.item.value+'">'+ui.item.label+'</a></span>').draggable({ revert: 'invalid' }).appendTo($('#popular_tags_list'));
+		$(this).val('');
+		
+	} });
 });
 function tagQuerySubmit()
 {
@@ -71,7 +76,7 @@ Popular Tags:
 {/foreach}
 </div>
 <div id='popular_tags_search'>
-	<input id='tag_search' size='5' /><input type='button' value='Add' /><a href='javascript:;' onclick='$("#tag_query").toggle(1000)'>Advanced</a>
+	<label for='tag_search'>Search Tag</label> <input id='tag_search' size='5' /><a href='javascript:;' onclick='$("#tag_query").toggle(1000)'>Advanced</a>
 </div>
 </div>
 <div id='tag_query' class='hidden'>
