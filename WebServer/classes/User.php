@@ -68,7 +68,7 @@ class User extends ActiveRecord
 		if ($remember)
 		{
 			IO::SetCookie('uid',$obj->id,14*24*3600);
-			IO::SetCookie('password',$obj->password,14*24*3600);
+			IO::SetCookie('password',$cookieKey,14*24*3600);
 		}
 		
 		$dbKey = self::EncryptPassword($cookieKey, $obj->salt, self::SERVER_ITERATION);
