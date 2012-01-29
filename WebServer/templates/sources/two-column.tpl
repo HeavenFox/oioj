@@ -9,4 +9,5 @@
 <div id="column-right">
 {block name="column-right"}{/block}
 </div>
+<div style='clear:both'></div>
 {/block}

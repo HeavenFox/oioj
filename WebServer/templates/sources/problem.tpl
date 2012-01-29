@@ -20,7 +20,10 @@ $(function(){
 <script type="text/javascript" src="scripts/mathjax/MathJax.js?config=default"></script>
 {/block}
 {block name="column-left"}
+<div id='title_bar'>
 <h2>{$problem->title}</h2>
+<div>Problem&nbsp;&nbsp;<a href=''>Discussion</a>&nbsp;&nbsp;<a href=''>Solution</a></div>
+</div>
 <div id='problem-body'>
 {$problem->body}
 </div>
