@@ -20,6 +20,12 @@ function import($package)
     require_once ROOT . 'classes' . DIRECTORY_SEPARATOR . $url . '.php';
 }
 
+function loadData($data)
+{
+	require_once ROOT. 'data/'.$data.'.php';
+	return $$data;
+}
+
 /**
  * Parse general protocol
  * @param string $str protocol data
