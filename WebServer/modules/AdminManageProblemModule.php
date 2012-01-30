@@ -96,8 +96,7 @@ class AdminManageProblemModule
 	{
 		$id = IO::GET('id',0,'intval');
 		
-		$obj = new Problem($id);
-		$obj->fetch(array('id','title','body','input','output','compare','listing'));
+		$obj = Problem::first(array('id','title','body','input','output','compare','listing'), 'WHERE `id` = '.$id);
 		
 		$form = $this->generateProblemForm($obj);
 		$form->get('id')->data = $id;
@@ -143,7 +142,6 @@ class AdminManageProblemModule
 			$scores = IO::POST('case-score');
 			
 			// Check if archive valid
-			echo "Checking if archive file is legal...<br />\n";
 			$zip = new ZipArchive();
 			
 			$legalFiles = array();
@@ -189,18 +187,18 @@ class AdminManageProblemModule
 			
 			$db = Database::Get();
 			
-			echo 'Adding problem to dispatch queue<br />';
-			
 			$prob->queueForDispatch();
 			
 			Cronjob::AddJob('ProblemDistribution','dispatch',array(), 0, 3);
-			
-			echo 'done. Problem ID: '.$prob->id;
+			OIOJ::Redirect('Problem #'.$prob->id.' Saved Successfully. It has been added to distribution queue and shall appear once its data finishes propagating','index.php?mod=problem&id='.$prob->id);
+		
 		}
 		else
 		{
 			$prob->update();
+			OIOJ::Redirect('Problem saved Successfully. Directing you to problem...','index.php?mod=problem&id='.$prob->id);
 		}
+		
 	}
 	
 	public function displayProblemForm($form)
