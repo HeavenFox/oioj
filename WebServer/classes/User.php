@@ -136,32 +136,44 @@ GROUP BY  `key`';
 		return $acl;
 	}
 	
-	public function ableTo($key)
+	public function getPermissionNumber($key)
 	{
 		if ($this->acl === null)
 		{
 			$this->acl = $this->getACL();
 			$this->createSession();
 		}
+		
+		$hierarchy = loadData('PermissionHierarchy');
+		$cur = $key;
+		
+		while (!isset($this->acl[$cur]) || $this->acl[$cur] == 0)
+		{
+			if (!isset($hierarchy[$cur]))
+			{
+				return 0;
+			}
+			$cur = $hierarchy[$cur];
+		}
+		return $this->acl[$cur];
+	}
+	
+	public function ableTo($key)
+	{
 		if (isset($this->acl[self::ACL_OMNIPOTENT]) && $this->acl[self::ACL_OMNIPOTENT] > 0)
 		{
 			return true;
 		}
-		return isset($this->acl[$key]) && $this->acl[$key] > 0;
+		return $this->getPermissionNumber($key) > 0;
 	}
 	
 	public function unableTo($key)
 	{
-		if ($this->acl === null)
-		{
-			$this->acl = $this->getACL();
-			$this->createSession();
-		}
 		if (isset($this->acl[self::ACL_OMNIPOTENT]) && $this->acl[self::ACL_OMNIPOTENT] > 0)
 		{
 			return false;
 		}
-		return isset($this->acl[$key]) && $this->acl[$key] < 0;
+		return $this->getPermissionNumber($key) < 0;
 	}
 	
 	public function __sleep()
