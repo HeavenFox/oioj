@@ -19,18 +19,13 @@ class AdminManageProblemModule
 		switch (IO::GET('act'))
 		{
 		case 'add':
-			if (IO::GET('submit'))
-			{
-				$this->addProblemSubmit();
-			}
-			else
-			{
-				$this->displayProblemForm($this->generateProblemForm());
-			}
-			
+			$this->displayProblemForm($this->generateProblemForm());
 			break;
 		case 'edit':
 			$this->editProblem();
+			break;
+		case 'submit':
+			$this->problemSubmit();
 			break;
 		case 'uploadimage':
 			$this->uploadImage();
@@ -41,7 +36,10 @@ class AdminManageProblemModule
 	
 	public function generateProblemForm(ActiveRecord $record = null)
 	{
-		$form = new SmartyForm('problem', 'index.php?mod=admin_problem&act=add&submit=1');
+		$form = new SmartyForm('problem', 'index.php?mod=admin_problem&act=submit');
+		
+		$form->add(new SF_Hidden('id','id'));
+		$form->add(new SF_Hidden('id','editing'));
 		
 		$form->add(new SF_Checkbox('id','listing','label','Public'));
 		
@@ -58,6 +56,7 @@ class AdminManageProblemModule
 		if ($record)
 		{
 			$form->addRecord('problem', $record);
+			$form->bind('listing','problem');
 			$form->bind('title','problem');
 			$form->bind('body','problem');
 			$form->bind('input_file','problem','input');
@@ -80,6 +79,15 @@ class AdminManageProblemModule
 					$obj->compare = $form->get('special_judge')->data;
 				}
 			});
+			
+			$form->bindByFunc('problem',function($form,$obj){
+				$form->get('id')->data = $obj->id;	
+			},function($form,$obj){
+				if ($data = $form->get('id')->data)
+				{
+					$obj->id = $data;
+				}
+			});
 		}
 		return $form;
 	}
@@ -92,12 +100,14 @@ class AdminManageProblemModule
 		$obj->fetch(array('id','title','body','input','output','compare','listing'));
 		
 		$form = $this->generateProblemForm($obj);
+		$form->get('id')->data = $id;
+		$form->get('editing')->data = 1;
 		
 		$form->gatherFromRecord();
 		$this->displayProblemForm($form);
 	}
 	
-	public function addProblemSubmit()
+	public function problemSubmit()
 	{
 		// Check permission
 		if (!User::GetCurrent()->ableTo('add_problem'))
@@ -106,82 +116,91 @@ class AdminManageProblemModule
 		}
 		
 		$prob = new Problem();
-		$prob->user = User::GetCurrent();
-		$prob->dispatched = 0;
 		
 		$form = $this->generateProblemForm($prob);
+		
+		$form->gatherFromPOST();
 		$form->saveToRecord();
-		/*
-		$prob->title = IO::POST('title');
-		$prob->body = IO::POST('body');
-		$prob->type = IO::POST('type');
-		$prob->listing = IO::POST('listing',0,function($data){return 1;});
 		
-		$prob->input = IO::POST('input_file');
-		$prob->output = IO::POST('output_file');
-		
-		*/
-		$inputs = IO::POST('case-in');
-		$outputs = IO::POST('case-out');
-		$tls = IO::POST('case-tl');
-		$mls = IO::POST('case-ml');
-		$scores = IO::POST('case-score');
-		
-		// Check if archive valid
-		echo "Checking if archive file is legal...<br />\n";
-		$zip = new ZipArchive();
-		
-		$legalFiles = array();
-		
-		if (is_uploaded_file($_FILES['archive']['tmp_name']))
+		if (!$form->get('editing')->data)
 		{
-			$zip->open($_FILES['archive']['tmp_name']);
+			$prob->user = User::GetCurrent();
+			$prob->dispatched = 0;
+			/*
+			$prob->title = IO::POST('title');
+			$prob->body = IO::POST('body');
+			$prob->type = IO::POST('type');
+			$prob->listing = IO::POST('listing',0,function($data){return 1;});
+			
+			$prob->input = IO::POST('input_file');
+			$prob->output = IO::POST('output_file');
+			
+			*/
+			$inputs = IO::POST('case-in');
+			$outputs = IO::POST('case-out');
+			$tls = IO::POST('case-tl');
+			$mls = IO::POST('case-ml');
+			$scores = IO::POST('case-score');
+			
+			// Check if archive valid
+			echo "Checking if archive file is legal...<br />\n";
+			$zip = new ZipArchive();
+			
+			$legalFiles = array();
+			
+			if (is_uploaded_file($_FILES['archive']['tmp_name']))
+			{
+				$zip->open($_FILES['archive']['tmp_name']);
+				foreach ($scores as $k => $v)
+				{
+					if (($idx1 = $zip->locateName($inputs[$k],ZIPARCHIVE::FL_NODIR)) === false || ($idx2 = $zip->locateName($outputs[$k],ZIPARCHIVE::FL_NODIR)) === false)
+					{
+						throw new Exception('wrong archive');
+					}
+					$legalFiles[$idx1] = $legalFiles[$idx2] = true;
+				}
+				$zip->close();
+			}else{
+				throw new Exception('error reading archive');
+			}
+			
 			foreach ($scores as $k => $v)
 			{
-				if (($idx1 = $zip->locateName($inputs[$k],ZIPARCHIVE::FL_NODIR)) === false || ($idx2 = $zip->locateName($outputs[$k],ZIPARCHIVE::FL_NODIR)) === false)
-				{
-					throw new Exception('wrong archive');
-				}
-				$legalFiles[$idx1] = $legalFiles[$idx2] = true;
+				$c = new TestCase();
+				$c->cid = $k+1;
+				$c->input = $inputs[$k];
+				$c->answer = $outputs[$k];
+				$c->timelimit = $tls[$k];
+				$c->memorylimit = $mls[$k];
+				$c->score = $v;
+				$c->problem = $prob;
+				
+				$prob->testCases[] = $c;
 			}
-			$zip->close();
-		}else{
-			throw new Exception('error reading archive');
-		}
-		
-		foreach ($scores as $k => $v)
-		{
-			$c = new TestCase();
-			$c->cid = $k+1;
-			$c->input = $inputs[$k];
-			$c->answer = $outputs[$k];
-			$c->timelimit = $tls[$k];
-			$c->memorylimit = $mls[$k];
-			$c->score = $v;
-			$c->problem = $prob;
 			
-			$prob->testCases[] = $c;
+			
+			$prob->add();
+			
+			$newloc = Settings::Get('tmp_dir').DIRECTORY_SEPARATOR.'cases'.DIRECTORY_SEPARATOR.$prob->id.'.zip';
+			
+			move_uploaded_file($_FILES['archive']['tmp_name'],$newloc);
+			
+			$prob->archiveLocation = $newloc;
+			
+			$db = Database::Get();
+			
+			echo 'Adding problem to dispatch queue<br />';
+			
+			$prob->queueForDispatch();
+			
+			Cronjob::AddJob('ProblemDistribution','dispatch',array(), 0, 3);
+			
+			echo 'done. Problem ID: '.$prob->id;
 		}
-		
-		
-		$prob->add();
-		
-		$newloc = Settings::Get('tmp_dir').DIRECTORY_SEPARATOR.'cases'.DIRECTORY_SEPARATOR.$prob->id.'.zip';
-		
-		move_uploaded_file($_FILES['archive']['tmp_name'],$newloc);
-		
-		$prob->archiveLocation = $newloc;
-		
-		$db = Database::Get();
-		
-		echo 'Adding problem to dispatch queue<br />';
-		
-		$prob->queueForDispatch();
-		
-		Cronjob::AddJob('ProblemDistribution','dispatch',array(), 0, 3);
-		
-		echo 'done. Problem ID: '.$prob->id;
-
+		else
+		{
+			$prob->update();
+		}
 	}
 	
 	public function displayProblemForm($form)

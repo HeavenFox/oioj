@@ -501,12 +501,6 @@ class SF_TextField extends SF_TextBased
 
 class SF_Password extends SF_TextField
 {
-	public function __construct()
-	{
-		call_user_func_array('parent::__construct',func_get_args());
-		
-	}
-	
 	protected function setDefaultAttributes()
 	{
 		parent::setDefaultAttributes();
@@ -519,9 +513,9 @@ class SF_Password extends SF_TextField
 
 class SF_EMail extends SF_TextBased
 {
-	public function __construct()
+	protected function setDefaultAttributes()
 	{
-		call_user_func_array('parent::__construct',func_get_args());
+		parent::setDefaultAttributes();
 		$this->attributes['type'] = 'email';
 	}
 }

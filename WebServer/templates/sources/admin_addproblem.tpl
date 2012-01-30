@@ -22,7 +22,7 @@ $(document).ready(function(){
 </script>
 {/block}
 {block name="body"}
-<h2>Add Problem</h2>
+<h2>{if $sf_problem->fresh}Add{else}Edit{/if} Problem</h2>
 {sform obj=$sf_problem enctype="multipart/form-data"}
 <div id="main">
 	<fieldset>
@@ -30,7 +30,7 @@ $(document).ready(function(){
 	<p>{sinput id="title" placeholder='Enter title here...'}</p>
 	<p>{sinput id="body"}</p>
 	</fieldset>
-
+{if $sf_problem->fresh}
 	<fieldset><legend>Test Cases</legend>
 	<table id='testcases-table'>
 	<thead><tr><td>Input</td><td>Answer</td><td>Time (s)</td><td>Mem (MB)</td><td>Score</td><td></td></tr></thead>
@@ -42,7 +42,7 @@ $(document).ready(function(){
 	</table><a id='batch_box_link' href='#batch_box'>Batch Add</a>
 	<p>Data Archive<input type="file" name="archive" /><br /><small>Must be a ZIP archive that contains all test cases</small></p>
 	</fieldset>
-
+{/if}
 	<input type='submit' value='Submit' />
 </div>
 <div id="aside">
@@ -55,6 +55,7 @@ $(document).ready(function(){
 		<small>To upload an image for use, use editor's "insert image" icon</small>
 		<input type='file' name='attach' />
 	</fieldset>
+	{if $sf_problem->fresh}
 	<fieldset>
 	<legend>Input, Output</legend>
 	<table>
@@ -85,6 +86,7 @@ $(document).ready(function(){
 	</tr>
 	</table>
 	</fieldset>
+	{/if}
 </div>
 {/sform}
 <div class="hidden">
