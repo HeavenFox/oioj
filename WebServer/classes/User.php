@@ -18,7 +18,6 @@ class User extends ActiveRecord
 	
 	/**
 	 * Encrypt password to store in database
-	 * 
 	 */
 	private static function EncryptPassword($password, $salt, $it)
 	{
@@ -29,6 +28,10 @@ class User extends ActiveRecord
 		return $password;
 	}
 	
+	/**
+	 * Get Current User
+	 * @return User Current logged-in user
+	 */
 	public static function GetCurrent()
 	{
 		if (self::$currentUser)

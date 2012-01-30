@@ -14,7 +14,7 @@ function removeCase(i)
 
 function addCase(input,answer,tl,ml,score)
 {
-	$("#testcases").append("<tr id='testcase-"+sn+"'><td><input type='text' name='case-in[]' value='"+input+"' size='8' /></td><td><input type='text' name='case-out[]' value='"+answer+"' size='8' /></td><td><input type='text' name='case-tl[]' value='"+tl+"' size='4' /></td><td><input type='text' name='case-ml[]' value='"+ml+"' size='4' /></td><td><input type='text' name='case-score[]' value='"+score+"' size='4' /></td><td><a href='javascript:;' onclick='removeCase("+sn+");return false;'>[-]</a></td></tr>");
+	$("#testcases").append("<tr id='testcase-"+sn+"'><td><input type='text' name='case-in[]' value='"+input+"' size='12' /></td><td><input type='text' name='case-out[]' value='"+answer+"' size='12' /></td><td><input type='text' name='case-tl[]' value='"+tl+"' size='4' /></td><td><input type='text' name='case-ml[]' value='"+ml+"' size='4' /></td><td><input type='text' name='case-score[]' value='"+score+"' size='4' /></td><td><a href='javascript:;' onclick='removeCase("+sn+");return false;'>[-]</a></td></tr>");
 	sn++;
 }
 
@@ -97,5 +97,5 @@ function resetForm()
 $(document).ready(function() {
 	$("a#batch_box_link").fancybox({'transitionIn'	:	'elastic',
 		'transitionOut'	:	'elastic',
-	'scrolling':'no'});
+		'scrolling':'no'});
 });

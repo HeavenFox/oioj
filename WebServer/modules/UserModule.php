@@ -22,6 +22,9 @@ class UserModule
 		case 'login':
 			$this->doLogin();
 			break;
+		case 'register':
+			$this->register();
+			break;
 		case 'register_submit':
 			$this->doRegisterSubmit();
 			break;
@@ -32,6 +35,21 @@ class UserModule
 			$this->logout();
 			break;
 		}
+	}
+	
+	public function generateRegisterForm()
+	{
+		import('SmartyForm');
+		
+		$form = new SmartyForm('register','index.php?mod=user&act=register_submit');
+		
+		$form->add(new SF_TextField('id','username','label','Username','minLength',3,'maxLength',16));
+		$form->add(new SF_Password('id','password','label','Password','minLength',6));
+		$form->add(new SF_Password('id','password_confirm','label','Again'));
+		$form->add(new SF_EMail('id','email','label','Email'));
+		$form->add(new SF_TextField('id','invitation','label','Invitation'));
+		
+		return $form;
 	}
 	
 	public function doLogin()
@@ -57,44 +75,79 @@ class UserModule
 		OIOJ::Redirect('You have been logged out.');
 	}
 	
+	public function register()
+	{
+		OIOJ::$template->assign('sf_register', $this->generateRegisterForm());
+		$this->registerForm();
+	}
+	
+	public function registerForm()
+	{
+		OIOJ::$template->display('register.tpl');
+	}
+	
 	public function doRegisterSubmit()
 	{
-		OIOJ::InitDatabase();
-		$suppliedCode = IO::POST('invitation');
+		$form = $this->generateRegisterForm();
 		
-		$invit = Invitation::first(array('id','user'),'WHERE `code` = ?', array($suppliedCode));
-		
-		if (!$invit || intval($invit->user))
-		{
-			throw new Exception('Sorry, invitation code invalid');
-		}
+		$form->gatherFromPOST();
 		
 		$user = new User();
 		
-		if (IO::POST('password') != IO::POST('password_confirm'))
+		$form->addRecord('user', $user);
+		$form->bind('username','user');
+		$form->bind('password','user');
+		$form->bind('email','user');
+		
+		$form->get('invitation')->addValidator(function($suppliedCode){
+			$invit = Invitation::first(array('id','user'),'WHERE `code` = ?', array($suppliedCode));
+			
+			if (!$invit || intval($invit->user))
+			{
+				throw new InputException('Invitation code invalid');
+			}
+		});
+		
+		$form->get('password_confirm')->addValidator(function($data) use ($form){
+			if ($data != $form->get('password')->data)
+			{
+				throw new InputException('Two passwords do not match');
+			}
+		});
+		
+		$form->validate();
+		
+		if ($form->valid)
 		{
-			throw new Exception('Password don\'t match');
+			$form->saveToRecord();
+			
+			try
+			{
+				$user->add();
+			}
+			catch(PDOException $e)
+			{
+				$form->get('username')->triggerError('Sorry, but the username is taken');
+			}
 		}
 		
-		$user->username = IO::POST('username');
-		$user->password = IO::POST('password');
-		$user->email = IO::POST('email');
-		
-		try
+		if ($form->valid)
 		{
-			$user->add();
+			// Automatically log user in
+			$user->createSession();
+			
+			// Invalidate invitation
+			$stmt = Database::Get()->prepare('UPDATE `oj_invitations` SET `user` = ? WHERE `code` = ?');
+			$stmt->execute($user->id, $form->get('invitation')->data);
+			
+			OIOJ::Redirect('You have successfully registered!');
 		}
-		catch(PDOException $e)
+		else
 		{
-			throw new Exception('Sorry, but the username is taken');
+			OIOJ::$template->assign('sf_register', $form);
+			$this->registerForm();
 		}
 		
-		$invit->user = $user;
-		$invit->update();
-		
-		$user->createSession();
-		
-		OIOJ::Redirect('You have successfully registered!');
 	}
 	
 	public function getCAPTCHA()

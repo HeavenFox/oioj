@@ -33,27 +33,27 @@ $(function(){
    <div id="login_panel"><h2>Log in</h2>
 
 <div id="login_traditional">
-<form action="index.php?mod=user&amp;act=login" method="post">
+{sform obj=$sf_login}
 <table>
-<tr><td>Username</td><td><input name="username" /></td></tr>
-<tr><td>Password</td><td><input type="password" name="password" /></td></tr>
-<tr><td>Remember?</td><td><input type="checkbox" name="remember" /></td></tr>
+<tr><td>{slabel id="username"}</td><td>{sinput id="username"}</td></tr>
+<tr><td>{slabel id="password"}</td><td>{sinput id="password"}</td></tr>
+<tr><td colspan="2">{sinput id="remember"}{slabel id="remember"}</td></tr>
 <tr><td colspan="2"><input type='submit' value='Submit' /></td></tr>
 </table>
-</form>
+{/sform}
 </div>
    </div>
    <div id="register_panel"><h2>Register</h2>
-<form action="index.php?mod=user&amp;act=register_submit" method="post">
+{sform obj=$sf_register}
 <table>
-<tr><td>Username</td><td><input name="username" onclick="showCAPTCHA()" /></td></tr>
-<tr><td>Password</td><td><input type="password" name="password" /></td></tr>
-<tr><td>Confirm</td><td><input type="password" name="password_confirm" /></td></tr>
-<tr><td>Email</td><td><input name="email" /></td></tr>
-<tr><td>Invitation</td><td><input name="invitation" /></td></tr>
+<tr><td>{slabel id="username"}</td><td>{sinput id="username"}</td></tr>
+<tr><td>{slabel id="password"}</td><td>{sinput id="password"}</td></tr>
+<tr><td>{slabel id="password_confirm"}</td><td>{sinput id="password_confirm"}</td></tr>
+<tr><td>{slabel id="email"}</td><td>{sinput id="email"}</td></tr>
+<tr><td>{slabel id="invitation"}</td><td>{sinput id="invitation"}</td></tr>
 <tr><td colspan="2"><input type='submit' value='Submit' /></td></tr>
 </table>
-</form>
+{/sform}
 </div>
 </div>
 </div>

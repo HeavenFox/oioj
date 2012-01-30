@@ -111,7 +111,7 @@ body
 #body
 {
 	padding: 0;
-	width: 960px;
+	width: 100%;
 }
 
 #body h2
@@ -164,4 +164,7 @@ body
 	display: none;
 }
 
-
+small
+{
+	font-size: 0.9em;
+}

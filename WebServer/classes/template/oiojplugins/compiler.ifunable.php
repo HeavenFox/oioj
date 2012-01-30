@@ -10,6 +10,6 @@
  */
 function smarty_compiler_ifunable($params, Smarty $smarty)
 {
-    return "<?php if (User::GetCurrent()->unableTo('".$params['to']."')) { ?>";
+    return "<?php if (User::GetCurrent()->unableTo(".$params['to'].")) { ?>";
 }
 ?>
