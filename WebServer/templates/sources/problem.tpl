@@ -31,6 +31,7 @@ $(function(){
 {block name="column-right"}
 <div class="sidebar-box">
 <h2>Problem Info</h2>
+<div class="sidebar-content">
 <ul>
 	<li>ID: {$problem->id}</li>
 	<li>Submitter: {$problem->user->username}</li>
@@ -39,9 +40,11 @@ $(function(){
 	{if $problem->source}<li>Source: {$problem->source}</li>{/if}
 </ul>
 </div>
+</div>
 {block name="problem_submit_box"}
 <div class="sidebar-box" id="problem-submit-box">
 	<h2>Submit</h2>
+	<div class="sidebar-content">
 	<div id="manual-upload">
 	<form method="post" enctype="multipart/form-data" action="index.php?mod=submit&amp;solution=1">
 		<input type='hidden' name='id' value='{$problem->id}' />
@@ -50,6 +53,7 @@ $(function(){
 	</form>
 	</div>
 	<div id="dropzone">
+	</div>
 	</div>
 </div>
 {/block}

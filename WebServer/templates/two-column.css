@@ -32,6 +32,18 @@
 	padding: 4px;
 }
 
+#problem-body
+{
+	margin: 6px;
+	line-height: 18px;
+}
+
+#column-right .sidebar-box ul
+{
+	list-style: none;
+	margin: 5px 8px 5px 8px;
+}
+
 #column-right .sidebar-box ul
 {
 	list-style: none;
