@@ -24,7 +24,7 @@ class SmartyForm
 	 *
 	 * @var bool
 	 */
-	public $fresh;
+	public $fresh = true;
 	
 	/**
 	 * Whether or not to automatically append error message
@@ -55,6 +55,8 @@ class SmartyForm
 	private $activeRecords;
 	
 	private $recordAssoc;
+	
+	private $recordFuncs;
 	
 	public function __construct($id, $action)
 	{
@@ -167,10 +169,26 @@ class SmartyForm
 	}
 	
 	/**
+	 * Bind activerecord using customized functions
+	 *
+	 * @param string $objID Object ID
+	 * @param callback $gatherer Gatherer object, which takes two parameters: form object and record object
+	 * @param callback $saver Saver function, which takes the same two parameters
+	 */
+	public function bindByFunc($objID, $gatherer, $saver)
+	{
+		if ($gatherer)
+			$this->recordFuncs[$objID]['gatherer'][] = $gatherer;
+		if ($saver)
+			$this->recordFuncs[$objID]['saver'][] = $saver;
+	}
+	
+	/**
 	 * Gather data from HTTP POST request
 	 */
 	public function gatherFromPOST()
 	{
+		$this->fresh = false;
 		foreach ($this->elements as $v)
 		{
 			$v->gatherFromPOST();
@@ -182,6 +200,7 @@ class SmartyForm
 	 */
 	public function gatherFromSession()
 	{
+		$this->fresh = false;
 		foreach ($this->elements as $v)
 		{
 			$v->gatherFromSession();
@@ -193,11 +212,21 @@ class SmartyForm
 	 */
 	public function gatherFromRecord()
 	{
+		$this->fresh = false;
+		foreach ($this->recordFuncs as $objID => $v)
+		{
+			foreach ($v['gatherer'] as $func)
+			{
+				$func($this, $this->activeRecords[$objID]);
+			}
+		}
 		foreach ($this->recordAssoc as $k => $v)
 		{
-			$prop = $v[2];
-			if (isset($this->recordAssoc[$v[0]]->$prop))
-				$this->elements[$k]->data = $this->recordAssoc[$v[0]]->$prop;
+			$prop = $v[1];
+			if (isset($this->activeRecords[$v[0]]->$prop))
+			{
+				$this->elements[$k]->data = $this->activeRecords[$v[0]]->$prop;
+			}
 		}
 	}
 	
@@ -207,10 +236,17 @@ class SmartyForm
 	 */
 	public function saveToRecord()
 	{
+		foreach ($this->recordFuncs as $objID => $v)
+		{
+			foreach ($v['saver'] as $func)
+			{
+				$func($this, $this->activeRecords[$objID]);
+			}
+		}
 		foreach ($this->recordAssoc as $k => $v)
 		{
-			$prop = $v[2];
-			$this->recordAssoc[$v[0]]->$prop = $this->elements[$k]->data;
+			$prop = $v[1];
+			$this->activeRecords[$v[0]]->$prop = $this->elements[$k]->data;
 		}
 	}
 }
@@ -415,12 +451,13 @@ abstract class SF_GroupElement extends SF_Element
 	
 }
 
-class SF_Hidden extends SF_Element
+class SF_Hidden extends SF_TextBased
 {
-	public $autoAttach = false;
-	public function html()
+	public $autoAttach = true;
+	protected function setDefaultAttributes()
 	{
-		return "<input type='hidden' name='{$this->id}' value='{$this->data}' />";
+		parent::setDefaultAttributes();
+		$this->attributes['type'] = 'hidden';
 	}
 }
 

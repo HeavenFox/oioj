@@ -16,8 +16,7 @@ $(document).ready(function(){
 			{ name: 'links', items : [ 'Link','Unlink' ] },
 			{ name: 'tools', items : [ 'Maximize' ] }
 		],
-		filebrowserBrowseUrl : 'test.html',
-        filebrowserUploadUrl : 'test.php'
+        filebrowserUploadUrl : 'index.php?mod=admin_problem&act=uploadimage'
 	});
 });
 </script>
@@ -53,6 +52,7 @@ $(document).ready(function(){
 	</fieldset>
 	<fieldset>
 		<legend>Attachments</legend>
+		<small>To upload an image for use, use editor's "insert image" icon</small>
 		<input type='file' name='attach' />
 	</fieldset>
 	<fieldset>

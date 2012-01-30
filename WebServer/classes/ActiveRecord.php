@@ -490,7 +490,7 @@ class ActiveRecord
 	
 	public function __isset($param)
 	{
-		return isset($this->_propUpdated[$param]);
+		return isset($this->_propValues[$param]);
 	}
 	
 	public function __sleep()
