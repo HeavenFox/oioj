@@ -87,16 +87,32 @@
 	vertical-align: middle;
 }
 
-#user_panel
-{
-	height: 180px;
-}
-
 #login_panel
 {
 	padding: 3px;
 	width: 340px;
 	float: left;
+}
+
+#user_panel input
+{
+	background: white;
+	background: -moz-linear-gradient(top, #e8e8e8 0%, #f6f6f6 28%, #ffffff 100%);
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#e8e8e8), color-stop(28%,#f6f6f6), color-stop(100%,#ffffff));
+	background: -webkit-linear-gradient(top, #e8e8e8 0%,#f6f6f6 28%,#ffffff 100%);
+	background: -o-linear-gradient(top, #e8e8e8 0%,#f6f6f6 28%,#ffffff 100%);
+	background: -ms-linear-gradient(top, #e8e8e8 0%,#f6f6f6 28%,#ffffff 100%);
+	background: linear-gradient(top, #e8e8e8 0%,#f6f6f6 28%,#ffffff 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#e8e8e8', endColorstr='#ffffff',GradientType=0 );
+	border: 1px solid #adadad;
+}
+
+#sf_login_username, #sf_login_password
+{
+
+	font-size: 20px;
+	width: 250px;
+	margin-left: 10px;
 }
 
 #register_panel

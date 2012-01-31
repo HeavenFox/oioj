@@ -5,6 +5,7 @@
 <script type="text/javascript" src="scripts/popup_record.js"></script>
 <script type="text/javascript" src="scripts/jquery-ui-1.8.16.custom.min.js"></script>
 <script type="text/javascript" src="scripts/jquery.fileupload.js"></script>
+<script type="text/javascript" src="scripts/jquery.iframe-transport.js"></script>
 <script type="text/javascript" src="scripts/submitsoln/submitsoln.js"></script>
 <script type="text/javascript" src="scripts/submitsoln/submitsoln_prob.js"></script>
 <script type="text/javascript">
@@ -55,6 +56,7 @@ $(function(){
 </table>
 {/sform}
 </div>
+   <div style="clear: both;"></div>
 </div>
 </div>
 {else}

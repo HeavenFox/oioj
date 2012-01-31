@@ -81,10 +81,10 @@ function toggleScreen(obj,box)
 {
 	if (obj.checked)
 	{
-		$(box).hide().value("/SCREEN/");
+		$(box).hide().val("/SCREEN/");
 	}else
 	{
-		$(box).show().value("");
+		$(box).show().val("");
 	}
 }
 

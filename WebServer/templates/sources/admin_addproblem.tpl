@@ -1,4 +1,4 @@
-{extends file="two-column.tpl"}
+{extends file="base.tpl"}
 {block name="html_head" append}
 <link rel='stylesheet' href='templates/admin_addproblem.css' />
 
@@ -6,18 +6,48 @@
 <script type="text/javascript" src="lib/ckeditor/ckeditor.js"></script>
 <script type="text/javascript" src="lib/ckeditor/adapters/jquery.js"></script>
 
+
+<script type="text/javascript" src="scripts/jquery-ui-1.8.16.custom.min.js"></script>
+<script type="text/javascript" src="scripts/jquery.fileupload.js"></script>
+<script type="text/javascript" src="scripts/jquery.iframe-transport.js"></script>
 <script type='text/javascript'>
-$(document).ready(function(){
+$(function(){
 	CKEDITOR.replace("sf_problem_body",{
 		toolbar: [
-			{ name: 'document', items : [ 'Preview' ] },
+			{ name: 'document', items : [ 'Source','Preview' ] },
 			{ name: 'basicstyles', items : [ 'Bold','Italic','Subscript','Superscript','-','RemoveFormat' ] },
-			{ name: 'paragraph', items : [ 'NumberedList','BulletedList','Image' ] },
+			{ name: 'paragraph', items : [ 'Format','NumberedList','BulletedList','Image' ] },
 			{ name: 'links', items : [ 'Link','Unlink' ] },
 			{ name: 'tools', items : [ 'Maximize' ] }
 		],
         filebrowserUploadUrl : 'index.php?mod=admin_problem&act=uploadimage'
 	});
+	
+	$('#attachments').fileupload(
+	{
+		dataType: "json",
+		url: "index.php?mod=admin_problem&act=uploadattachments",
+		singleFileUploads: false,
+		limitConcurrentUploads: 3,
+		done: function(e,data)
+		{
+			$.each(data.result, function(idx,file){
+				$('#uploaded_attachments').append(
+					$('<li />')
+					.text(file.fileName)
+					.append(
+						$('<input type="hidden" name="attach_storedname[]" />')
+						.attr('value',file.storedName)
+					)
+					.append(
+						$('<input type="hidden" name="attach_filename[]" />')
+						.attr('value',file.fileName)
+					)
+				);
+			});
+		}
+	}
+	);
 });
 </script>
 {/block}
@@ -50,12 +80,13 @@ $(document).ready(function(){
 		<legend>Basic</legend>
 		{sinput id='listing'}{slabel id='listing'}
 	</fieldset>
-	<fieldset>
-		<legend>Attachments</legend>
-		<small>To upload an image for use, use editor's "insert image" icon</small>
-		<input type='file' name='attach' />
-	</fieldset>
 	{if $sf_problem->fresh}
+	<fieldset id='attachments'>
+		<legend>Attachments</legend>
+		<small>To upload an image for use, use editor's "insert image" icon<br />Tip: you can upload multiple files at once</small>
+		<input type='file' name='attach[]' multiple="multiple" />
+		<ul id='uploaded_attachments'></ul>
+	</fieldset>
 	<fieldset>
 	<legend>Input, Output</legend>
 	<table>

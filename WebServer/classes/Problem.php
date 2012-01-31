@@ -3,6 +3,7 @@ import('TaggedRecord');
 import('TestCase');
 import('JudgeServer');
 import('Settings');
+import('ProblemAttachment');
 
 class Problem extends TaggedRecord
 {
@@ -30,6 +31,8 @@ class Problem extends TaggedRecord
 			'listing' => array('class' => 'bool'),
 			'dispatched' => array('class' => 'bool'),
 			'user' => array('class' => 'User', 'comp' => 'one', 'column' => 'uid'),
+			
+			'attachments' => array('class' => 'ProblemAttachment', 'comp' => 'many', 'column' => 'pid'),
 		
 			'count' => array('class' => 'int', 'query' => 'count(`id`)')
 		);

@@ -7,6 +7,7 @@ import('SmartyForm');
 class AdminManageProblemModule
 {
 	const UPLOADED_IMAGE_DIR = 'uploads/problem_figures/';
+	const UPLOADED_ATTACHMENTS_DIR = 'uploads/problem_attachments/';
 	
 	public function run()
 	{
@@ -29,6 +30,9 @@ class AdminManageProblemModule
 			break;
 		case 'uploadimage':
 			$this->uploadImage();
+			break;
+		case 'uploadattachments':
+			$this->uploadAttachments();
 			break;
 		}
 		
@@ -162,6 +166,9 @@ class AdminManageProblemModule
 				throw new Exception('error reading archive');
 			}
 			
+			//---------------------------------
+			// Test Cases
+			//---------------------------------
 			foreach ($scores as $k => $v)
 			{
 				$c = new TestCase();
@@ -176,8 +183,22 @@ class AdminManageProblemModule
 				$prob->testCases[] = $c;
 			}
 			
-			
 			$prob->add();
+			
+			//---------------------------------
+			// Attachments
+			//---------------------------------
+			$attachFileNames = IO::POST('attach_filename');
+			$attachStoredNames = IO::POST('attach_storedname');
+			
+			foreach ($attachFileNames as $k => $v)
+			{
+				$attach = new ProblemAttachment();
+				$attach->problem = $prob;
+				$attach->storedname = $attachStoredNames[$k];
+				$attach->filename = $v;
+				$attach->add();
+			}
 			
 			$newloc = Settings::Get('tmp_dir').DIRECTORY_SEPARATOR.'cases'.DIRECTORY_SEPARATOR.$prob->id.'.zip';
 			
@@ -236,6 +257,24 @@ class AdminManageProblemModule
 		}
 		
 		echo "<script type='text/javascript'>window.parent.CKEDITOR.tools.callFunction($funcNum, '$url', '$message');</script>";
+	}
+	
+	public function uploadAttachments()
+	{
+		$attachments = array();
+		
+		for ($i = 0; $i < count($_FILES['attach']['name']);$i++)
+		{
+			if (is_uploaded_file($_FILES['attach']['tmp_name'][$i]))
+			{
+				$storedName = time() . '-' . rand(1000,9999);
+				move_uploaded_file($_FILES['attach']['tmp_name'][$i],ROOT . self::UPLOADED_ATTACHMENTS_DIR . $storedName);
+				$fileName = $_FILES['attach']['name'][$i];
+				$attachments[] = array('storedName' => $storedName, 'fileName' => $fileName);
+			}
+		}
+		
+		echo json_encode($attachments);
 	}
 }
 ?>

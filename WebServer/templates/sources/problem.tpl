@@ -34,13 +34,27 @@ $(function(){
 <div class="sidebar-content">
 <ul>
 	<li>ID: {$problem->id}</li>
-	<li>Submitter: {$problem->user->username}</li>
+	{if $problem->user->username}<li>Submitter: {$problem->user->username}</li>{/if}
+	<li>Input: {if $problem->input == "/SCREEN/"}Screen{else}{$problem->input}{/if}</li>
+	<li>Output: {if $problem->output == "/SCREEN/"}Screen{else}{$problem->output}{/if}</li>
 	<li>Submission: {$problem->submission}</li>
 	<li>Accepted: {$problem->accepted}</li>
 	{if $problem->source}<li>Source: {$problem->source}</li>{/if}
 </ul>
 </div>
 </div>
+{if $problem->attachments}
+<div class="sidebar-box">
+<h2>Attachments</h2>
+<div class="sidebar-content">
+<ul>
+{foreach $problem->attachments as $a}
+<li><a href="index.php?mod=problem&act=attach&aid={$a->id}">{$a->filename}</a></li>
+{/foreach}
+</ul>
+</div>
+</div>
+{/if}
 {block name="problem_submit_box"}
 <div class="sidebar-box" id="problem-submit-box">
 	<h2>Submit</h2>

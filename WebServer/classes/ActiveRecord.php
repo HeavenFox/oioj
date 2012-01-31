@@ -37,10 +37,6 @@ class ActiveRecord
 	 */
 	public function getComposite($composites)
 	{
-		if (is_string($composites))
-		{
-			$composites = array($composites);
-		}
 		foreach ($composites as $k => $v)
 		{
 			$className = static::$schema[$k]['class'];

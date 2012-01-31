@@ -181,6 +181,14 @@ CREATE TABLE `oj_problems` (
   KEY `uid` (`uid`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
+CREATE TABLE `oj_problem_attachments` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `pid` int(11) NOT NULL,
+  `filename` varchar(64) NOT NULL,
+  `storedname` varchar(24) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 CREATE TABLE `oj_problem_tags` (
   `pid` int(11) NOT NULL,
   `tid` int(11) NOT NULL,

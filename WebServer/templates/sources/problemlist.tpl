@@ -100,4 +100,5 @@ Popular Tags:
 </tbody>
 </table>
 {pager cur=$page_cur max=$page_max url="index.php?mod=problemlist&page=%d" form="index.php?mod=problemlist" var="page"}
+{ifable to="add_problem"}<a href="index.php?mod=admin_problem&act=add">Add New Problem</a>{endif}
 {/block}
