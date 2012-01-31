@@ -24,8 +24,11 @@ class ProblemListModule
 			}
 			die(json_encode($result));
 		}
+		
 		OIOJ::AddBreadcrumb('Problems');
+		
 		$probPerPage = IO::GET('perpage', self::DEFAULT_PROBLEM_PER_PAGE, 'intval');
+		
 		if ($probPerPage < 1 || $probPerPage > self::MAX_PROBLEM_PER_PAGE)
 		{
 			$probPerPage = self::DEFAULT_PROBLEM_PER_PAGE;
@@ -44,10 +47,12 @@ class ProblemListModule
 		}else if (IO::GET('tagquery'))
 		{
 			$problems = Problem::queryByTags(array('id','title','submission','accepted'),json_decode(IO::GET('tagquery')));
+		}else if ($keyword = IO::POST('keyword'))
+		{
+			$problems = $selector->findAtPage($pageNum, $probPerPage, $maxPage, array('id','title','submission','accepted'), "WHERE `title` LIKE ? AND `listing` > 0 AND `dispatched` > 0", array('%'.$keyword.'%'));
 		}
 		else
 		{
-		
 			$problems = $selector->findAtPage($pageNum, $probPerPage, $maxPage, array('id','title','submission','accepted'), "WHERE `listing` > 0 AND `dispatched` > 0");
 		}
 		

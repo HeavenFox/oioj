@@ -32,10 +32,9 @@
 	padding: 4px;
 }
 
-#problem-body
+#title_bar
 {
-	margin: 6px;
-	line-height: 18px;
+	margin-right: 1px;
 }
 
 #column-right .sidebar-box ul

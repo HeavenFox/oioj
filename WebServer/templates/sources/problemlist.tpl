@@ -3,6 +3,7 @@
 <link rel='stylesheet' href='templates/list.css' />
 <link rel='stylesheet' href='templates/pager.css' />
 <link rel='stylesheet' href='templates/tagquery.css' />
+<link rel='stylesheet' href='templates/problemlist.css' />
 <link rel="stylesheet" href="scripts/jquery-ui-css/ui-lightness/jquery-ui-1.8.16.custom.css" />
 <script type='text/javascript' src='scripts/jquery-ui-1.8.16.custom.min.js'></script>
 <script type='text/javascript' src='scripts/tagquery.js'></script>
@@ -68,23 +69,29 @@ function tagQuerySubmit()
 </style>
 {/block}
 {block name="body"}
-<div id='popular_tags'>
-<div id='popular_tags_list'>
-Popular Tags: 
-{foreach $tags as $tag}
-<span class='tag' data-tid='{$tag->id}'><a href='index.php?mod=problemlist&amp;tag={$tag->id}'>{$tag->tag}</a></span>
-{/foreach}
+<div id='title_bar'>
+<h2>Problems</h2><div><a href='javascript:;' onclick='$("#tags").toggle(500);$(this).toggleClass("on");'>Tags</a>&nbsp;&nbsp;<a href='javascript:;' onclick='$("#search").toggle(500);$(this).toggleClass("on");'>Search</a></div>
 </div>
-<div id='popular_tags_search'>
-	<label for='tag_search'>Search Tag</label> <input id='tag_search' size='5' /><a href='javascript:;' onclick='$("#tag_query").toggle(1000)'>Advanced</a>
-</div>
-</div>
-<div id='tag_query' class='hidden'>
-<div class='intersect_group ig_new'><ul></ul></div>
-<div id='tagquery_right'>
-<div id='trash'></div>
-<input type='button' onclick='tagQuerySubmit();' value='Submit' />
-</div>
+<div id='search' class="hidden"><form method="post" action="index.php?mod=problemlist&amp;act=search">Search by Title <input type="text" name="keyword" /><input type="submit" value="Search" /></form></div>
+<div id="tags" class="hidden">
+	<div id='popular_tags'>
+		<div id='popular_tags_list'>
+		Popular Tags: 
+		{foreach $tags as $tag}
+		<span class='tag' data-tid='{$tag->id}'><a href='index.php?mod=problemlist&amp;tag={$tag->id}'>{$tag->tag}</a></span>
+		{/foreach}
+		</div>
+		<div id='popular_tags_search'>
+			<label for='tag_search'>Search Tag</label> <input id='tag_search' size='5' /><a href='javascript:;' onclick='$("#tag_query").toggle(1000)'>Advanced</a>
+		</div>
+	</div>
+	<div id='tag_query' class='hidden'>
+		<div class='intersect_group ig_new'><ul></ul></div>
+		<div id='tagquery_right'>
+			<div id='trash'></div>
+			<input type='button' onclick='tagQuerySubmit();' value='Submit' />
+		</div>
+	</div>
 </div>
 <table id='problems' class='tablist'>
 <thead><tr><td style="width: 50px;">ID</td><td>Title</td><td style="width: 100px;">Acceptance</td></tr></thead>

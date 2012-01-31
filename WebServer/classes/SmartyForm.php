@@ -236,18 +236,26 @@ class SmartyForm
 	 */
 	public function saveToRecord()
 	{
-		foreach ($this->recordFuncs as $objID => $v)
+		if ($this->recordFuncs)
 		{
-			foreach ($v['saver'] as $func)
+			foreach ($this->recordFuncs as $objID => $v)
 			{
-				$func($this, $this->activeRecords[$objID]);
+				foreach ($v['saver'] as $func)
+				{
+					$func($this, $this->activeRecords[$objID]);
+				}
 			}
 		}
-		foreach ($this->recordAssoc as $k => $v)
+		
+		if ($this->recordAssoc)
 		{
-			$prop = $v[1];
-			$this->activeRecords[$v[0]]->$prop = $this->elements[$k]->data;
+			foreach ($this->recordAssoc as $k => $v)
+			{
+				$prop = $v[1];
+				$this->activeRecords[$v[0]]->$prop = $this->elements[$k]->data;
+			}
 		}
+		
 	}
 }
 
@@ -492,9 +500,14 @@ class SF_TextField extends SF_TextBased
 	public function validate()
 	{
 		parent::validate();
-		if (strlen($this->data) < $this->minLength || strlen($this->data) > $this->maxLength)
+		if ($this->minLength && strlen($this->data) < $this->minLength)
 		{
-			throw new InputException("The length should lie between {$this->minLength} and {$this->maxLength}");
+			throw new InputException("The length should be greater than {$this->minLength}");
+		}
+		
+		if ($this->maxLength && strlen($this->data) > $this->maxLength)
+		{
+			throw new InputException("The length should be less than {$this->maxLength}");
 		}
 	}
 }

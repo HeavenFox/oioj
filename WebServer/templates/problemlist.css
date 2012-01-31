@@ -1,34 +1,6 @@
-#body table
-{
-	width: 100%;
-	border: 1px solid #626262;
-	font-size: 16px;
-}
 
-#body td
-{
-	padding: 3px;
-}
 
-#body table thead tr
+#tags, #search
 {
-	background-color: #626262;
-	color: white;
-}
-
-#body table tbody tr .even
-{
-	background-color: #d3d3d3;
-}
-
-#body table tbody tr a
-{
-	color: black;
-	text-decoration: none;
-}
-
-#body table tbody tr a:hover
-{
-	color: black;
-	text-decoration: underline;
+	padding: 5px;
 }
