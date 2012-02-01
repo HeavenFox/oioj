@@ -1,4 +1,5 @@
 <?php
+require_once ROOT . DIRECTORY_SEPARATOR . 'config.php';
 /**
  * Database Manager
  * HeavenFox Base Library
@@ -27,7 +28,7 @@ class Database
         switch($params['driver'])
         {
 		case 'pdo_mysql':
-			$obj = new PDO('mysql:host='.$params['host'].';dbname='.$params['database'],$params['username'],$params['password']);
+			$obj = new PDO('mysql:host='.$params['host'].';port='.$params['port'].';dbname='.$params['database'],$params['username'],$params['password']);
 			$obj->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING);
 			break;
 		case 'mysqli':

@@ -4,8 +4,6 @@ define('ROOT',dirname(__FILE__).DIRECTORY_SEPARATOR);
 define('MODULE_DIR',ROOT.'modules'.DIRECTORY_SEPARATOR);
 define('LIB_DIR',ROOT.'lib'.DIRECTORY_SEPARATOR);
 
-require_once ROOT . DIRECTORY_SEPARATOR . 'config.php';
-
 define('OIOJ_VERSION', 100);
 define('OIOJ_READABLE_VERSION','v1.0.0');
 

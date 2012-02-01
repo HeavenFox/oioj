@@ -58,7 +58,9 @@ class SmartyForm
 	
 	private $recordFuncs;
 	
-	public function __construct($id, $action)
+	const FORMHTML_NO_OPENING = 1;
+	
+	public function __construct($id = '', $action = '')
 	{
 		$this->id = $id;
 		$this->action = $action;
@@ -108,7 +110,7 @@ class SmartyForm
 		return $this->valid;
 	}
 	
-	public function getFormOpeningHTML($params)
+	public function getFormOpeningHTML($params = array())
 	{
 		$html = "<form id='".self::HTML_ID_PREFIX."{$this->id}' method='post' action='".htmlspecialchars($this->action)."'";
 		foreach ($params as $k => $v)
@@ -126,7 +128,7 @@ class SmartyForm
 		return $html;
 	}
 	
-	public function getHTML($ele, $subgroup, $attr)
+	public function getHTML($ele, $subgroup = null, $attr = array())
 	{
 		$this->elements[$ele]->setAttribute($attr);
 		return $this->elements[$ele]->html();
@@ -135,6 +137,29 @@ class SmartyForm
 	public function getLabelHTML($ele)
 	{
 		return '<label for="'.$this->elements[$ele]->getHTMLID() .'">'.$this->elements[$ele]->label.'</label>';
+	}
+	
+	public function getFormHTML($template, $elements = null, $options = 0)
+	{
+		$defaultTemplates = array(
+			'table' => '<tr><td>{label}</td><td>{input}</td></tr>'
+		);
+		
+		if (isset($defaultTemplates[$template]))
+		{
+			$template = $defaultTemplates[$template];
+		}
+		
+		$html = '';
+		
+		foreach ($this->elements as $k => $v)
+		{
+			if (!$elements || in_array($k,$elements))
+			{
+				$html .= str_replace('{label}',$this->getLabelHTML($k),str_replace('{input}',$this->getHTML($k),$template));
+			}
+		}
+		return $html;
 	}
 	
 	/**
