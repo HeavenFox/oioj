@@ -1,9 +1,20 @@
 <?php
-import('ActiveRecord');
+import('TaggedRecord');
 
-class User extends ActiveRecord
+class User extends TaggedRecord
 {
 	static $tableName = 'oj_users';
+	
+	public static $tagAssocTable = array('oj_user_tags','uid','tid');
+	
+	public static $schema = array(
+		'id' => array('class' => 'int'),
+		'username' => array('class' => 'string'),
+		'password' => array('class' => 'string'),
+		'email' => array('class' => 'string'),
+		'count' => array('class' => 'int','query' => 'count(`id`)')
+	);
+	
 	
 	private static $currentUser = null;
 	
@@ -168,6 +179,22 @@ GROUP BY  `key`';
 			return true;
 		}
 		return $this->getPermissionNumber($key) > 0;
+	}
+	
+	public function assertAble($key)
+	{
+		if (!$this->ableTo($key))
+		{
+			throw new PermissionException($key);
+		}
+	}
+	
+	public function assertNotUnable($key)
+	{
+		if ($this->unableTo($key))
+		{
+			throw new PermissionException($key);
+		}
 	}
 	
 	public function unableTo($key)

@@ -58,7 +58,7 @@ class IO
 	}
 	
 	
-	private static function GetArrayElement(&$ar, $prop, $defaultValue, $san)
+	public static function GetArrayElement(&$ar, $prop, $defaultValue = null, $san = null)
 	{
 		if (!isset($ar[$prop])) {
 			return $defaultValue;

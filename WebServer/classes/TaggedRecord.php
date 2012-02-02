@@ -69,6 +69,11 @@ class TaggedRecord extends ActiveRecord
 		return Tag::find(array('id','tag'),'INNER JOIN `'.static::$tagAssocTable[0].'` ON (`'.static::$tagAssocTable[0].'`.`'.static::$tagAssocTable[2].'` = `'.Tag::$tableName.'`.`'.Tag::$keyProperty.'`) WHERE '.Tag::Column('tag').' LIKE ? GROUP BY `'.Tag::$tableName.'`.`'.Tag::$keyProperty.'` ORDER BY count(*) DESC'.($num ? " LIMIT 0,{$num}" : ''),array($term));
 	}
 	
+	public function getTags()
+	{
+		return Tag::find(array('id','tag'),'INNER JOIN `'.static::$tagAssocTable[0].'` ON (`'.static::$tagAssocTable[0].'`.`'.static::$tagAssocTable[2].'` = `'.Tag::$tableName.'`.`'.Tag::$keyProperty.'`) WHERE `'.static::$tagAssocTable[0].'`.`'.static::$tagAssocTable[1].'`='.$this->_propValues[static::$keyProperty]);
+	}
+	
 	protected static function _makeAllInSetQueryString($properties, $tags)
 	{
 		if (is_int($tags))return self::_makeAnyInSetQueryString($properties, array($tags));

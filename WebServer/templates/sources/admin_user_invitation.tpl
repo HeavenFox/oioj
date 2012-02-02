@@ -3,7 +3,9 @@
 <link rel='stylesheet' href='templates/list.css' />
 {/block}
 {block name="column-left"}
+<div id='title_bar'>
 <h2>Manage Invitations</h2>
+</div>
 <table class='tablist'>
 <thead>
 <tr><td>Code</td><td>Used by</td></tr>

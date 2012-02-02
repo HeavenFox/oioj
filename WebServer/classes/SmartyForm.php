@@ -50,7 +50,7 @@ class SmartyForm
 	
 	private $id;
 	
-	private $elements;
+	protected $elements;
 	
 	private $activeRecords;
 	
@@ -86,6 +86,11 @@ class SmartyForm
 	public function get($id)
 	{
 		return $this->elements[$id];
+	}
+	
+	public function exists($id)
+	{
+		return isset($this->elements[$id]);
 	}
 	
 	/**
