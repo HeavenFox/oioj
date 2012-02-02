@@ -8,7 +8,7 @@ class Config
 		'port' => '3306',
 		'username' => 'root',
 		'password' => 'root',
-		'database' => 'oioj_new'
+		'database' => 'oioj'
 	);
 }
 ?>

@@ -12,6 +12,7 @@ class User extends TaggedRecord
 		'username' => array('class' => 'string'),
 		'password' => array('class' => 'string'),
 		'email' => array('class' => 'string'),
+		'salt' => array('class' => 'string'),
 		'count' => array('class' => 'int','query' => 'count(`id`)')
 	);
 	
