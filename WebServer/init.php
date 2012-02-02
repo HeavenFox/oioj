@@ -20,7 +20,7 @@ function import($package)
 
 function loadData($data)
 {
-	require_once ROOT. 'data/'.$data.'.php';
+	require ROOT. 'data/'.$data.'.php';
 	return $$data;
 }
 

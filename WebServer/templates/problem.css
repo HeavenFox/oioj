@@ -1,40 +1,4 @@
-#title_bar
-{
-	height: 40px;
-	background-color: #F6F6F6;
-	border-bottom: 1px solid #e2e2e2;
-	margin-right: 1px;
-	padding: 0 10px 0 10px;
-}
 
-#title_bar h2
-{
-	font-size: 22px;
-	float: left;
-	font-weight: normal;
-	font-family: Verdana, Tahoma, sans-serif;
-	line-height: 30px;
-	text-shadow: 0 0 0.3em #c7c7c7;
-}
-
-#title_bar div
-{
-	float: right;
-	line-height: 40px;
-	font-size: 18px;
-	color: #6c6c6c;
-}
-
-#title_bar a
-{
-	text-decoration: none;
-	color: #a3a3a3;
-}
-
-#title_bar a:hover
-{
-	color: #6c6c6c;
-}
 
 #dropzone
 {
@@ -54,4 +18,9 @@
 #dropzone.hover
 {
 	background-position: 0 -240px;
+}
+
+#problem-body
+{
+	line-height: 20px;
 }

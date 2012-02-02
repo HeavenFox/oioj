@@ -138,7 +138,7 @@ class UserModule
 			
 			// Invalidate invitation
 			$stmt = Database::Get()->prepare('UPDATE `oj_invitations` SET `user` = ? WHERE `code` = ?');
-			$stmt->execute($user->id, $form->get('invitation')->data);
+			$stmt->execute(array($user->id, $form->get('invitation')->data));
 			
 			OIOJ::Redirect('You have successfully registered!');
 		}
