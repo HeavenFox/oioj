@@ -6,6 +6,8 @@ class TaggedRecord extends ActiveRecord
 {
 	public static $tagAssocTable = array('_table_name','record_column','tag_column');
 	
+	public $tags;
+	
 	public static function GetByTag($properties, $tagId, $suffix = '')
 	{
 		return static::queryByTags($properties,array($tagId),$suffix);
@@ -59,6 +61,46 @@ class TaggedRecord extends ActiveRecord
 		return $resultSet;
 	}
 	
+	public function addTags($tags)
+	{
+		if (!is_array($tags))
+		{
+			$tags = array($tags);
+		}
+		$tagids = array();
+		foreach ($tags as $t)
+		{
+			if (is_int($t))
+			{
+				$tagids[] = $t;
+			}
+			else if ($t instanceof Tag)
+			{
+				$tagids[] = $t->id;
+			}
+			else
+			{
+				$tag = Tag::AddIfNotExist($t);
+				$tagids[] = $tag->id;
+			}
+		}
+		$sql = 'INSERT INTO `'.static::$tagAssocTable[0].'` (`'.static::$tagAssocTable[1].'`,`'.static::$tagAssocTable[2].'`) VALUES ';
+		for ($i=0;$i<count($tagids);$i++)
+		{
+			if ($i>0)
+			{
+				$sql .= ',';
+			}
+			$sql .= '('.$this->id.','.$tagids[$i].')';
+		}
+		Database::Get()->exec($sql);
+	}
+	
+	public function removeAllTags()
+	{
+		
+	}
+	
 	public static function GetPopularTags($num = null)
 	{
 		return Tag::find(array('id','tag','count'),'INNER JOIN `'.static::$tagAssocTable[0].'` ON (`'.static::$tagAssocTable[0].'`.`'.static::$tagAssocTable[2].'` = `'.Tag::$tableName.'`.`'.Tag::$keyProperty.'`) GROUP BY `'.Tag::$tableName.'`.`'.Tag::$keyProperty.'` ORDER BY count(*) DESC'.($num ? " LIMIT 0,{$num}" : ''));
@@ -71,7 +113,7 @@ class TaggedRecord extends ActiveRecord
 	
 	public function getTags()
 	{
-		return Tag::find(array('id','tag'),'INNER JOIN `'.static::$tagAssocTable[0].'` ON (`'.static::$tagAssocTable[0].'`.`'.static::$tagAssocTable[2].'` = `'.Tag::$tableName.'`.`'.Tag::$keyProperty.'`) WHERE `'.static::$tagAssocTable[0].'`.`'.static::$tagAssocTable[1].'`='.$this->_propValues[static::$keyProperty]);
+		return ($this->tags = Tag::find(array('id','tag'),'INNER JOIN `'.static::$tagAssocTable[0].'` ON (`'.static::$tagAssocTable[0].'`.`'.static::$tagAssocTable[2].'` = `'.Tag::$tableName.'`.`'.Tag::$keyProperty.'`) WHERE `'.static::$tagAssocTable[0].'`.`'.static::$tagAssocTable[1].'`='.$this->_propValues[static::$keyProperty]));
 	}
 	
 	protected static function _makeAllInSetQueryString($properties, $tags)

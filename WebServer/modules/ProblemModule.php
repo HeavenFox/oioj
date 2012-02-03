@@ -33,6 +33,7 @@ class ProblemModule
 		$this->problem = Problem::first(array('id','title','body','accepted','submission','output','input','source','listing','user' => array('username')),$id);
 		if (!$this->problem) return false;
 		$this->problem->getComposite(array('attachments' => array('id','filename')));
+		$this->problem->getTags();
 		OIOJ::$template->assign('pid', $id);
 		OIOJ::$template->assign('problem', $this->problem);
 		return $this->problem;

@@ -1,16 +1,38 @@
 {extends file="base.tpl"}
 {block name="html_head" append}
 <link rel='stylesheet' href='templates/admin_addproblem.css' />
-
+<link rel="stylesheet" href="scripts/jquery-ui-css/ui-lightness/jquery-ui-1.8.16.custom.css" />
+<script type='text/javascript' src='scripts/jquery-ui-1.8.16.custom.min.js'></script>
 <script type="text/javascript" src="scripts/admin_addproblem.js"></script>
 <script type="text/javascript" src="lib/ckeditor/ckeditor.js"></script>
 <script type="text/javascript" src="lib/ckeditor/adapters/jquery.js"></script>
-
-
-<script type="text/javascript" src="scripts/jquery-ui-1.8.16.custom.min.js"></script>
 <script type="text/javascript" src="scripts/jquery.fileupload.js"></script>
 <script type="text/javascript" src="scripts/jquery.iframe-transport.js"></script>
 <script type='text/javascript'>
+function addTags()
+{
+	var tags = $('#tag_input').val().split(';');
+	$.each(tags, function(idx,val){
+		addTagRow(0,$.trim(val));
+	});
+	
+}
+
+function addTagRow(id,tag)
+{
+	$('#tags_added').append(
+		$('<li />')
+		.text(tag)
+		.append(
+			$('<input type="hidden" name="tag_tid[]" />')
+			.attr('value',id)
+		)
+		.append(
+			$('<input type="hidden" name="tag_tag[]" />')
+			.attr('value',tag)
+		)
+	);
+}
 $(function(){
 	CKEDITOR.replace("sf_problem_body",{
 		toolbar: [
@@ -48,6 +70,15 @@ $(function(){
 		}
 	}
 	);
+	
+	$('#tag_input').autocomplete({
+		source: 'index.php?mod=problemlist&act=tagcomplete&ajax=1',
+		select:function(event, ui){ 
+			event.preventDefault();
+			addTagRow(ui.item.value,ui.item.label);
+			$(this).val('');
+		}
+	});
 });
 </script>
 {/block}
@@ -86,6 +117,12 @@ $(function(){
 		<small>To upload an image for use, use editor's "insert image" icon<br />Tip: you can upload multiple files at once</small>
 		<input type='file' name='attach[]' multiple="multiple" />
 		<ul id='uploaded_attachments'></ul>
+	</fieldset>
+	<fieldset id='tags'>
+		<legend>Tags</legend>
+		<small>Use colon (;) to separate multiple tags</small>
+		<ul id='tags_added'></ul>
+		<input id='tag_input' /><input type='button' value='Add' onclick='addTags()' />
 	</fieldset>
 	<fieldset>
 	<legend>Input, Output</legend>

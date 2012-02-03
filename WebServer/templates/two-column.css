@@ -32,6 +32,24 @@
 	padding: 4px;
 }
 
+#column-right .sidebar-box h2 a
+{
+	color: #666666;
+	text-decoration: none;
+	padding-left: 15px;
+	background: url('images/collapsible_collapse.png') no-repeat center left;
+}
+
+#column-right .sidebar-box h2 a:hover
+{
+	text-decoration: underline;
+}
+
+#column-right .sidebar-box h2 a.collapsed
+{
+	background-image: url('images/collapsible_collapsed.png');
+}
+
 #title_bar
 {
 	margin-right: 1px;

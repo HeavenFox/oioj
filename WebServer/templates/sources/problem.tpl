@@ -1,6 +1,7 @@
 {extends file="two-column.tpl"}
 {block name="html_head" append}
 <link rel='stylesheet' href='templates/problem.css' />
+<link rel="stylesheet" href="scripts/jquery-ui-css/ui-lightness/jquery-ui-1.8.16.custom.css" />
 <script type="text/javascript" src="scripts/jquery-ui-1.8.16.custom.min.js"></script>
 <script type="text/javascript" src="scripts/jquery.fileupload.js"></script>
 <script type="text/javascript" src="scripts/submitsoln/submitsoln.js"></script>
@@ -15,7 +16,50 @@ $(function(){
 		hoverClass: 'hover'
 	});
 });
+{ifable to="edit_tags"}
+function removeTag(pid,tid,obj)
+{
+	$.get('index.php?mod=admin_problem&act=removetag&tid='+tid+'&pid='+pid,function(data)
+	{
+		$(obj).parent().remove();
+	});
+}
+function addTag(pid,tid,tag)
+{
+	$.post('index.php?mod=admin_problem&act=addtag',{ 'tid': tid, 'pid': pid, 'tag': tag },function(data)
+	{
+		console.log(data);
+		$('#taglist').append($('<span class="tag">'+tag+'<a href="javascript:;" onclick="removeTag('+pid+','+data.tid+',this);">[x]</a></span>'));
+	},'json');
+}
+function addTagFromInput()
+{
+	addTag({$problem->id},0,$('#tag_input').val());
+}
+$(function(){
+	$('#tag_input').autocomplete({
+		source: 'index.php?mod=problemlist&act=tagcomplete&ajax=1',
+		select: function(event, ui){ 
+			event.preventDefault();
+			addTag({$problem->id},ui.item.value,ui.item.label);
+			$(this).val('');
+		}
+	});
+});
+{endif}
 </script>
+<style type='text/css'>
+.tag
+{
+	font-size: 12px;
+	padding: 3px;
+	background-color: #dbdbdb;
+	border: 1px solid #c2c2c2;
+	border-radius: 3px;
+	margin: 8px;
+	line-height: 15px;
+}
+</style>
 {/block}
 <script type="text/javascript" src="scripts/mathjax/MathJax.js?config=default"></script>
 {/block}
@@ -43,6 +87,27 @@ $(function(){
 	<li>Accepted: {$problem->accepted}</li>
 	{if $problem->source}<li>Source: {$problem->source}</li>{/if}
 </ul>
+</div>
+</div>
+<div class="sidebar-box">
+<h2><a href='javascript:;'>Tags</a></h2>
+<div class="sidebar-content">
+<div id='taglist'>
+{if $problem->tags}
+{foreach $problem->tags as $tag}
+<span class="tag">{$tag->tag}
+{ifable to="edit_tags"}
+<a href="javascript:;" onclick="removeTag({$problem->id},{$tag->id},this);">[x]</a>
+{endif}
+</span>
+{/foreach}
+{/if}
+</div>
+{ifable to="edit_tags"}
+<div>
+<input id='tag_input' size='5' /><input type='button' value='+' onclick='addTagFromInput()' />
+</div>
+{endif}
 </div>
 </div>
 {if $problem->attachments}

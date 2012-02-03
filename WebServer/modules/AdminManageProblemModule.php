@@ -34,8 +34,38 @@ class AdminManageProblemModule
 		case 'uploadattachments':
 			$this->uploadAttachments();
 			break;
+		case 'removetag':
+			$this->removeTag();
+			break;
+		case 'addtag':
+			$this->addTag();
+			break;
 		}
 		
+	}
+	
+	public function removeTag()
+	{
+		User::GetCurrent()->assertAble('edit_tags');
+		Database::Get()->exec('DELETE FROM `oj_problem_tags` WHERE `tid` = '.IO::GET('tid',0,'intval').' AND `pid` = '.IO::GET('pid',0,'intval'));
+	}
+	
+	public function addTag()
+	{
+		User::GetCurrent()->assertAble('edit_tags');
+		$problem = new Problem(IO::POST('pid',0,'intval'));
+		if ($tid = IO::POST('tid',0,'intval'))
+		{
+			$problem->addTags($tid);
+			
+			echo json_encode(array('tid' => $tid));
+		}else
+		{
+			$tag = Tag::AddIfNotExist(IO::POST('tag'));
+			$problem->addTags($tag);
+			
+			echo json_encode(array('tid' => $tag->id));
+		}
 	}
 	
 	public function generateProblemForm(ActiveRecord $record = null)
@@ -185,28 +215,50 @@ class AdminManageProblemModule
 			
 			$prob->add();
 			
+			$newloc = Settings::Get('data_archive_dir').DIRECTORY_SEPARATOR.$prob->id.'.zip';
+			
+			move_uploaded_file($_FILES['archive']['tmp_name'],$newloc);
+			
+			$prob->archiveLocation = $newloc;
+			
 			//---------------------------------
 			// Attachments
 			//---------------------------------
 			$attachFileNames = IO::POST('attach_filename');
 			$attachStoredNames = IO::POST('attach_storedname');
 			
-			foreach ($attachFileNames as $k => $v)
+			if ($attachFileNames)
 			{
-				$attach = new ProblemAttachment();
-				$attach->problem = $prob;
-				$attach->storedname = $attachStoredNames[$k];
-				$attach->filename = $v;
-				$attach->add();
+				
+				foreach ($attachFileNames as $k => $v)
+				{
+					$attach = new ProblemAttachment();
+					$attach->problem = $prob;
+					$attach->storedname = $attachStoredNames[$k];
+					$attach->filename = $v;
+					$attach->add();
+				}
 			}
 			
-			$newloc = Settings::Get('tmp_dir').DIRECTORY_SEPARATOR.'cases'.DIRECTORY_SEPARATOR.$prob->id.'.zip';
+			//---------------------------------
+			// Tags
+			//---------------------------------
+			$tags = array();
+			$tag_ids = IO::POST('tag_tid');
+			$tag_tag = IO::POST('tag_tag');
+			for ($i=0;$i < count($tag_ids);$i++)
+			{
+				if ($tid = intval($tag_ids[$i]))
+				{
+					$tags[] = $tid;
+				}else
+				{
+					$tags[] = $tag_tag[$i];
+				}
+			}
+			$prob->addTags($tags);
 			
-			move_uploaded_file($_FILES['archive']['tmp_name'],$newloc);
 			
-			$prob->archiveLocation = $newloc;
-			
-			$db = Database::Get();
 			
 			$prob->queueForDispatch();
 			

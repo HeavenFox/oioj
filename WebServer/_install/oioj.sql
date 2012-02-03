@@ -244,7 +244,8 @@ INSERT INTO `oj_settings` (`id`, `key`, `value`) VALUES
 (5, 'recaptcha_public', '6Lf85MgSAAAAAJ6wTy4saHVye28O19cvTBw1eRzE'),
 (6, 'recaptcha_private', '6Lf85MgSAAAAALSrX3MkcTibjmv8vOMDTtjxLvWK'),
 (7, 'default_timezone', 'Asia/Shanghai'),
-(8, 'user_default_tags', '1');
+(8, 'user_default_tags', '1'),
+(9, 'data_archive_dir', 'D:\\oiojtemp\\');
 
 CREATE TABLE `oj_tags` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
