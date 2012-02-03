@@ -1,6 +1,17 @@
 {extends file="two-column.tpl"}
 {block name="html_head" append}
 <link rel='stylesheet' href='templates/list.css' />
+<style>
+.tablist
+{
+	font-size: 12px;
+}
+
+.tablist tbody td
+{
+	padding: 2px 4px 2px 4px;
+}
+</style>
 {sheader obj=$sf_settings}
 {/block}
 {block name="column-left"}
@@ -15,7 +26,7 @@
 </thead>
 <tbody>
 <tr>
-<td>{slabel id='tmp_dir'}</td><td>{sinput id='tmp_dir'}</td>
+<td style="width: 200px">{slabel id='tmp_dir'}</td><td>{sinput id='tmp_dir'}</td>
 </tr>
 <tr>
 <td>{slabel id='default_timezone'}</td><td>{sinput id='default_timezone'}</td>
@@ -54,7 +65,13 @@
 </thead>
 <tbody>
 <tr>
-<td>{slabel id='user_default_tags'}</td><td>{sinput id='user_default_tags'}</td>
+<td>Allow Registration</td><td></td>
+</tr>
+<tr>
+<td>Require CAPTCHA</td><td></td>
+</tr>
+<tr>
+<td>Require Invitation</td><td></td>
 </tr>
 <tr>
 </tr>

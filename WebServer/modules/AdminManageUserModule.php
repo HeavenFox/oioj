@@ -51,6 +51,9 @@ class AdminManageUserModule
 		case 'doeditperm':
 			$this->ajaxEditPermissionValue();
 			break;
+		case 'tagproperties':
+			$this->ajaxTagProperties();
+			break;
 		default:
 			$this->listUsers();
 		}
@@ -70,6 +73,19 @@ class AdminManageUserModule
 		OIOJ::$template->assign('page_max', $maxPage);
 		OIOJ::$template->assign('users', $users);
 		OIOJ::$template->display('admin_user_list.tpl');
+	}
+	
+	public function ajaxTagProperties()
+	{
+		if (IO::POST('state',0,'intval'))
+		{
+			$stmt = Database::Get()->prepare('INSERT INTO `oj_usertag_properties` (`tid`,`key`) VALUES (?,?)');
+		}
+		else
+		{
+			$stmt = Database::Get()->prepare('DELETE FROM `oj_usertag_properties` WHERE `tid` = ? AND `key` = ?');
+		}
+		$stmt->execute(array(IO::POST('tid',null,'intval'),IO::POST('key')));
 	}
 	
 	public function ajaxEditPermissionValue()
@@ -229,8 +245,23 @@ class AdminManageUserModule
 		
 		$this->generatePermissionTable(null,$tags,$table);
 		
+		// Tag Properties
+		$stmt = Database::Get()->query('SELECT `tid`,`key` FROM `oj_usertag_properties`');
+		$prop = array_fill(0,count($tags),array());
+		foreach ($stmt as $row)
+		{
+			for ($i=0;$i<count($tags);$i++)
+			{
+				if (intval($row['tid']) == $tags[$i]->id)
+				{
+					$prop[$i][$row['key']] = true;
+				}
+			}
+		}
+		
 		OIOJ::$template->assign('table',$table);
 		OIOJ::$template->assign('tags',$tags);
+		OIOJ::$template->assign('properties',$prop);
 		
 		OIOJ::$template->display('admin_tag_permissions.tpl');
 	}

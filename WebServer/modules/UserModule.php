@@ -141,6 +141,10 @@ class UserModule
 			
 			// Invalidate invitation
 			$stmt = Database::Get()->prepare('UPDATE `oj_invitations` SET `user` = ? WHERE `code` = ?');
+			
+			// Add Tags
+			Database::Get()->exec("INSERT INTO `oj_user_tags` (`uid`,`tid`) SELECT {$user->id},`tid` FROM `oj_usertag_properties` WHERE `key`='auto_apply_new_user'");
+			
 			$stmt->execute(array($user->id, $form->get('invitation')->data));
 			
 			OIOJ::Redirect('You have successfully registered!');

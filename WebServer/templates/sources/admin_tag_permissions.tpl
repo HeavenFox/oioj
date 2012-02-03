@@ -3,6 +3,18 @@
 <link rel='stylesheet' href='templates/list.css' />
 <script type="text/javascript" src='scripts/permissions.js'></script>
 <script type="text/javascript">
+function setTagProperties(obj)
+{
+	var newState = obj.checked;
+	// Do not change value now...
+	obj.checked = !newState;
+	$.post("index.php?mod=admin_user&act=tagproperties",{ key: $(obj).data('key'), tid: $(obj).data('tid'), state: (newState?1:0) },function(data)
+	{
+		console.log(data);
+		obj.checked = newState;
+	});
+}
+
 $(function(){
 	setColor();
 });
@@ -39,8 +51,14 @@ $(function(){
 	</tr>
 </thead>
 <tbody>
-	<tr><td>Auto Apply to New Users?</td><td><input type="checkbox" checked="checked" /></td></tr>
-	<tr><td>Users Can Freely Join?</td><td><input type="checkbox" checked="checked" /></td></tr>
+	<tr><td>Auto Apply to New Users?</td>
+	{foreach $properties as $k => $t}	
+	<td><input type="checkbox" {if isset($t.auto_apply_new_user)}checked="checked"{/if} onchange="setTagProperties(this)" data-key="auto_apply_new_user" data-tid="{$tags[$k]->id}" /></td>
+	{/foreach}</tr>
+	<tr><td>Users Can Freely Join?</td>
+	{foreach $properties as $k => $t}	
+	<td><input type="checkbox" {if isset($t.freely_join)}checked="checked"{/if} onchange="setTagProperties(this)" data-key="freely_join" data-tid="{$tags[$k]->id}" /></td>
+	{/foreach}</tr>
 </tbody>
 </table>
 <form method="post" action="index.php?mod=admin_user&amp;act=tagpermissions">

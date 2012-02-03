@@ -299,9 +299,7 @@ CREATE TABLE `oj_user_tags` (
 
 CREATE TABLE `oj_usertag_properties` (
   `tid` int(11) NOT NULL,
-  `taggable` tinyint(1) NOT NULL,
-  `newuser` tinyint(1) NOT NULL,
-  PRIMARY KEY (`tid`)
+  `key` varchar(32) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 ALTER TABLE `oj_articles_tags`
