@@ -1,10 +1,15 @@
 <div class="sidebar-box">
+<h2>Settings</h2>
+<ul>
+<li><a href='index.php?mod=admin_settings'>Basic Settings</a></li>
+</ul>
+</div>
+<div class="sidebar-box">
 <h2>Judge System</h2>
 <ul>
 <li><a href='index.php?mod=admin_judgeserver'>Manage Judge Servers</a></li>
 </ul>
 </div>
-
 <div class="sidebar-box">
 <h2>User Management</h2>
 <ul>

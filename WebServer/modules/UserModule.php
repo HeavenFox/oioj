@@ -12,7 +12,7 @@ class UserModule
 		// Begin session
 		session_start();
 		
-		OIOJ::$template->assign('user',User::GetCurrent());
+		OIOJ::$template->assign('current_user',User::GetCurrent());
 	}
 	
 	public function run()

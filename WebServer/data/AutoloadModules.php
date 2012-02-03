@@ -1,0 +1,3 @@
+<?php
+$AutoloadModules = array('UserModule');
+?>

@@ -58,6 +58,8 @@ class SmartyForm
 	
 	private $recordFuncs;
 	
+	private $headers;
+	
 	const FORMHTML_NO_OPENING = 1;
 	
 	public function __construct($id = '', $action = '')
@@ -75,6 +77,31 @@ class SmartyForm
 	{
 		$obj->form = $this;
 		$this->elements[$obj->getID()] = $obj;
+	}
+	
+	public function registerHeader($cid, $code)
+	{
+		if (!isset($this->headers[$cid]))
+		{
+			$this->headers[$cid] = $code;
+		}
+	}
+	
+	public function getHeaderHTML()
+	{
+		$str = '';
+		$printed = array();
+		
+		foreach ($this->elements as $v)
+		{
+			$cls = get_class($v);
+			if (!isset($printed[$cls]))
+			{
+				$printed[$cls] = true;
+				$str .= $cls::$htmlHeader . "\n";
+			}
+		}
+		return $str;
 	}
 	
 	/**
@@ -297,6 +324,8 @@ abstract class SF_Element
 	protected $attributes = array();
 	
 	public $autoAttach = false;
+	
+	public static $htmlHeader;
 	
 	/**
 	 * @var SmartyForm

@@ -38,10 +38,14 @@ class SF_ServerBrowser extends SF_TextField
 	 */
 	public $object = 'both';
 	
+	static $htmlHeader = '<script type="text/javascript">function setVar(obj,val){
+		$("#"+obj).val(val);
+	}</script>';
+	
 	public function html()
 	{
 		$this->setDefaultAttributes();
-		return "<input " . $this->generateAtrributes() . " /><a href='javascript:;' onclick='window.open(\"index.php?mod=admin_commons&act=browseserver&object=".$this->object."&callback=".urlencode("function(data){this.setVar('".$this->getHTMLID()."',data)}")."\")'>[Browse]</a>" . $this->appendedErrorMessage();
+		return "<input " . $this->generateAtrributes() . " /><a href='javascript:;' onclick='".htmlspecialchars("window.open(\"index.php?mod=admin_commons&act=browseserver&object=".$this->object."&callback=".urlencode("function(data){this.setVar(\"".$this->getHTMLID()."\",data);}").'","","width=300,height=300")')."'>[Browse]</a>" . $this->appendedErrorMessage();
 	}
 }
 ?>

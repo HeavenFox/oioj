@@ -14,12 +14,19 @@ class Settings
 	
 	public static function Set($param, $val)
 	{
-		$stmt = Database::Get()->prepare('UPDATE `oj_settings` SET `'.$param.'` = ?');
-		$stmt->execute(array($val));
+		if (self::Get($param) != $val)
+		{
+			$stmt = Database::Get()->prepare('UPDATE `oj_settings` SET `value` = ? WHERE `key` = ?');
+			$stmt->execute(array($val,$param));
+		}
 	}
 	
 	public static function GetAll()
 	{
+		if (!self::$stored)
+		{
+			self::StoreSettings();
+		}
 		return self::$stored;
 	}
 	

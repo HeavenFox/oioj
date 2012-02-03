@@ -24,7 +24,7 @@ class AdminCommonsModule
 		$pwd = IO::GET('pwd',ROOT);
 		function makeCallback($file)
 		{
-			return "onclick='(".IO::GET('callback').").call(window.opener,\"".addslashes($file)."\");window.close();'";
+			return "onclick='".htmlspecialchars("(".IO::GET('callback').").call(window.opener,\"".addslashes($file)."\");window.close();")."'";
 		}
 		if (!defined('DS'))
 			define('DS',DIRECTORY_SEPARATOR);
@@ -56,7 +56,7 @@ class AdminCommonsModule
 			}
 			else
 			{
-				echo '<a href="index.php?mod=admin_commons&act=browseserver&amp;callback='.IO::GET('callback').'&amp;object='.$obj.'&amp;pwd='.urlencode(realpath($loc).DS).'">';
+				echo '<a href="index.php?mod=admin_commons&act=browseserver&amp;callback='.urlencode(IO::GET('callback')).'&amp;object='.$obj.'&amp;pwd='.urlencode(realpath($loc).DS).'">';
 			}
 			echo htmlspecialchars($f);
 			echo '</a>';

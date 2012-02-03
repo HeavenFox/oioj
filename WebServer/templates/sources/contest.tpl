@@ -61,7 +61,7 @@
 {/if}
 {else}
 <p>You have not registered.</p>
-<p>{if $user->id != 0}
+<p>{if $current_user->id != 0}
 <a href="index.php?mod=contest&amp;act=register&amp;id={$c->id}">Register now</a>
 {else}
 <a href="javascript:;" onclick="globalShowLoginBox();return false;">Log in</a> to register

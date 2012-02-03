@@ -27,8 +27,8 @@
  » {if $v}<a href='{$v|escape}'>{/if}{$k}{if $v}</a>{/if}
 {/foreach}
 {/if}
-</div><div id="userinfo">Welcome, {$user->username}
-{if $user->id != 0}
+</div><div id="userinfo">Welcome, {$current_user->username}
+{if $current_user->id != 0}
 {ifable to="admin_cp"}<a href='index.php?mod=admin_home'>Admin CP</a> - {endif} <a href='index.php?mod=user&amp;act=editprofile'>User Center</a> - <a href='index.php?mod=user&amp;act=logout'>Log out</a>
 {else}
  <a href='javascript:;' onclick='globalShowLoginBox()'>Log in</a>
