@@ -34,6 +34,9 @@ class UserModule
 		case 'logout':
 			$this->logout();
 			break;
+		case 'tagcomplete':
+			$this->completeTag();
+			break;
 		}
 	}
 	
@@ -154,6 +157,20 @@ class UserModule
 	{
 		require_once LIB_DIR . 'recaptchalib.php';
 		echo recaptcha_get_js(Config::$CAPTCHA_Public);
+	}
+	
+	public function completeTag()
+	{
+		$tags = User::SearchTags('%'.IO::REQUEST('term').'%', 10);
+		$result = array();
+		foreach ($tags as $tag)
+		{
+			$n = array();
+			$n['label'] = $tag->tag;
+			$n['value'] = $tag->id;
+			$result[] = $n;
+		}
+		echo json_encode($result);
 	}
 }
 ?>

@@ -217,7 +217,15 @@ class AdminManageUserModule
 		
 		$table = $this->travelTree($roots);
 		
-		$tags = User::GetPopularTags();
+		if (IO::POST('tag'))
+		{
+			$tags = array(Tag::AddIfNotExist(IO::POST('tag')));
+		}
+		else
+		{
+			$tags = User::GetPopularTags();
+		}
+		
 		
 		$this->generatePermissionTable(null,$tags,$table);
 		

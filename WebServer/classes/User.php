@@ -116,7 +116,7 @@ class User extends TaggedRecord
 		$this->password = self::EncryptPassword($this->password,$this->salt,self::COOKIE_ITERATION+self::SERVER_ITERATION);
 		
 		parent::add();
-		
+		/*
 		$tags = explode(';',Settings::Get('user_default_tags'));
 		foreach ($tags as $k => $tagid)
 		{
@@ -125,7 +125,7 @@ class User extends TaggedRecord
 		}
 		
 		Database::Get()->query('INSERT INTO `oj_user_tags` (`uid`,`tid`) VALUES '.implode(',',$tags));
-		
+		*/
 		$this->createSession();
 	}
 	
