@@ -629,6 +629,19 @@ class SF_Number extends SF_TextBased
 	}
 }
 
+class SF_TimeZone extends SF_TextBased
+{
+	static $htmlHeader;
+	protected function setDefaultAttributes()
+	{
+		parent::setDefaultAttributes();
+		$this->attributes['class'] = 'timezone_input';
+	}
+}
+
+SF_TimeZone::$htmlHeader = '<script type="text/javascript">
+	$(function(){$(".timezone_input").autocomplete({source: '.json_encode(timezone_identifiers_list()).'});});;
+	</script>';
 
 class SF_Date extends SF_TextBased
 {

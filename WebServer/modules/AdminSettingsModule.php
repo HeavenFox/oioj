@@ -11,7 +11,7 @@ class AdminSettingsModule
 		$form->add(new SF_ServerBrowser('id','local_judgeserver_data_dir','label','Local Judge Server Data Folder','object','directory'));
 		$form->add(new SF_TextField('id','recaptcha_public','label','reCAPTCHA Public'));
 		$form->add(new SF_TextField('id','recaptcha_private','label','reCAPTCHA Private'));
-		$form->add(new SF_TextField('id','default_timezone','label','Default Time Zone'));
+		$form->add(new SF_TimeZone('id','default_timezone','label','Default Time Zone'));
 		
 		return $form;
 	}

@@ -1,6 +1,8 @@
 {extends file="two-column.tpl"}
 {block name="html_head" append}
 <link rel='stylesheet' href='templates/list.css' />
+<link rel="stylesheet" href="scripts/jquery-ui-css/ui-lightness/jquery-ui-1.8.16.custom.css" />
+<script type="text/javascript" src="scripts/jquery-ui-1.8.16.custom.min.js"></script>
 <style>
 .tablist
 {
