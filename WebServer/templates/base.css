@@ -176,19 +176,30 @@ small
 	background-color: #F6F6F6;
 	border-bottom: 1px solid #e2e2e2;
 	padding: 0 10px 0 10px;
+	margin: 0;
+}
+
+#title_bar .titles
+{
+	float: left;
 }
 
 #title_bar h2
 {
-	font-size: 22px;
-	float: left;
+	font-size: 20px;
 	font-weight: normal;
 	font-family: Verdana, Tahoma, sans-serif;
 	line-height: 35px;
 	text-shadow: 0 0 0.3em #c7c7c7;
+	margin: 0;
 }
 
-#title_bar div
+#title_bar.with_secondline
+{
+	height: 60px;
+}
+
+#title_bar div.links
 {
 	float: right;
 	line-height: 40px;

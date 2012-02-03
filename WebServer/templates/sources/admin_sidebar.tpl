@@ -9,6 +9,7 @@
 <h2>User Management</h2>
 <ul>
 <li><a href='index.php?mod=admin_user'>Manage Users</a></li>
+<li><a href='index.php?mod=admin_user&amp;act=tagpermissions'>Tag Permissions</a></li>
 <li><a href='index.php?mod=admin_user&amp;act=invitation'>Invitation</a></li>
 </ul>
 </div>

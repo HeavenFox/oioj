@@ -36,11 +36,20 @@ class AdminManageUserModule
 		case 'save':
 			$this->save();
 			break;
+		case 'loginas':
+			$this->loginAs();
+			break;
 		case 'invitation':
 			$this->invitation();
 			break;
 		case 'permissions':
 			$this->permissions();
+			break;
+		case 'tagpermissions':
+			$this->tagPermissions();
+			break;
+		case 'doeditperm':
+			$this->ajaxEditPermissionValue();
 			break;
 		default:
 			$this->listUsers();
@@ -63,6 +72,44 @@ class AdminManageUserModule
 		OIOJ::$template->display('admin_user_list.tpl');
 	}
 	
+	public function ajaxEditPermissionValue()
+	{
+		function process($id,$key,$table,$column)
+		{
+			$sql = null;
+			if (IO::POST('old',0,'intval'))
+			{
+				if ($newperm = IO::POST('new',0,'intval'))
+				{
+					$sql = "UPDATE `{$table}` SET `permission` = {$newperm} WHERE `{$column}` = {$id} AND `key` = ?";
+				}else
+				{
+					$sql = "DELETE FROM `{$table}` SET WHERE `{$column}` = {$id} AND `key` = ?";
+				}
+			}else
+			{
+				if ($newperm = IO::POST('new',0,'intval'))
+				{
+					$sql = "INSERT INTO `{$table}` (`{$column}`,`key`,`permission`) VALUES ({$id},?,{$newperm})";
+				}
+			}
+			if ($sql)
+			{
+				$stmt = Database::Get()->prepare($sql);
+				$stmt->execute(array($key));
+			}
+		}
+		if ($id = IO::POST('uid',null,'intval'))
+		{
+			process($id,IO::POST('key'),'oj_user_acl','uid');
+		}
+		else if ($id = IO::POST('tid',null,'intval'))
+		{
+			process($id,IO::POST('key'),'oj_tag_acl','tid');
+		}
+		echo '{}';
+	}
+	
 	public function permissions()
 	{
 		// We have a forest in $roots
@@ -73,26 +120,65 @@ class AdminManageUserModule
 		$uid = IO::GET('uid',0,'intval');
 		
 		$user = new User($uid);
+		
+		$user->fetch(array('username'));
 		$tags = $user->getTags();
 		
-		$tagAcl = array();
-		$tagExist = array();
-		foreach ($tags as $t)
+		$this->generatePermissionTable($user,$tags,$table);
+		
+		OIOJ::$template->assign('table',$table);
+		OIOJ::$template->assign('tags',$tags);
+		OIOJ::$template->assign('user',$user);
+		
+		OIOJ::$template->display('admin_user_permissions.tpl');
+	}
+	
+	public function loginAs()
+	{
+		// This is a very advanced feature and should only be granted to OMNIPOTENT user
+		User::GetCurrent()->assertAble('omnipotent');
+		
+		$user = User::first(array('id','username'),'`id`='.IO::GET('uid',0,'intval'));
+		if ($user)
 		{
-			$tagExist[$t->id] = true;
+			$user->createSession();
 		}
-		$userAcl = array();
-		foreach(Database::Get()->query('SELECT `tid`,`key`,`permission` FROM `oj_tag_acl`') as $row)
+		else
 		{
-			if (isset($tagExist[intval($row['tid'])]))
+			throw new InputException('Invalid User ID');
+		}
+	}
+	
+	private function generatePermissionTable($user, $tags, &$table)
+	{
+		
+		if ($tags)
+		{
+			$tagAcl = array();
+			$tagExist = array();
+			foreach ($tags as $t)
 			{
-				$tagAcl[intval($row['tid'])][$row['key']] = intval($row['permission']);
+				$tagExist[$t->id] = true;
+			}
+			
+			foreach(Database::Get()->query('SELECT `tid`,`key`,`permission` FROM `oj_tag_acl`') as $row)
+			{
+				if (isset($tagExist[intval($row['tid'])]))
+				{
+					$tagAcl[intval($row['tid'])][$row['key']] = intval($row['permission']);
+				}
 			}
 		}
-		foreach(Database::Get()->query('SELECT `uid`,`key`,`permission` FROM `oj_user_acl` WHERE `uid`='.$uid) as $row)
+		
+		if ($user)
 		{
-			$userAcl[$row['key']] = intval($row['permission']);
+			$userAcl = array();
+			foreach(Database::Get()->query('SELECT `uid`,`key`,`permission` FROM `oj_user_acl` WHERE `uid`='.$user->id) as $row)
+			{
+				$userAcl[$row['key']] = intval($row['permission']);
+			}
 		}
+		
 		
 		$names = loadData('PermissionKeyNames');
 		
@@ -110,16 +196,35 @@ class AdminManageUserModule
 			}
 			$table[$k]['name'] .= htmlspecialchars($names[$v['key']]);
 			// Format Permission
-			$table[$k]['perms'] = array();
-			$table[$k]['perms'][] = IO::GetArrayElement($userAcl,$v['key'],0);
-			foreach ($tags as $tag)
+			if ($user)
 			{
-				$table[$k]['perms'][] = IO::GetArrayElement($tagAcl[$tag->id],$v['key'],0);
+				$table[$k]['user_perms'] = IO::GetArrayElement($userAcl,$v['key'],0);
+			}
+			if ($tags)
+			{
+				$table[$k]['tag_perms'] = array();
+				foreach ($tags as $tag)
+				{
+					$table[$k]['tag_perms'][] = IO::GetArrayElement($tagAcl[$tag->id],$v['key'],0);
+				}
 			}
 		}
+	}
+	
+	public function tagPermissions()
+	{
+		$roots = $this->generatePermissionTree();
+		
+		$table = $this->travelTree($roots);
+		
+		$tags = User::GetPopularTags();
+		
+		$this->generatePermissionTable(null,$tags,$table);
+		
 		OIOJ::$template->assign('table',$table);
 		OIOJ::$template->assign('tags',$tags);
-		OIOJ::$template->display('admin_user_permissions.tpl');
+		
+		OIOJ::$template->display('admin_tag_permissions.tpl');
 	}
 	
 	private function generatePermissionTree()

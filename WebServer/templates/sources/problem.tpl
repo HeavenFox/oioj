@@ -21,8 +21,10 @@ $(function(){
 {/block}
 {block name="column-left"}
 <div id='title_bar'>
+<div class="titles">
 <h2>{$problem->title}</h2>
-<div>Problem&nbsp;&nbsp;<a href=''>Discussion</a>&nbsp;&nbsp;<a href=''>Solution</a></div>
+</div>
+<div class="links">Problem&nbsp;&nbsp;<a href=''>Discussion</a>&nbsp;&nbsp;<a href=''>Solution</a></div>
 </div>
 <div id='problem-body'>
 {$problem->body}

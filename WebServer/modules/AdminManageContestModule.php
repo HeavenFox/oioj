@@ -54,6 +54,11 @@ class AdminManageContestModule
 		return strtotime(IO::POST($name.'-date').' '.IO::POST($name.'-h').':'.IO::POST($name.'-m').':'.IO::POST($name.'-s'));
 	}
 	
+	public function generateForm()
+	{
+		$form = new SmartyForm();
+	}
+	
 	public function saveContest()
 	{
 		// Ranking Criteria
