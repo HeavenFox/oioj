@@ -44,6 +44,16 @@ class StepSystemCheck
 		}
 		$this->html .= '</tr>';
 		
+		$this->html .= '<tr><td>Magic Quotes</td>';
+		if (function_exists('get_magic_quotes_gpc') && get_magic_quotes_gpc())
+		{
+			$this->html .= '<td class="warning">On. It is strongly recommended that you turn it off for performance reasons</td>';
+		}else
+		{
+			$this->html .= '<td class="pass">Off</td>';
+		}
+		$this->html .= '</tr>';
+		
 		
 		$this->html .= '</table>';
 		
@@ -67,6 +77,10 @@ class StepSystemCheck
 .fail
 {
 	color: red;
+}
+.warning
+{
+	color: yellow;
 }
 </style>
 ';

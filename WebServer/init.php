@@ -7,6 +7,19 @@ define('LIB_DIR',ROOT.'lib'.DIRECTORY_SEPARATOR);
 define('OIOJ_VERSION', 100);
 define('OIOJ_READABLE_VERSION','v1.0.0');
 
+// Turn off magic quotes
+if (get_magic_quotes_gpc())
+{
+    function stripslashes_gpc(&$value)
+    {
+        $value = stripslashes($value);
+    }
+    array_walk_recursive($_GET, 'stripslashes_gpc');
+    array_walk_recursive($_POST, 'stripslashes_gpc');
+    array_walk_recursive($_COOKIE, 'stripslashes_gpc');
+    array_walk_recursive($_REQUEST, 'stripslashes_gpc');
+}
+
 /**
  * Import class
  * @param string $package Class package to import
