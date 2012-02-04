@@ -58,10 +58,14 @@
 #column-right .sidebar-box ul
 {
 	list-style: none;
+}
+
+#column-right .sidebar-content
+{
 	margin: 5px 8px 5px 8px;
 }
 
-#column-right .sidebar-box ul
+#column-right .sidebar-box li
 {
-	list-style: none;
+	margin-top: 2px;
 }

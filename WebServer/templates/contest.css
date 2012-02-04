@@ -1,12 +1,10 @@
 #column-left h2
 {
-	font-size: 20px;
+	font-size: 18px;
+	margin: 5px;
+	font-weight: normal;
 }
 
-#column-left h3
-{
-	font-size: 16px;
-}
 
 #description
 {

@@ -9,7 +9,7 @@
 </div>
 <div id="description">{$c->description}</div>
 {if $c->problems}
-<h3>Problems</h3>
+<h2>Problems</h2>
 {if $registered && !$started}
 <p>Note: By viewing any of the problems below, you start working on this contest and the timer starts to tick.</p>
 {/if}
@@ -29,13 +29,14 @@
 </table>
 {/if}
 {if isset($ranking)}
-<h3>Ranking</h3>
+<h2>Ranking</h2>
 {include file="boxes/contest_ranking.tpl"}
 {/if}
 {/block}
 {block name="column-right"}
 <div class="sidebar-box">
 <h2>At a Glance</h2>
+<div class="sidebar-content">
 <ul>
 <li>Status:
 {if $c->status == Contest::STATUS_WAITING}Waiting{/if}
@@ -50,6 +51,7 @@
 <li>Contest End: {if $c->endTime > 0}<br />{$c->endTime|datetime_format}{else}N/A{/if}</li>
 <li>Duration: {$c->duration|duration_format}</li>
 </ul>
+</div>
 </div>
 {nocache}
 <div class="sidebar-box">
