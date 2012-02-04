@@ -89,6 +89,7 @@ $(function(){
 </ul>
 </div>
 </div>
+{block name="tags_box"}
 <div class="sidebar-box">
 <h2><a href='javascript:;'>Tags</a></h2>
 <div class="sidebar-content">
@@ -110,6 +111,7 @@ $(function(){
 {endif}
 </div>
 </div>
+{/block}
 {if $problem->attachments}
 <div class="sidebar-box">
 <h2>Attachments</h2>

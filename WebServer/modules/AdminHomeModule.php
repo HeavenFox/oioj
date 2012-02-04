@@ -4,10 +4,7 @@ class AdminHomeModule
 {
 	public function run()
 	{
-		if (!User::GetCurrent()->ableTo('admin_cp'))
-		{
-			throw new PermissionException();
-		}
+		User::GetCurrent()->assertAble('admin_cp');
 		OIOJ::$template->display('admin_home.tpl');
 	}
 

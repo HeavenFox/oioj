@@ -50,3 +50,5 @@ $(function(){
 	</div>
 </div>
 {/block}
+{block name="tags_box"}
+{/block}

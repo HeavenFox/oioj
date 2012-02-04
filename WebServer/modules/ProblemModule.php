@@ -19,13 +19,31 @@ class ProblemModule
 		}
 		$probID = IO::GET('id',0,'intval');
 		
-		if (!OIOJ::$template->isCached('problem.tpl', $probID))
+		$this->checkPermission();
+		if (!$this->checkCache($probID))
 		{
-			if (!($obj = $this->loadProblem($probID)) || $obj->listing == 0) {
-				throw new Exception('Problem does not exist', 404);
-			}
+			$this->loadProblem($probID);
+			$this->checkProblemPermission();
 		}
 		$this->display($probID);
+	}
+	
+	public function checkCache($probID)
+	{
+		return OIOJ::$template->isCached('problem.tpl', $probID);
+	}
+	
+	public function checkPermission()
+	{
+		User::GetCurrent()->assertNotUnable('view_problem');
+	}
+	
+	public function checkProblemPermission()
+	{
+		if (!$this->problem->listing)
+		{
+			throw new InputException('Problem does not exist');
+		}
 	}
 	
 	public function loadProblem($id)

@@ -20,6 +20,7 @@ class AdminSettingsModule
 	
 	public function run()
 	{
+		User::GetCurrent()->assertAble('manage_settings');
 		$form = $this->generateForm();
 		if (IO::GET('act') == 'save')
 		{

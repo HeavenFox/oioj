@@ -1,9 +1,11 @@
 <?php
 $PermissionHierarchy = array(
-	'add_problem' => 'admin_cp',
-	'edit_problem' => 'add_problem',
-	'add_contest' => 'admin_cp',
-	'edit_contest' => 'add_contest',
-	'contest_cp' => 'admin_cp'
+	'edit_problem' => 'admin_cp',
+	'add_problem' => 'edit_problem',
+	'edit_contest' => 'admin_cp',
+	'add_contest' => 'edit_contest',
+	'contest_cp' => 'admin_cp',
+	'manage_judgeserver' => 'admin_cp',
+	'edit_tags' => 'edit_problem'
 );
 ?>

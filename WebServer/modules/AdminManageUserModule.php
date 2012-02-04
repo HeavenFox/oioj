@@ -21,10 +21,8 @@ class AdminManageUserModule
 	public function run()
 	{
 		$user = User::GetCurrent();
-		if (!($user->ableTo('manage_user') || ($user->ableTo('admin_cp') && !$user->unableTo('manage_user'))))
-		{
-			throw new PermissionException();
-		}
+		$user->assertAble('manage_user');
+		
 		switch (IO::GET('act'))
 		{
 		case 'add':
@@ -43,15 +41,19 @@ class AdminManageUserModule
 			$this->invitation();
 			break;
 		case 'permissions':
+			$user->assertAble('manage_permission');
 			$this->permissions();
 			break;
 		case 'tagpermissions':
+			$user->assertAble('manage_permission');
 			$this->tagPermissions();
 			break;
 		case 'doeditperm':
+			$user->assertAble('manage_permission');
 			$this->ajaxEditPermissionValue();
 			break;
 		case 'tagproperties':
+			$user->assertAble('manage_permission');
 			$this->ajaxTagProperties();
 			break;
 		default:

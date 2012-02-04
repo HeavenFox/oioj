@@ -4,12 +4,18 @@ $PermissionKeyNames = array(
 	'view_contest' => 'View Contest',
 	'view_problem' => 'View Problem',
 	'submit_solution' => 'Submit Solution',
-	'query_problemlist' => 'Query Problem List',
+	'query_tag_advanced' => 'Advanced Query by Tag',
+	'query_search' => 'Search',
 	'admin_cp' => 'Admin CP',
 	'add_problem' => 'Add Problem',
 	'edit_problem' => 'Edit Problem',
 	'add_contest' => 'Add Contest',
 	'edit_contest' => 'Edit Contest',
-	'contest_cp' => 'Contest CP'
+	'contest_cp' => 'Contest CP',
+	'manage_judgeserver' => 'Manage Judge Server',
+	'manage_user' => 'Manage Users',
+	'manage_permission' => 'Manage Permissions',
+	'manage_settings' => 'Manage Settings',
+	'edit_tags' => 'Edit tags'
 );
 ?>

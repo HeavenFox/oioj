@@ -44,11 +44,15 @@ class ProblemListModule
 		{
 			$problems = $selector->findAtPage($pageNum, $probPerPage, $maxPage, array('id','title','submission','accepted'), IO::GET('tag'), null, function($prop, $tagid, $suffix){return Problem::GetByTag($prop, $tagid, $suffix);});
 		
-		}else if (IO::GET('tagquery'))
+		}
+		else if (IO::GET('tagquery'))
 		{
+			User::GetCurrent()->assertNotUnable('query_tag_advanced');
 			$problems = Problem::queryByTags(array('id','title','submission','accepted'),json_decode(IO::GET('tagquery')));
-		}else if ($keyword = IO::POST('keyword'))
+		}
+		else if ($keyword = IO::POST('keyword'))
 		{
+			User::GetCurrent()->assertNotUnable('query_search');
 			$problems = $selector->findAtPage($pageNum, $probPerPage, $maxPage, array('id','title','submission','accepted'), "WHERE `title` LIKE ? AND `listing` > 0 AND `dispatched` > 0", array('%'.$keyword.'%'));
 		}
 		else

@@ -17,32 +17,39 @@ class ContestProblemModule extends ProblemModule
 		}
 		else
 		{
-			$probID = IO::GET('id',0,'intval');
-			$contID = IO::GET('cid',0,'intval');
-			// Check enrollment status
-			$this->contest = Contest::first(array('id','status'),$contID);
-			
-			if ($this->contest->status <= Contest::STATUS_WAITING)
-			{
-				throw new Exception('Contest has not started yet.');
-			}
-			
-			$cu = User::GetCurrent();
-			if (!$this->contest->checkEnrollment($cu))
-			{
-				throw new Exception('You\'re not registered. Please log in (if you have not) and enter from contest homepage.');
-			}
-			
-			$this->loadContest();
-			
-			if (!OIOJ::$template->isCached('contestproblem.tpl', $probID))
-			{
-				if (!$this->loadProblem($probID)) {
-					throw new Exception('Problem does not exist', 404);
-				}
-			}
-			$this->display($probID);
+			parent::run();
 		}
+	}
+	
+	public function checkPermission()
+	{
+		parent::checkPermission();
+		User::GetCurrent()->assertNotUnable('view_contest');
+		
+		$probID = IO::GET('id',0,'intval');
+		$contID = IO::GET('cid',0,'intval');
+		// Check enrollment status
+		$this->contest = Contest::first(array('id','status'),$contID);
+		
+		if ($this->contest->status <= Contest::STATUS_WAITING)
+		{
+			throw new Exception('Contest has not started yet.');
+		}
+		
+		$cu = User::GetCurrent();
+		if (!$this->contest->checkEnrollment($cu))
+		{
+			throw new Exception('You\'re not registered. Please log in (if you have not) and enter from contest homepage.');
+		}
+	}
+	
+	public function checkCache($probID)
+	{
+		return OIOJ::$template->isCached('contestproblem.tpl', $probID);
+	}
+	
+	public function checkProblemPermission()
+	{
 	}
 	
 	public function loadContest()

@@ -6,6 +6,7 @@ class ContestListModule
 {
 	public function run()
 	{
+		User::GetCurrent()->assertNotUnable('view_contest');
 		$this->showHomePage();
 	}
 	

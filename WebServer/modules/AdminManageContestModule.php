@@ -8,11 +8,8 @@ class AdminManageContestModule
 {
 	public function run()
 	{
-		$user = User::GetCurrent();
-		if (!($user->ableTo('add_contest') || ($user->ableTo('admin_cp') && !$user->unableTo('add_contest'))))
-		{
-			throw new PermissionException();
-		}
+		User::GetCurrent()->assertAble('add_contest');
+		
 		switch (IO::GET('act'))
 		{
 		case 'getproblemtitle':

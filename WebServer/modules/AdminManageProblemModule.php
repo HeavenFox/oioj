@@ -12,32 +12,34 @@ class AdminManageProblemModule
 	public function run()
 	{
 		$user = User::GetCurrent();
-		if (!($user->ableTo('add_problem') || ($user->ableTo('admin_cp') && !$user->unableTo('add_problem'))))
-		{
-			throw new PermissionException();
-		}
 		
 		switch (IO::GET('act'))
 		{
 		case 'add':
+			$user->assertAble('add_problem');
 			$this->displayProblemForm($this->generateProblemForm());
 			break;
 		case 'edit':
+			$user->assertAble('edit_problem');
 			$this->editProblem();
 			break;
 		case 'submit':
 			$this->problemSubmit();
 			break;
 		case 'uploadimage':
+			$user->assertAble('add_problem');
 			$this->uploadImage();
 			break;
 		case 'uploadattachments':
+			$user->assertAble('add_problem');
 			$this->uploadAttachments();
 			break;
 		case 'removetag':
+			$user->assertAble('edit_tags');
 			$this->removeTag();
 			break;
 		case 'addtag':
+			$user->assertAble('edit_tags');
 			$this->addTag();
 			break;
 		}
@@ -46,13 +48,11 @@ class AdminManageProblemModule
 	
 	public function removeTag()
 	{
-		User::GetCurrent()->assertAble('edit_tags');
 		Database::Get()->exec('DELETE FROM `oj_problem_tags` WHERE `tid` = '.IO::GET('tid',0,'intval').' AND `pid` = '.IO::GET('pid',0,'intval'));
 	}
 	
 	public function addTag()
 	{
-		User::GetCurrent()->assertAble('edit_tags');
 		$problem = new Problem(IO::POST('pid',0,'intval'));
 		if ($tid = IO::POST('tid',0,'intval'))
 		{
@@ -142,12 +142,6 @@ class AdminManageProblemModule
 	
 	public function problemSubmit()
 	{
-		// Check permission
-		if (!User::GetCurrent()->ableTo('add_problem'))
-		{
-			throw new Exception('denied');
-		}
-		
 		$prob = new Problem();
 		
 		$form = $this->generateProblemForm($prob);
@@ -157,6 +151,7 @@ class AdminManageProblemModule
 		
 		if (!$form->get('editing')->data)
 		{
+			User::GetCurrent()->assertAble('edit_problem');
 			$prob->user = User::GetCurrent();
 			$prob->dispatched = 0;
 			/*
@@ -268,6 +263,7 @@ class AdminManageProblemModule
 		}
 		else
 		{
+			User::GetCurrent()->assertAble('edit_problem');
 			$prob->update();
 			OIOJ::Redirect('Problem saved Successfully. Directing you to problem...','index.php?mod=problem&id='.$prob->id);
 		}

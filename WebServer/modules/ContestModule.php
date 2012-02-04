@@ -18,6 +18,7 @@ class ContestModule
 	
 	public function run()
 	{
+		User::GetCurrent()->assertNotUnable('view_contest');
 		switch (IO::GET('act',null))
 		{
 		case 'register':

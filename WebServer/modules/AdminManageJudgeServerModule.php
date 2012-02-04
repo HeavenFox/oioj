@@ -6,11 +6,7 @@ class AdminManageJudgeServerModule
 {
 	public function run()
 	{
-		$user = User::GetCurrent();
-		if (!($user->ableTo('manage_judgeserver') || ($user->ableTo('admin_cp') && !$user->unableTo('manage_judgeserver'))))
-		{
-			throw new PermissionException();
-		}
+		User::GetCurrent()->assertAble('manage_judgeserver');
 		
 		switch (IO::GET('act'))
 		{

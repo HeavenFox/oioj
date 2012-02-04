@@ -46,7 +46,7 @@ class ContestCPModule
 		
 		$user = User::GetCurrent();
 		
-		if (!($user->id == $this->contest->id || $user->ableTo('contestcp') || ($user->ableTo('admin_cp') && !$user->unableTo('contestcp'))))
+		if (!($user->id == $this->contest->id || $user->ableTo('contestcp')))
 		{
 			throw new PermissionException();
 		}
