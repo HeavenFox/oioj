@@ -39,6 +39,9 @@
 </tr>
 </thead>
 <tbody>
+	<tr>
+<td>{slabel id='data_archive_dir'}</td><td>{sinput id='data_archive_dir'}</td>
+</tr>
 <tr>
 <td>{slabel id='token'}</td><td>{sinput id='token'}</td>
 </tr>

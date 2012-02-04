@@ -26,6 +26,10 @@ class AdminCommonsModule
 		{
 			return "onclick='".htmlspecialchars("(".IO::GET('callback').").call(window.opener,\"".addslashes($file)."\");window.close();")."'";
 		}
+		
+		echo '<!DOCTYPE HTML><html><head><title>'.htmlspecialchars($pwd).'</title><link rel="stylesheet" href="templates/admin_serverbrowser.css" /></head>';
+		echo '<body>';
+		
 		if (!defined('DS'))
 			define('DS',DIRECTORY_SEPARATOR);
 		echo '<p>';
@@ -36,8 +40,8 @@ class AdminCommonsModule
 		}
 		echo '</p>';
 		echo '<table>';
-		
-		
+		echo '<thead><tr><td>Name</td><td>Size</td><td>Stat.</td><td>Perm.</td></tr></thead>';
+		echo '<tbody>';
 		
 		foreach (scandir($pwd) as $f)
 		{
@@ -49,7 +53,7 @@ class AdminCommonsModule
 			}
 			
 			echo '<tr>';
-			echo '<td>';
+			echo '<td class="filename">';
 			if ($isFile)
 			{
 				echo "<a href='javascript:;' ".makeCallback($loc).">";
@@ -61,7 +65,7 @@ class AdminCommonsModule
 			echo htmlspecialchars($f);
 			echo '</a>';
 			echo '</td>';
-			echo '<td>';
+			echo '<td class="size">';
 			
 			if ($isFile)
 			{
@@ -74,6 +78,9 @@ class AdminCommonsModule
 					$cur++;
 				}
 				echo sprintf("%.2f",$size) . $unit[$cur];
+			}else
+			{
+				echo '-';
 			}
 			echo '</td>';
 			echo '<td>';
@@ -110,8 +117,10 @@ class AdminCommonsModule
 			echo '</td>';
 			echo '</tr>';
 		}
+		echo '</tbody>';
 		echo '</table>';
 		
+		echo '</body></html>';
 	}
 
 }
