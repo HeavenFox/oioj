@@ -70,7 +70,7 @@ function tagQuerySubmit()
 {/block}
 {block name="body"}
 <div id='title_bar'>
-<div class="titles"><h2>Problems</h2>
+<div class="titles"><h1>Problems</h1>
 </div>
 	<div class="links"><a href='javascript:;' onclick='$("#tags").toggle(500);$(this).toggleClass("on");'>Tags</a>&nbsp;&nbsp;<a href='javascript:;' onclick='$("#search").toggle(500);$(this).toggleClass("on");'>Search</a></div>
 </div>

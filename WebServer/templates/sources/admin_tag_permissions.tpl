@@ -22,7 +22,7 @@ $(function(){
 {/block}
 {block name="column-left"}
 <div id='title_bar' class="with_secondline">
-<div class="secondline"><h2>View Tag Permissions</h2><div>To edit, click on a value</div></div>
+<div class="titles"><h1>View Tag Permissions</h1><div>To edit, click on a value</div></div>
 </div>
 <table class='tablist'>
 <thead>

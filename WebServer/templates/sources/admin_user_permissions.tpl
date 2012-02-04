@@ -10,7 +10,7 @@ $(function(){
 {/block}
 {block name="column-left"}
 <div id='title_bar' class="with_secondline">
-<h2>View Permission: {$user->username}</h2><div class="secondline">To edit, click on a value</div>
+<div class="titles"><h1>View Permission: {$user->username}</h1><div>To edit, click on a value</div></div>
 </div>
 <table class='tablist'>
 <thead>

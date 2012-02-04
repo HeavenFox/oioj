@@ -18,7 +18,7 @@
 {/block}
 {block name="column-left"}
 <div id='title_bar'>
-<div><h2>Settings</h2></div>
+<div><h1>Settings</h1></div>
 </div>
 {sform obj=$sf_settings}
 <table class='tablist'>

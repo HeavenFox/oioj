@@ -80,7 +80,7 @@ class ContestModule
 	
 	public function showProfile()
 	{
-		$contest = Contest::first(array('id','title','description','regBegin','regDeadline','beginTime','endTime','duration','status','user'=>array('username')),'WHERE `oj_contests`.`id`='.$this->contestId);
+		$contest = Contest::first(array('id','title','description','regBegin','regDeadline','beginTime','endTime','duration','status','user'=>array('id','username')),'WHERE `oj_contests`.`id`='.$this->contestId);
 		
 		if (!$contest)
 		{

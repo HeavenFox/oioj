@@ -4,7 +4,7 @@
 {/block}
 {block name="column-left"}
 <div id='title_bar'>
-<h2>Manage Invitations</h2>
+<h1>Manage Invitations</h1>
 </div>
 <table class='tablist'>
 <thead>

@@ -4,6 +4,7 @@ defined('IN_OIOJ') || die('Forbidden');
 import('Contest');
 import('Problem');
 import('JudgeRecord');
+import('Cronjob');
 
 class ContestCPModule
 {
@@ -27,6 +28,18 @@ class ContestCPModule
 		Cronjob::RemoveJob("`class` = 'Contest' AND `method` = 'end' AND `reference` = {$this->contest->id}");
 	}
 	
+	public function beginRegistration()
+	{
+		$this->contest->regBegin = time();
+		$this->contest->submit();
+	}
+	
+	public function endRegistration()
+	{
+		$this->contest->regDeadline = time();
+		$this->contest->submit();
+	}
+	
 	public function judge()
 	{
 		$this->contest->judge();
@@ -42,11 +55,11 @@ class ContestCPModule
 	{
 		$this->cid = IO::GET('id',0,'intval');
 		
-		$this->contest = Contest::first(array('title','status','user'),$this->cid);
+		$this->contest = Contest::first(array('title','status','user'=>array('id','username')),$this->cid);
 		
 		$user = User::GetCurrent();
 		
-		if (!($user->id == $this->contest->id || $user->ableTo('contestcp')))
+		if (!($user->id == $this->contest->user->id || $user->ableTo('contestcp')))
 		{
 			throw new PermissionException();
 		}
@@ -64,8 +77,17 @@ class ContestCPModule
 		case 'end':
 			$this->endContest();
 			break;
+		case 'beginreg':
+			$this->beginRegistration();
+			break;
+		case 'endreg':
+			$this->endRegistration();
+			break;
 		case 'judge':
 			$this->judge();
+			break;
+		case 'finishjudge':
+			$this->finishJudge();
 			break;
 		default:
 			

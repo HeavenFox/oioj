@@ -4,7 +4,9 @@
 <link rel='stylesheet' href='templates/contest.css' />
 {/block}
 {block name="column-left"}
-<h2>{$c->title}</h2>
+<div id="title_bar">
+<h1>{$c->title}</h1>
+</div>
 <div id="description">{$c->description}</div>
 {if $c->problems}
 <h3>Problems</h3>
@@ -49,24 +51,34 @@
 <li>Duration: {$c->duration|duration_format}</li>
 </ul>
 </div>
+{nocache}
 <div class="sidebar-box">
 <h2>Your Status</h2>
-{nocache}
+<div class="sidebar-content">
 {if $registered}
-<p>You have registered for this contest</p>
-{if $started}
-<p>You have started working on your problem at {$started|datetime_format}. Be sure to submit before time runs out!</p>
+	<p>You have registered for this contest</p>
+	{if $started}
+		<p>You have started working on your problem at {$started|datetime_format}. Be sure to submit before time runs out!</p>
+	{else}
+		<p>You havn't started working yet. Start now!</p>
+	{/if}
 {else}
-<p>You havn't started working yet. Start now!</p>
+	<p>You have not registered.</p>
+	<p>{if $current_user->id != 0}
+	<a href="index.php?mod=contest&amp;act=register&amp;id={$c->id}">Register now</a>
+	{else}
+	<a href="javascript:;" onclick="globalShowLoginBox();return false;">Log in</a> to register
+	{/if}</p>
 {/if}
-{else}
-<p>You have not registered.</p>
-<p>{if $current_user->id != 0}
-<a href="index.php?mod=contest&amp;act=register&amp;id={$c->id}">Register now</a>
-{else}
-<a href="javascript:;" onclick="globalShowLoginBox();return false;">Log in</a> to register
-{/if}</p>
+</div>
+</div>
+{if $current_user->ableTo('contestcp') || $current_user->id == $c->user->id}
+<div class="sidebar-box">
+<h2>Manage</h2>
+<div class="sidebar-content">
+	<a href="index.php?mod=contestcp&id={$c->id}">Control Panel</a>
+</div>
+</div>
 {/if}
 {/nocache}
-</div>
 {/block}

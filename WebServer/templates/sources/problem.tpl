@@ -66,9 +66,11 @@ $(function(){
 {block name="column-left"}
 <div id='title_bar'>
 <div class="titles">
-<h2>{$problem->title}</h2>
+<h1>{$problem->title}</h1>
 </div>
+{block name="titlebar_names"}
 <div class="links">Problem&nbsp;&nbsp;<a href=''>Discussion</a>&nbsp;&nbsp;<a href=''>Solution</a></div>
+{/block}
 </div>
 <div id='problem-body'>
 {$problem->body}

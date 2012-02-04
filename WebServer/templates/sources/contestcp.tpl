@@ -6,8 +6,8 @@
 <h3>Status: Waiting.</h3>
 
 <a href='index.php?mod=contestcp&amp;id={$contest->id}&amp;act=start'>Begin Now</a>
-Begin Registration Now
-Stop Registration Now
+<a href='index.php?mod=contestcp&amp;id={$contest->id}&amp;act=beginreg'>Begin Registration Now</a>
+<a href='index.php?mod=contestcp&amp;id={$contest->id}&amp;act=endreg'>Stop Registration Now</a>
 {/if}
 
 {if $status_code == Contest::STATUS_INPROGRESS}
