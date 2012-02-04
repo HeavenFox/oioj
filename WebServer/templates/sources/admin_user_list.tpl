@@ -13,7 +13,7 @@
 </thead>
 <tbody>
 {foreach $users as $user}
-<tr><td>{$user->id}</td><td>{$user->username}</td><td>[Edit] <a href="index.php?mod=admin_user&act=permissions&uid={$user->id}">[Permissions]</a></td></tr>
+<tr><td>{$user->id}</td><td>{$user->username}</td><td>[Edit] <a href="index.php?mod=admin_user&act=permissions&uid={$user->id}">[Permissions]</a>{ifable to="omnipotent"} <a href='index.php?mod=admin_user&act=loginas&id={$user->id}'>[Login as]</a>{endif}</td></tr>
 {/foreach}
 </tbody>
 </table>

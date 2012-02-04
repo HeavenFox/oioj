@@ -57,7 +57,6 @@ class UserModule
 	
 	public function doLogin()
 	{
-		OIOJ::InitDatabase();
 		$username = IO::POST('username','',null);
 		$password = IO::POST('password','',null);
 		

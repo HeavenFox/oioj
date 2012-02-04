@@ -154,7 +154,7 @@ class AdminManageUserModule
 		// This is a very advanced feature and should only be granted to OMNIPOTENT user
 		User::GetCurrent()->assertAble('omnipotent');
 		
-		$user = User::first(array('id','username'),'`id`='.IO::GET('uid',0,'intval'));
+		$user = User::first(array('id','username'),'WHERE `id`='.IO::GET('id',0,'intval'));
 		if ($user)
 		{
 			$user->createSession();
@@ -163,6 +163,7 @@ class AdminManageUserModule
 		{
 			throw new InputException('Invalid User ID');
 		}
+		OIOJ::Redirect("You have successfully assumed {$user->username}'s identity. Redirecting you to home page...",'index.php');
 	}
 	
 	private function generatePermissionTable($user, $tags, &$table)
@@ -247,16 +248,24 @@ class AdminManageUserModule
 		
 		// Tag Properties
 		$stmt = Database::Get()->query('SELECT `tid`,`key` FROM `oj_usertag_properties`');
-		$prop = array_fill(0,count($tags),array());
-		foreach ($stmt as $row)
+		if (count($tags))
 		{
-			for ($i=0;$i<count($tags);$i++)
+			$prop = array_fill(0,count($tags),array());
+			
+			foreach ($stmt as $row)
 			{
-				if (intval($row['tid']) == $tags[$i]->id)
+				for ($i=0;$i<count($tags);$i++)
 				{
-					$prop[$i][$row['key']] = true;
+					if (intval($row['tid']) == $tags[$i]->id)
+					{
+						$prop[$i][$row['key']] = true;
+					}
 				}
 			}
+		}
+		else
+		{
+			$prop = array();
 		}
 		
 		OIOJ::$template->assign('table',$table);
