@@ -29,6 +29,11 @@ class ProblemListModule
 		
 		$probPerPage = IO::GET('perpage', self::DEFAULT_PROBLEM_PER_PAGE, 'intval');
 		
+		$propertiesToDisplay = array('id','title','submission','accepted');
+		
+		// Permission restriction clause
+		$clause = User::GetCurrent()->ableTo('edit_problem') ? '1' : '((`listing` > 0 AND `dispatched` > 0) OR `uid` = '.User::GetCurrent()->id.')';
+		
 		if ($probPerPage < 1 || $probPerPage > self::MAX_PROBLEM_PER_PAGE)
 		{
 			$probPerPage = self::DEFAULT_PROBLEM_PER_PAGE;
@@ -42,22 +47,22 @@ class ProblemListModule
 		
 		if (IO::GET('tag'))
 		{
-			$problems = $selector->findAtPage($pageNum, $probPerPage, $maxPage, array('id','title','submission','accepted'), IO::GET('tag'), null, function($prop, $tagid, $suffix){return Problem::GetByTag($prop, $tagid, $suffix);});
+			$problems = $selector->findAtPage($pageNum, $probPerPage, $maxPage, $propertiesToDisplay, IO::GET('tag'), null, function($prop, $tagid, $data) use ($clause){return Problem::GetByTag($prop, $tagid, $clause);});
 		
 		}
 		else if (IO::GET('tagquery'))
 		{
 			User::GetCurrent()->assertNotUnable('query_tag_advanced');
-			$problems = Problem::queryByTags(array('id','title','submission','accepted'),json_decode(IO::GET('tagquery')));
+			$problems = Problem::queryByTags($propertiesToDisplay,json_decode(IO::GET('tagquery')),$clause);
 		}
 		else if ($keyword = IO::POST('keyword'))
 		{
 			User::GetCurrent()->assertNotUnable('query_search');
-			$problems = $selector->findAtPage($pageNum, $probPerPage, $maxPage, array('id','title','submission','accepted'), "WHERE `title` LIKE ? AND `listing` > 0 AND `dispatched` > 0", array('%'.$keyword.'%'));
+			$problems = $selector->findAtPage($pageNum, $probPerPage, $maxPage, $propertiesToDisplay, "WHERE `title` LIKE ? AND {$clause}", array('%'.$keyword.'%'));
 		}
 		else
 		{
-			$problems = $selector->findAtPage($pageNum, $probPerPage, $maxPage, array('id','title','submission','accepted'), "WHERE `listing` > 0 AND `dispatched` > 0");
+			$problems = $selector->findAtPage($pageNum, $probPerPage, $maxPage, $propertiesToDisplay, "WHERE {$clause}");
 		}
 		
 		OIOJ::$template->assign('problems',$problems);

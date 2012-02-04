@@ -10,7 +10,7 @@ class TaggedRecord extends ActiveRecord
 	
 	public static function GetByTag($properties, $tagId, $suffix = '')
 	{
-		return static::queryByTags($properties,array($tagId),$suffix);
+		return static::queryByTags($properties,array($tagId),'',$suffix);
 	}
 	
 	/**
@@ -20,7 +20,7 @@ class TaggedRecord extends ActiveRecord
 	 * @param array $cond Condition array
 	 * @param string $suffix Query suffix, like LIMIT or ORDER BY
 	 */
-	public static function queryByTags($properties, $cond, $suffix = '')
+	public static function queryByTags($properties, $cond, $filter = '1', $suffix = '')
 	{
 		$queries = array();
 		$single = array();
@@ -35,13 +35,13 @@ class TaggedRecord extends ActiveRecord
 				$single[] = $v[0];
 			}else
 			{
-				$queries[] = self::_makeAllInSetQueryString($properties, $v);
+				$queries[] = self::_makeAllInSetQueryString($properties, $v, $filter);
 			}
 		}
 		
 		if (count($single))
 		{
-			$queries[] = self::_makeAnyInSetQueryString($properties, $single);
+			$queries[] = self::_makeAnyInSetQueryString($properties, $single, $filter);
 		}
 		
 		$query = implode(' UNION ', $queries);
@@ -116,9 +116,9 @@ class TaggedRecord extends ActiveRecord
 		return ($this->tags = Tag::find(array('id','tag'),'INNER JOIN `'.static::$tagAssocTable[0].'` ON (`'.static::$tagAssocTable[0].'`.`'.static::$tagAssocTable[2].'` = `'.Tag::$tableName.'`.`'.Tag::$keyProperty.'`) WHERE `'.static::$tagAssocTable[0].'`.`'.static::$tagAssocTable[1].'`='.$this->_propValues[static::$keyProperty]));
 	}
 	
-	protected static function _makeAllInSetQueryString($properties, $tags)
+	protected static function _makeAllInSetQueryString($properties, $tags, $cond = '1')
 	{
-		if (is_int($tags))return self::_makeAnyInSetQueryString($properties, array($tags));
+		if (is_int($tags))return self::_makeAnyInSetQueryString($properties, array($tags), $cond);
 		
 		$query = 'SELECT '.parent::_makeColumnList($properties).' FROM ';
 		for ($i = 1; $i <= count($tags); $i++)
@@ -151,13 +151,15 @@ class TaggedRecord extends ActiveRecord
 			}
 			$query .= "`_tag_{$i}`.`id` = ".$tags[$i-1];
 		}
+		
+		$query .= ' AND '.$cond;
 		return $query;
 	}
 	
-	protected static function _makeAnyInSetQueryString($properties, $tags)
+	protected static function _makeAnyInSetQueryString($properties, $tags, $cond = '1')
 	{
 		if (is_int($tags))$tags = array($tags);
-		return parent::_makeQueryString($properties, ' RIGHT JOIN `'.static::$tagAssocTable[0].'` ON (`'.static::$tagAssocTable[0].'`.`'.static::$tagAssocTable[1].'` = '.static::Column(static::$keyProperty).') WHERE `'.static::$tagAssocTable[0].'`.`'.static::$tagAssocTable[2]. (count($tags) == 1 ? ('` = '.$tags[0]) : '` IN ('.implode(',',$tags).')'));
+		return parent::_makeQueryString($properties, ' RIGHT JOIN `'.static::$tagAssocTable[0].'` ON (`'.static::$tagAssocTable[0].'`.`'.static::$tagAssocTable[1].'` = '.static::Column(static::$keyProperty).') WHERE `'.static::$tagAssocTable[0].'`.`'.static::$tagAssocTable[2]. (count($tags) == 1 ? ('` = '.$tags[0]) : '` IN ('.implode(',',$tags).')') . ' AND '.$cond);
 	}
 }
 ?>

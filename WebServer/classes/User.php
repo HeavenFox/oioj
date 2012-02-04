@@ -156,7 +156,10 @@ GROUP BY  `key`';
 		if ($this->acl === null)
 		{
 			$this->acl = $this->getACL();
-			$this->createSession();
+			if ($this->id == User::GetCurrent()->id)
+			{
+				$this->createSession();
+			}
 		}
 	}
 	

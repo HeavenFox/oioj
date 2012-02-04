@@ -40,7 +40,7 @@ class ProblemModule
 	
 	public function checkProblemPermission()
 	{
-		if (!$this->problem->listing)
+		if (!$this->problem->listing && User::GetCurrent()->id != $this->problem->user->id && !User::GetCurrent()->ableTo('edit_problem'))
 		{
 			throw new InputException('Problem does not exist');
 		}
@@ -48,7 +48,7 @@ class ProblemModule
 	
 	public function loadProblem($id)
 	{
-		$this->problem = Problem::first(array('id','title','body','accepted','submission','output','input','source','listing','user' => array('username')),$id);
+		$this->problem = Problem::first(array('id','title','body','accepted','submission','output','input','source','listing','user' => array('id','username')),$id);
 		if (!$this->problem) return false;
 		$this->problem->getComposite(array('attachments' => array('id','filename')));
 		$this->problem->getTags();

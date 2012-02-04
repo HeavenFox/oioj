@@ -24,10 +24,11 @@ class AdminCommonsModule
 		$pwd = IO::GET('pwd',ROOT);
 		function makeCallback($file)
 		{
-			return "onclick='".htmlspecialchars("(".IO::GET('callback').").call(window.opener,\"".addslashes($file)."\");window.close();")."'";
+			$func = "(".IO::GET('callback').").call(window.opener,'".str_replace("\\","\\\\",$file)."');window.close();";
+			return 'onclick="'.htmlspecialchars($func).'"';
 		}
 		
-		echo '<!DOCTYPE HTML><html><head><title>'.htmlspecialchars($pwd).'</title><link rel="stylesheet" href="templates/admin_serverbrowser.css" /></head>';
+		echo '<!DOCTYPE HTML><html><head><meta charset="utf-8" /><title>'.htmlspecialchars($pwd).'</title><link rel="stylesheet" href="templates/admin_serverbrowser.css" /></head>';
 		echo '<body>';
 		
 		if (!defined('DS'))
