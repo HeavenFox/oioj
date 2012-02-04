@@ -94,7 +94,7 @@
 	float: left;
 }
 
-#user_panel input
+#user_panel input[type="text"], #user_panel input[type="password"]
 {
 	background: white;
 	background: -moz-linear-gradient(top, #e8e8e8 0%, #f6f6f6 28%, #ffffff 100%);
@@ -110,7 +110,7 @@
 #sf_login_username, #sf_login_password
 {
 
-	font-size: 20px;
+	font-size: 18px;
 	width: 250px;
 	margin-left: 10px;
 }
