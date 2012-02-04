@@ -151,14 +151,18 @@ GROUP BY  `key`';
 		return $acl;
 	}
 	
-	public function getPermissionNumber($key)
+	private function obtainAcl()
 	{
 		if ($this->acl === null)
 		{
 			$this->acl = $this->getACL();
 			$this->createSession();
 		}
-		
+	}
+	
+	public function getPermissionNumber($key)
+	{
+		$this->obtainAcl();
 		$hierarchy = loadData('PermissionHierarchy');
 		$cur = $key;
 		
@@ -175,6 +179,7 @@ GROUP BY  `key`';
 	
 	public function ableTo($key)
 	{
+		$this->obtainAcl();
 		if (isset($this->acl[self::ACL_OMNIPOTENT]) && $this->acl[self::ACL_OMNIPOTENT] > 0)
 		{
 			return true;
@@ -200,6 +205,7 @@ GROUP BY  `key`';
 	
 	public function unableTo($key)
 	{
+		$this->obtainAcl();
 		if (isset($this->acl[self::ACL_OMNIPOTENT]) && $this->acl[self::ACL_OMNIPOTENT] > 0)
 		{
 			return false;

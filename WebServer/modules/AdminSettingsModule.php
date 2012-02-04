@@ -26,6 +26,7 @@ class AdminSettingsModule
 		{
 			$form->gatherFromPOST();
 			$form->saveToSettings();
+			OIOJ::GlobalMessage('Saved Successfully');
 		}
 		else
 		{
