@@ -43,12 +43,13 @@ class Cronjob_ProblemDistribution extends Cronjob
 					}catch(Exception $e)
 					{
 						$failureExists = true;
+						$this->log('Unable to dispatch Problem #'.$pid.' to server #'.$sid.'. Error: '.$e->getMessage());
 						break;
 					}
 					
 					$toRemove[] = intval($row['id']);
 					unset($problems_server[$pid][$sid]);
-					$this->log('Dispatched Problem '.$pid.' to server '.$sid);
+					$this->log('Dispatched Problem #'.$pid.' to server #'.$sid);
 					
 					break;
 				}

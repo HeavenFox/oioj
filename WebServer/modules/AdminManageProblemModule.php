@@ -80,8 +80,8 @@ class AdminManageProblemModule
 		$form->add(new SF_TextField('title'));
 		$form->add(new SF_TextArea('body'));
 		
-		$form->add(new SF_TextField('id','input_file','label','Input'));
-		$form->add(new SF_TextField('id','output_file','label','Output'));
+		$form->add(new SF_TextField('id','input_file','label','Input','minLength',1));
+		$form->add(new SF_TextField('id','output_file','label','Output','minLength',1));
 		
 		$form->add(new SF_Select('id','type','label','Type','options',array('Traditional' => '1', 'Interactive' => '2', 'Output' => '3')));
 		$form->add(new SF_Select('id','comp_method','label','Compare','options',array('Full Text'=>'/FULLTEXT/','Omit Space at EOL'=>'/OMITSPACE/','Special Judge' => 'special')));

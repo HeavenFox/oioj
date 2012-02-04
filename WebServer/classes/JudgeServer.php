@@ -28,7 +28,7 @@ class JudgeServer extends ActiveRecord
 	
 	public function dispatch($task)
 	{
-		$fp = fsockopen($this->ip,$this->port,$errno,$errstr,10);
+		$fp = @fsockopen($this->ip,$this->port,$errno,$errstr,10);
 		if (!$fp)
 		{
 			return false;

@@ -29,7 +29,7 @@ class ProblemListModule
 		
 		$probPerPage = IO::GET('perpage', self::DEFAULT_PROBLEM_PER_PAGE, 'intval');
 		
-		$propertiesToDisplay = array('id','title','submission','accepted');
+		$propertiesToDisplay = array('id','title','submission','accepted','listing','dispatched');
 		
 		// Permission restriction clause
 		$clause = User::GetCurrent()->ableTo('edit_problem') ? '1' : '((`listing` > 0 AND `dispatched` > 0) OR `uid` = '.User::GetCurrent()->id.')';
