@@ -1,6 +1,8 @@
 <?php
 define('INSTALL_ROOT',dirname(__FILE__) . '/');
 
+file_exists(INSTALL_ROOT.'installer.lock') and die();
+
 require INSTALL_ROOT . '../init.php';
 
 import('IO');
