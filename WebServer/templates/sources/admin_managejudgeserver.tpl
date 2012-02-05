@@ -8,7 +8,9 @@ $(function(){
 </script>
 {/block}
 {block name="column-left"}
-<h2>Manage Judge Server</h2>
+<div id="title_bar">
+<h1>Manage Judge Server</h1>
+</div>
 <table class='tablist'>
 <thead>
 <tr><td>On?</td><td>ID</td><td>Name</td><td>IP : Port</td><td>workload</td><td>max. workload</td><td>FTP User</td><td></td></tr>

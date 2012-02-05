@@ -2,7 +2,9 @@
 {block name="html_head" append}
 {/block}
 {block name="column-left"}
-<h2>OIOJ Admin CP</h2>
+<div id="title_bar">
+<h1>OIOJ Admin CP</h1>
+</div>
 {/block}
 {block name="column-right"}
 {include file="admin_sidebar.tpl"}
