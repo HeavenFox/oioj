@@ -4,8 +4,8 @@ define('ROOT',dirname(__FILE__).DIRECTORY_SEPARATOR);
 define('MODULE_DIR',ROOT.'modules'.DIRECTORY_SEPARATOR);
 define('LIB_DIR',ROOT.'lib'.DIRECTORY_SEPARATOR);
 
-define('OIOJ_VERSION', 100);
-define('OIOJ_READABLE_VERSION','v1.0.0');
+define('OIOJ_VERSION', 90);
+define('OIOJ_READABLE_VERSION','v1.0.0 Beta');
 
 // Turn off magic quotes
 if (get_magic_quotes_gpc())
