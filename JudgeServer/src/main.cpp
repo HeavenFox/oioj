@@ -30,6 +30,7 @@ using namespace std;
 
 #define REQUEST_EVAL 1
 #define REQUEST_ADD 2
+#define REQUEST_STATS 3
 
 #define SERVERCODE_SUCCESS 0
 #define SERVERCODE_WAITLISTED 1
@@ -42,17 +43,15 @@ int msgQueue;
 
 int main (int argc, const char * argv[])
 {
-	/*
 	// Daemonize
 	if (fork())
 	{
 		exit(0);
 	}
 	
-	
-	
 	setsid();
 	chdir("/");
+	/*
 	umask(0);
 	
 	// Finish daemonizing
@@ -118,13 +117,14 @@ int main (int argc, const char * argv[])
     		continue;
     	}
 
-    	if (selResult == 0)
+    	// Check message queue
+    	while (msgrcv(msgQueue,&msg,sizeof(msg),0,IPC_NOWAIT) >= 0)
     	{
-    		// Check message queue
-    		while (msgrcv(msgQueue,&msg,sizeof(msg),0,IPC_NOWAIT) >= 0)
-    		{
-    			scheduler->removeTask(msg.cpuid);
-    		}
+    		scheduler->removeTask(msg.cpuid);
+    	}
+		
+		if (selResult == 0)
+    	{
     		continue;
     	}
 
@@ -145,8 +145,6 @@ int main (int argc, const char * argv[])
 			continue;
 		}
 		
-		syslog(LOG_INFO, "Request length: %d",reqlength);
-		
 		const int command_size = 6;
 		char actioncmd[command_size+1];
 		fread(actioncmd,sizeof(char),command_size,sockfile);
@@ -160,6 +158,10 @@ int main (int argc, const char * argv[])
 		else if (strcmp(actioncmd,"ADDPB\n") == 0)
 		{
 			action = REQUEST_ADD;
+		}
+		else if (strcmp(actioncmd,"STATS\n") == 0)
+		{
+			action = REQUEST_STATS;
 		}
 		else
 		{
@@ -198,6 +200,12 @@ int main (int argc, const char * argv[])
 			syslog(LOG_INFO, "Request type: add problem");
 			AddRequest req;
 			req.processRequest(str);
+		}
+		else if (action == REQUEST_STATS)
+		{
+			char response[512];
+			sprintf(response, "Workload %d\n", scheduler->serverWorkload());
+			send(client_sock,response,strlen(response),0);
 		}
 		syslog(LOG_INFO, "Request processed");
         close(client_sock);
