@@ -7,7 +7,7 @@ SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 
 
 DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `contest_judge`(contest_id INT)
+CREATE PROCEDURE `contest_judge`(contest_id INT)
 BEGIN
 	DECLARE done INT DEFAULT FALSE;
 	DECLARE mid,mpid,muid INT DEFAULT 0;
