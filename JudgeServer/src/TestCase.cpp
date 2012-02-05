@@ -478,6 +478,4 @@ void TestCase::addSchema(sqlite3 *db)
 		syslog(LOG_ERR,"Add Case Error: %d\n",code);
 	}
 	sqlite3_finalize(stmt);
-
-
 }

@@ -48,18 +48,6 @@ $(function(){
 });
 {endif}
 </script>
-<style type='text/css'>
-.tag
-{
-	font-size: 12px;
-	padding: 3px;
-	background-color: #dbdbdb;
-	border: 1px solid #c2c2c2;
-	border-radius: 3px;
-	margin: 8px;
-	line-height: 15px;
-}
-</style>
 {/block}
 <script type="text/javascript" src="scripts/mathjax/MathJax.js?config=default"></script>
 {/block}
