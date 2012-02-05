@@ -19,6 +19,12 @@ class AdminManageJudgeServerModule
 		case 'save':
 			$this->save();
 			break;
+		case 'stats':
+			$this->stats();
+			break;
+		case 'ping':
+			$this->ping();
+			break;
 		default:
 			$servers = JudgeServer::find(array('id','name','ip','port','workload','maxWorkload','ftpUsername','online'));
 			OIOJ::$template->assign('servers',$servers);
@@ -63,6 +69,34 @@ class AdminManageJudgeServerModule
 		$obj->submit();
 		
 		OIOJ::Redirect('Judge Server Saved Successfully','index.php?mod=admin_judgeserver');
+	}
+	
+	public function stats()
+	{
+		$obj = JudgeServer::first(array('id','name','maxWorkload','ip','port'),'WHERE `id`='.IO::GET('id',0,'intval'));
+		if ($obj)
+		{
+			$result = $obj->dispatch("STATS\n");
+			if ($result)
+			{
+				echo "<p>Server {$obj->name} (#{$obj->id})</p>\n";
+				echo "<p>Workload: {$result['Workload']}</p>";
+			}
+			else
+			{
+				echo '<p>Unable to contact server. It seems offline. You may try to ping the server.</p>';
+			}
+			
+		}
+	}
+	
+	public function ping()
+	{
+		$obj = JudgeServer::first(array('ip'),'WHERE `id`='.IO::GET('id',0,'intval'));
+		if ($obj)
+		{
+			echo nl2br(IO::Ping($obj->ip));
+		}
 	}
 }
 ?>

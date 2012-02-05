@@ -57,6 +57,16 @@ class IO
 		$_SESSION[$prop] = $val;
 	}
 	
+	/**
+	 * Ping any IP Address
+	 * It has been proved unfeasible to ping directly from php (raw), thus we use exec
+	 */
+	public static function Ping($ip, $count = 4, $timeout = 500)
+	{
+		exec('ping -c '.escapeshellarg($count).' -W '.escapeshellarg($timeout).' '.escapeshellarg($ip),$result,$a);
+		return implode("\n", $result);
+	}
+	
 	
 	public static function GetArrayElement(&$ar, $prop, $defaultValue = null, $san = null)
 	{

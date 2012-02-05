@@ -127,7 +127,8 @@ class JudgeRecord extends ActiveRecord
 				$result = $server->dispatch($this);
 				if ($result && $result['ServerCode'] <= 1)
 				{
-					$server->setWorkload(intval($result['Workload']));
+					//$server->setWorkload(intval($result['Workload']));
+					$server->addWorkload(1);
 					$this->status = JudgeRecord::STATUS_DISPATCHED;
 					$this->server = $server;
 					
