@@ -33,3 +33,5 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 {$message}
 </div>
 {/block}
+{block name="current_user_info"}
+{/block}

@@ -27,16 +27,17 @@
  » {if $v}<a href='{$v|escape}'>{/if}{$k}{if $v}</a>{/if}
 {/foreach}
 {/if}
-</div><div id="userinfo">Welcome, {$current_user->username}
+</div>{block name="current_user_info"}<div id="userinfo">Welcome, {$current_user->username}
 {if $current_user->id != 0}
 {ifable to="admin_cp"}<a href='index.php?mod=admin_home'>Admin CP</a> - {endif} <a href='index.php?mod=user&amp;act=editprofile'>User Center</a> - <a href='index.php?mod=user&amp;act=logout'>Log out</a>
 {else}
  <a href='javascript:;' onclick='globalShowLoginBox()'>Log in</a>
 {/if}
-</div></div>
+</div>{/block}</div>
 
 <div id="body">{block name="body"}<!-- DEFAULT CONTENT -->{/block}</div>
-<div id="footer">Page Generated at: {date("Y-m-d H:m:s")} GMT{date("P")}<br />OIOJ Instructional Online Judge (c){$smarty.now|date_format:"%Y"} Zhu Jingsi. All Rights Reserved.</div></div>
+<div id="footer">{block name="footer"}Page Generated at: {date("Y-m-d H:m:s")} GMT{date("P")}<br />OIOJ Instructional Online Judge (c){$smarty.now|date_format:"%Y"} Zhu Jingsi. All Rights Reserved.{/block}</div>
+</div>
 
 </body>
 </html>
