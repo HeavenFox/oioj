@@ -214,7 +214,10 @@ void TestCase::run()
 			// Child. open pipe for writing
 			close(pd[0]);
 			FILE *pout = fdopen(pd[1],"w");
-			fprintf(pout,"%d %d %f %d\n", resultCode, resultExtendedCode, timeUsed, memoryUsed);
+			fwrite(&resultCode, sizeof(resultCode),1,pout);
+			fwrite(&resultExtendedCode, sizeof(resultExtendedCode),1,pout);
+			fwrite(&timeUsed, sizeof(timeUsed),1,pout);
+			fwrite(&memoryUsed, sizeof(memoryUsed),1,pout);
 			fclose(pout);
 
 			exit(0);
@@ -225,7 +228,10 @@ void TestCase::run()
 	{
 		close(pd[1]);
 		FILE *pin = fdopen(pd[0],"r");
-		fscanf(pin, "%d %d %f %d", &result, &resultExtended, &actualTime, &bytesActualMemory);
+		fread(&result, sizeof(result),1,pout);
+		fread(&resultExtended, sizeof(resultExtended),1,pout);
+		fread(&actualTime, sizeof(actualTime),1,pout);
+		fread(&bytesActualMemory, sizeof(bytesActualMemory),1,pout);
 		fclose(pin);
 		waitpid(cld,NULL,0);
 	}
