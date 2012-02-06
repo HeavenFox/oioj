@@ -228,10 +228,10 @@ void TestCase::run()
 	{
 		close(pd[1]);
 		FILE *pin = fdopen(pd[0],"r");
-		fread(&result, sizeof(result),1,pout);
-		fread(&resultExtended, sizeof(resultExtended),1,pout);
-		fread(&actualTime, sizeof(actualTime),1,pout);
-		fread(&bytesActualMemory, sizeof(bytesActualMemory),1,pout);
+		fread(&result, sizeof(result),1,pin);
+		fread(&resultExtended, sizeof(resultExtended),1,pin);
+		fread(&actualTime, sizeof(actualTime),1,pin);
+		fread(&bytesActualMemory, sizeof(bytesActualMemory),1,pin);
 		fclose(pin);
 		waitpid(cld,NULL,0);
 	}
