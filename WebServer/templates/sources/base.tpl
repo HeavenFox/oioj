@@ -36,7 +36,7 @@
 </div></div>
 
 <div id="body">{block name="body"}<!-- DEFAULT CONTENT -->{/block}</div>
-<div id="footer">Page Generated at: {$smarty.now|date_format:"%Y-%m-%d %T, Server Time Zone %z"}<br />OIOJ Instructional Online Judge (c){$smarty.now|date_format:"%Y"} Zhu Jingsi. All Rights Reserved.</div></div>
+<div id="footer">Page Generated at: {date("Y-m-d H:m:s")} GMT{date("P")}<br />OIOJ Instructional Online Judge (c){$smarty.now|date_format:"%Y"} Zhu Jingsi. All Rights Reserved.</div></div>
 
 </body>
 </html>

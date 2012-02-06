@@ -4,6 +4,8 @@ $AvailableModules = array(
 	'records' => 'RecordsModule',
 	'submit' => 'SubmitModule',
 	
+	'time' => 'TimeModule',
+	
 	'problemlist' => 'ProblemListModule',
 	'problem' => 'ProblemModule',
 	'admin_problem' => 'AdminManageProblemModule',
