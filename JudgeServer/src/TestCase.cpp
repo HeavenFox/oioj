@@ -94,7 +94,7 @@ void TestCase::run()
 		}
 		else
 		{
-			short resultCode = 0;
+			int resultCode = 0;
 			int resultExtendedCode = 0;
 			double timeUsed = 0.0;
 			int memoryUsed = 0;
