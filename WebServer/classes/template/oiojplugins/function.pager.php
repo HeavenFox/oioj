@@ -63,7 +63,7 @@ function smarty_function_pager($params, Smarty_Internal_Template $smarty)
 	$html .= '</ul>';
 	if (isset($params['form']) || isset($params['script']))
 	{
-		$html .= '<form'.(isset($params['form']) ? 'action="'.$params['form'].'" method="POST"' : '').(isset($params['script']) ? ' onsubmit="'.sprintf($params['script'],'parseInt(this.'.$params['var'].'.value)').'"' : '').'><input type="number" name="'.$params['var'].'" min="1" max="'.$params['max'].'" step="1" style="width: 55px" /><input type="submit" value="Go" /></form></div>';
+		$html .= '<form'.(isset($params['form']) ? 'action="'.$params['form'].'" method="POST"' : '').(isset($params['script']) ? ' onsubmit="'.sprintf($params['script'],'parseInt(this.'.$params['var'].'.value)').';return false;"' : '').'><input type="number" name="'.$params['var'].'" min="1" max="'.$params['max'].'" step="1" style="width: 55px" /><input type="submit" value="Go" /></form></div>';
 	}
 	return $html;
 }

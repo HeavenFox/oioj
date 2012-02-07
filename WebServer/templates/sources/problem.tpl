@@ -3,11 +3,15 @@
 <link rel='stylesheet' href='templates/problem.css' />
 <link rel="stylesheet" href="scripts/jquery-ui-css/ui-lightness/jquery-ui-1.8.16.custom.css" />
 <script type="text/javascript" src="scripts/jquery-ui-1.8.16.custom.min.js"></script>
+<script type="text/javascript" src="scripts/loader.js"></script>
 <script type="text/javascript" src="scripts/jquery.fileupload.js"></script>
 <script type="text/javascript" src="scripts/submitsoln/submitsoln.js"></script>
 <script type="text/javascript" src="scripts/popup_record.js"></script>
 {block name="submit_script"}
 <script type="text/javascript" src="scripts/submitsoln/submitsoln_prob.js"></script>
+<script type="text/javascript">
+var curProblemID = {$problem->id};
+</script>
 <script type="text/javascript">
 $(function(){
 	$("#problem-submit-box").submitsoln_prob({
@@ -17,38 +21,11 @@ $(function(){
 		uploadStatus: $('#submit_status')
 	});
 });
-{ifable to="edit_tags"}
-function removeTag(pid,tid,obj)
-{
-	$.get('index.php?mod=admin_problem&act=removetag&tid='+tid+'&pid='+pid,function(data)
-	{
-		$(obj).parent().remove();
-	});
-}
-function addTag(pid,tid,tag)
-{
-	$.post('index.php?mod=admin_problem&act=addtag',{ 'tid': tid, 'pid': pid, 'tag': tag },function(data)
-	{
-		console.log(data);
-		$('#taglist').append($('<span class="tag">'+tag+'<a href="javascript:;" onclick="removeTag('+pid+','+data.tid+',this);">[x]</a></span>'));
-	},'json');
-}
-function addTagFromInput()
-{
-	addTag({$problem->id},0,$('#tag_input').val());
-}
-$(function(){
-	$('#tag_input').autocomplete({
-		source: 'index.php?mod=problemlist&act=tagcomplete&ajax=1',
-		select: function(event, ui){ 
-			event.preventDefault();
-			addTag({$problem->id},ui.item.value,ui.item.label);
-			$(this).val('');
-		}
-	});
-});
-{endif}
 </script>
+{ifable to="edit_tags"}
+<script type="text/javascript" src="scripts/tagmanage.js"></script>
+{endif}
+
 {/block}
 <script type="text/javascript" src="scripts/mathjax/MathJax.js?config=default"></script>
 {/block}
@@ -57,13 +34,15 @@ $(function(){
 <div class="titles">
 <h1>{$problem->title}</h1>
 </div>
-{block name="titlebar_names"}
-<div class="links">Problem&nbsp;&nbsp;<a href=''>Discussion</a>&nbsp;&nbsp;<a href=''>Solution</a></div>
+{block name="titlebar_links"}
+<div class="links">Problem&nbsp;&nbsp;<a href='index.php?mod=problem&act=discussion&id={$problem->id}'>Discussion</a>&nbsp;&nbsp;<a href=''>Solution</a></div>
 {/block}
 </div>
+{block name="problem_body"}
 <div id='problem-body'>
 {$problem->body}
 </div>
+{/block}
 {/block}
 {block name="column-right"}
 <div class="sidebar-box">

@@ -217,3 +217,15 @@ small
 {
 	color: #6c6c6c;
 }
+
+#loading_indicator
+{
+	width: 40px;
+	height: 40px;
+	background-image: url('images/loading.png');
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	margin-left: -20px;
+	margin-top: -20px;
+}

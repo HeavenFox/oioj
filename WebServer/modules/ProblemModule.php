@@ -30,8 +30,11 @@ class ProblemModule
 		case 'attach':
 			$this->getAttachment();
 			break;
+		case 'discussion':
+			$this->discussion();
+			break;
 		case 'comments':
-			$this->getComments();
+			echo $this->getComments();
 			break;
 		default:
 			$this->display($probID);
@@ -64,9 +67,35 @@ class ProblemModule
 		if (!$this->problem) return false;
 		$this->problem->getComposite(array('attachments' => array('id','filename')));
 		$this->problem->getTags();
-		OIOJ::$template->assign('pid', $id);
 		OIOJ::$template->assign('problem', $this->problem);
 		return $this->problem;
+	}
+	
+	public function discussion()
+	{
+		if (IO::GET('do') == 'post')
+		{
+			import('filters.FilterHTML');
+			import('filters.FilterSpoiler');
+			$filter = new FilterSpoiler(new FilterHTML());
+			
+				$comment = new ProblemComment();
+				$comment->content = $filter->sanitize(nl2br(IO::POST('content')));
+				$comment->timestamp = time();
+				User::GetCurrent()->fetch(array('email'));
+				$comment->user = User::GetCurrent();
+				$comment->problem = $this->problem;
+				$comment->parentID = IO::POST('parent',0,'intval');
+				$comment->add();
+				
+				OIOJ::$template->assign('comment',$comment);
+				OIOJ::$template->display('boxes/comment.tpl');
+		}
+		else
+		{
+			OIOJ::$template->assign('html',$this->getComments());
+			OIOJ::$template->display('problem_discussion.tpl');
+		}
 	}
 	
 	public function getAttachment()
@@ -149,7 +178,7 @@ class ProblemModule
 		OIOJ::$template->assign('curPage',$page);
 		OIOJ::$template->assign('maxPage',$maxPage);
 		
-		echo OIOJ::$template->fetch('boxes/problem_comments.tpl');
+		return OIOJ::$template->fetch('boxes/problem_comments.tpl');
 	}
 	
 	public function display($probID)
