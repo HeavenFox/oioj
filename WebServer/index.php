@@ -46,14 +46,14 @@ $module = new $mod;
 try
 {
 	$module->run();
-}
+}/*
 catch (PDOException $e)
 {
 	// DB error shall not be displayed
 	error_log($e->getMessage().var_export(debug_backtrace(),true));
 	OIOJ::$template->assign('message', 'Database Error');
 	OIOJ::$template->display('error.tpl');
-}
+}*/
 catch (Exception $e)
 {
 	// Catch-all

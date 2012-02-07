@@ -33,7 +33,9 @@ class Problem extends TaggedRecord
 			'user' => array('class' => 'User', 'comp' => 'one', 'column' => 'uid'),
 			
 			'attachments' => array('class' => 'ProblemAttachment', 'comp' => 'many', 'column' => 'pid'),
-		
+			
+			'comments' => array('class' => 'ProblemComment', 'comp' => 'many', 'column' => 'pid'),
+			
 			'count' => array('class' => 'int', 'query' => 'count(`id`)')
 		);
 	public static $tableName = 'oj_problems';

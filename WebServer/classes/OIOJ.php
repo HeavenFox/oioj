@@ -1,6 +1,11 @@
 <?php
 class OIOJ
 {
+	/**
+	 * Template Object
+	 *
+	 * @var Template
+	 */
 	public static $template;
 	
 	private static $breadcrumbHandlerAdded = false;
