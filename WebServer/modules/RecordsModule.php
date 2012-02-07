@@ -23,6 +23,11 @@ class RecordsModule
 	{
 		$this->record = $record = $this->getSingleRecord();
 		
+		if (!$record)
+		{
+			throw new InputException('Invalid record');
+		}
+		
 		OIOJ::$template->assign('id',$record->id);
 		OIOJ::$template->assign('server_name',$record->server->name ? $record->server->name : 'None');
 		OIOJ::$template->assign('status',$record->getReadableStatus());
@@ -51,7 +56,7 @@ class RecordsModule
 	
 	private function getSingleRecord()
 	{
-		return JudgeRecord::first(array('id','status','cases','score','server' => array('id','name')),IO::GET('id',0,'intval'));
+		return JudgeRecord::first(array('id','status','cases','score','server' => array('id','name'),'timestamp'),IO::GET('id',0,'intval'));
 	}
 	
 	public function formatCaseResult($li)

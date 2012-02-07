@@ -124,7 +124,7 @@ $(function(){
 		<input type='hidden' name='id' value='{$problem->id}' />
 		<input type="hidden" name="MAX_FILE_SIZE" value="10240" />
 		<input type="file" name="source" />
-		<input type="submit" /><a href='index.php?mod=submit&amp;id={$problem->id}'>Use Form Instead</a>
+		<input type="submit" value='Submit' /><a href='index.php?mod=submit&amp;id={$problem->id}'>Use Form Instead</a>
 	</form>
 	<div id="submit_status" class="hidden" style='text-align: center'></div>
 	<div id="dropzone">
