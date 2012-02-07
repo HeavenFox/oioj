@@ -22,6 +22,7 @@ class RecordsModule
 	private function setSingleRecordVars()
 	{
 		$this->record = $record = $this->getSingleRecord();
+		
 		OIOJ::$template->assign('id',$record->id);
 		OIOJ::$template->assign('server_name',$record->server->name ? $record->server->name : 'None');
 		OIOJ::$template->assign('status',$record->getReadableStatus());
@@ -37,11 +38,20 @@ class RecordsModule
 			}
 			OIOJ::$template->assign('cases',$cases);
 		}
+		
+		if ($record->status == JudgeRecord::STATUS_WAITING)
+		{
+			OIOJ::$template->assign('numwaiting',JudgeRecord::first(array('count'),'WHERE `timestamp` <= '.$record->timestamp)->count);
+		}
+		else if ($record->status == JudgeRecord::STATUS_DISPATCHED)
+		{
+			OIOJ::$template->assign('numsharing',JudgeRecord::first(array('count'),'WHERE `status` = '.JudgeRecord::STATUS_DISPATCHED.' AND `server` = '.$record->server->id)->count);
+		}
 	}
 	
 	private function getSingleRecord()
 	{
-		return JudgeRecord::first(array('id','status','cases','score','server' => array('name')),IO::GET('id',0,'intval'));
+		return JudgeRecord::first(array('id','status','cases','score','server' => array('id','name')),IO::GET('id',0,'intval'));
 	}
 	
 	public function formatCaseResult($li)

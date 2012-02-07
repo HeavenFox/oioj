@@ -13,7 +13,8 @@ $(function(){
 	$("#problem-submit-box").submitsoln_prob({
 		drop: $('#dropzone'),
 		inClass: 'in',
-		hoverClass: 'hover'
+		hoverClass: 'hover',
+		uploadStatus: $('#submit_status')
 	});
 });
 {ifable to="edit_tags"}
@@ -121,11 +122,13 @@ $(function(){
 	<div id="manual-upload">
 	<form method="post" enctype="multipart/form-data" action="index.php?mod=submit&amp;solution=1">
 		<input type='hidden' name='id' value='{$problem->id}' />
+		<input type="hidden" name="MAX_FILE_SIZE" value="10240" />
 		<input type="file" name="source" />
 		<input type="submit" /><a href='index.php?mod=submit&amp;id={$problem->id}'>Use Form Instead</a>
 	</form>
-	</div>
+	<div id="submit_status" class="hidden" style='text-align: center'></div>
 	<div id="dropzone">
+	</div>
 	</div>
 	</div>
 </div>
