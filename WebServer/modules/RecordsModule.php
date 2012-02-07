@@ -91,7 +91,7 @@ class RecordsModule
 		$maxPage = 1;
 		
 		$selector = new RecordSelector('JudgeRecord');
-			$records = $selector->findAtPage($pageNum, $perPage, $maxPage, array('id','status','cases','lang','timestamp','score','problem' => array('id','title'),'user' => array('id','username'),'server' => array('name')));
+			$records = $selector->findAtPage($pageNum, $perPage, $maxPage, array('id','status','cases','lang','timestamp','score','problem' => array('id','title'),'user' => array('id','username'),'server' => array('name')),'ORDER BY `timestamp` DESC');
 			
 			$statusStr = array('Waiting','Dispatched','Accepted','Compile Error','Rejected');
 			
