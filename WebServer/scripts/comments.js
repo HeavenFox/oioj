@@ -3,7 +3,7 @@ function commentFlipPage(page)
 	loader.show();
 	$.get('index.php?mod=problem&act=comments&page='+page+'&id='+curProblemID,function(data)
 	{
-		$('#comments').html(data);
+		$('#comments').empty().append($(data).parseSpoiler());
 		loader.hide();
 		curPage = page;
 	},'html');
@@ -11,6 +11,7 @@ function commentFlipPage(page)
 }
 function submitComment(obj)
 {
+	$(obj).find("input, textarea").attr('disabled','disabled');
 	loader.show();
 	var comment = obj.content.value;
 	var parent = parseInt(obj.parent.value);
@@ -35,12 +36,25 @@ function submitComment(obj)
 			$('#comments_list').append(newComment);
 		}
 		newComment.css('opacity',0.1).animate({ 'opacity': 1 },500);
+		$(window).scrollTop(newComment.position().top-10);
 		
+		$(obj).find("input, textarea").removeAttr('disabled');
+		$(obj).find("textarea").val('');
+		clearReply();
+		
+		newComment.parseSpoiler();
 	},'html');
+}
+
+function clearReply()
+{
+	$('#postcomment input[name="parent"]').val(0);
+	$('#reply_indicator').hide();
 }
 
 function replyComment(id)
 {
 	$('#postcomment input[name="parent"]').val(id);
 	$('#postcomment textarea').focus();
+	$('#reply_indicator').show();
 }

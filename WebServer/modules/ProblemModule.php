@@ -75,6 +75,7 @@ class ProblemModule
 	{
 		if (IO::GET('do') == 'post')
 		{
+			User::GetCurrent()->assertAble('submit_problem_comment');
 			import('filters.FilterHTML');
 			import('filters.FilterSpoiler');
 			$filter = new FilterSpoiler(new FilterHTML());

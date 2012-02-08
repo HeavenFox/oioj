@@ -1,4 +1,3 @@
-<a name="comment-{$comment->id}" />
 <div class="comment_container" id="comment-{$comment->id}">
 <div class="comment_poster">
 <img src="http://www.gravatar.com/avatar/{md5(strtolower(trim($comment->user->email)))}?s=60&d=mm" title="" width="60px" height="60px" /><br />
