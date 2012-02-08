@@ -1,17 +1,8 @@
-function globalShowLoginBox()
+$(function()
 {
-	$.fancybox('<div id="global-login-box"><h2>Log in to OIOJ</h2>	<table>	<form action="index.php?mod=user&act=login" method="post">	<tr><td>Username</td><td><input name="username" /></td></tr>	<tr><td>Password</td><td><input type="password" name="password" /></td></tr>	<tr><td>Remember?</td><td><input type="checkbox" name="remember" /></td></tr>	<tr><td colspan="2"><input type="submit" value="Submit" /></td></tr>	</form>	</table></div>',{
+	$('a[rel="fancylink"]').fancybox('',{
 		'scrolling': 'no',
 		'transitionIn'	:	'elastic',
 		'transitionOut'	:	'elastic'
 	});
-}
-
-function escapeHtml(unsafe) {
-  return unsafe
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#039;");
-}
+});

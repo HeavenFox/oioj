@@ -22,6 +22,9 @@ class UserModule
 		case 'login':
 			$this->doLogin();
 			break;
+		case 'loginform':
+			$this->showLoginForm();
+			break;
 		case 'register':
 			$this->register();
 			break;
@@ -86,6 +89,11 @@ class UserModule
 	public function registerForm()
 	{
 		OIOJ::$template->display('register.tpl');
+	}
+	
+	public function showLoginForm()
+	{
+		OIOJ::$template->display('boxes/login.tpl');
 	}
 	
 	public function doRegisterSubmit()
