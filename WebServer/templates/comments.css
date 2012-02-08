@@ -42,3 +42,10 @@
 {
 	margin-top: 12px;
 }
+
+.none
+{
+	text-align: center;
+	padding: 15px;
+	font-style: italic;
+}
