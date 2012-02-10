@@ -41,23 +41,32 @@ if (!isset($availableModules[$mod]))
 	$mod = $availableModules[$mod];
 }
 
+if (IO::GET('ajax') == 'json')
+{
+	header('Content-type: application/json; charset=utf-8');
+}
+else
+{
+	header('Content-type: text/html; charset=utf-8');
+}
+
 require_once MODULE_DIR . $mod . '.php';
 $module = new $mod;
 try
 {
 	$module->run();
-}/*
+}
 catch (PDOException $e)
 {
 	// DB error shall not be displayed
 	error_log($e->getMessage().var_export(debug_backtrace(),true));
 	OIOJ::$template->assign('message', 'Database Error');
 	OIOJ::$template->display('error.tpl');
-}*/
+}
 catch (Exception $e)
 {
 	// Catch-all
-	if (IO::GET('ajax'))
+	if (IO::GET('ajax') == 'json')
 	{
 		die(json_encode(array('error' => $e->getMessage())));
 	}else
