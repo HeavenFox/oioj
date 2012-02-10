@@ -4,10 +4,7 @@ body
 {
 	font-family: Tahoma, Verdana, Lucida Grande, sans-serif;
 	font-size: 14px;
-	background-color: #8a8a8a;
-	background-image: url('images/background.jpg');
-	background-position: center top;
-	background-repeat: no-repeat;
+	background: #8a8a8a url('images/background.jpg') no-repeat center top;
 }
 
 #container
