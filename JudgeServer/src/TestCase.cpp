@@ -67,7 +67,7 @@ void TestCase::run()
 
 		if (getuid() == 0)
 		{
-			//chroot(record->workingDirectory.c_str());
+			chroot(record->workingDirectory.c_str());
 			// relinquish root privilege
 			setuid(Configuration::AgentUID);
 		}

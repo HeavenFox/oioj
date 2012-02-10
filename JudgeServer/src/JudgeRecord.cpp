@@ -8,7 +8,7 @@
 
 #include "JudgeRecord.h"
 
-bool JudgeRecord::prepareProblem(string s)
+bool JudgeRecord::prepareRecord(string s)
 {
     istringstream sin(s);
     string line;
@@ -84,7 +84,7 @@ void JudgeRecord::deduceVariable()
 		sout<<'.'<<language;
 		submissionPath = sout.str();
 
-		mkdir(workingDirectory.c_str(), 0755);
+		mkdir(workingDirectory.c_str(), 0777);
 
 	}
 }

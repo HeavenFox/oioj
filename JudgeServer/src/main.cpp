@@ -51,12 +51,11 @@ int main (int argc, const char * argv[])
 	
 	setsid();
 	chdir("/");
-	/*
+	
 	umask(0);
 	
 	// Finish daemonizing
 	
-	*/
 	openlog("oiojd",LOG_PID,LOG_DAEMON);
 	syslog(LOG_INFO, "OIOJ Judge Daemon Starting");
     
@@ -183,7 +182,7 @@ int main (int argc, const char * argv[])
 
 			char response[512];
 			int code;
-			if (!currentRecord->prepareProblem(str))
+			if (!currentRecord->prepareRecord(str))
 			{
 				syslog(LOG_ERR, "Failed to parse problem. Request string %s", str.c_str());
 				code = SERVERCODE_INTERNAL;

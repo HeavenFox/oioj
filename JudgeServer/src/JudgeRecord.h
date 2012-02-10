@@ -99,7 +99,7 @@ public:
     	deducedVariable = false;
     }
     
-    bool prepareProblem(string s);
+    bool prepareRecord(string s);
     
     void setProblemSchema(string s);
     
