@@ -1,3 +1,3 @@
 <?php
-$AutoloadModules = array('UserModule');
+$AutoloadModules = array('UserModule','TimeModule');
 ?>

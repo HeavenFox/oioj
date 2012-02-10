@@ -68,18 +68,15 @@ void AddRequest::processRequest(string &s)
                 path<<Configuration::TempDirPrefix<<p.id<<"."<<format;
 		ostringstream outputdir;
 		outputdir<<Configuration::DataDirPrefix<<p.id<<'/';
-                
-		if (fork() == 0)
+		
+		pid_t cld = fork();
+		if (cld == 0)
 		{
-			pid_t cld = fork();
-			if (cld == 0)
-			{
-				execl("/usr/bin/unzip","unzip","-jqqo",path.str().c_str(),"-d",outputdir.str().c_str(),NULL);
-			}else
-			{
-				waitpid(cld,NULL,0);
-				unlink(path.str().c_str());
-			}
+			execl("/usr/bin/unzip","unzip","-jqqo",path.str().c_str(),"-d",outputdir.str().c_str(),NULL);
+		}else
+		{
+			waitpid(cld,NULL,0);
+			unlink(path.str().c_str());
 		}
 
 }

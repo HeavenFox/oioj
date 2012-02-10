@@ -96,7 +96,7 @@ function tagQuerySubmit()
 	</div>
 </div>
 <table id='problems' class='tablist'>
-<thead><tr><td style="width: 50px;">ID</td><td>Title</td><td style="width: 100px;">Acceptance</td></tr></thead>
+<thead><tr><td style="width: 50px;">ID</td><td>Title</td><td style="width: 130px;">Acceptance</td></tr></thead>
 <tbody>
 {foreach $problems as $problem}
 <tr class="{cycle values="odd,even"}">

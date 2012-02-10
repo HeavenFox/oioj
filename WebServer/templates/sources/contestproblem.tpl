@@ -53,5 +53,5 @@ $(function(){
 {/block}
 {block name="tags_box"}
 {/block}
-{block name="titlebar_names"}
+{block name="titlebar_links"}
 {/block}

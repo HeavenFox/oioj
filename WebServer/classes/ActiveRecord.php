@@ -39,26 +39,36 @@ class ActiveRecord
 	{
 		foreach ($composites as $k => $v)
 		{
-			$className = static::$schema[$k]['class'];
-			switch (static::$schema[$k]['comp']) {
-			case 'many':
-				if (isset(static::$schema[$k]['junction']))
-				{
-					$this->_propValues[$k] = $className::find($v,
-															  'LEFT JOIN `'.static::$schema[$k]['junction'].
-															  '` ON (`'.$className::$tableName.'`.`'.$className::$keyProperty.'` = `'.static::$schema[$k]['junction'].'`.`'.static::$schema[$k]['column'][1].'`)'.
-															  ' WHERE `'.static::$schema[$k]['junction'].'`.`'. static::$schema[$k]['column'][0] .'` = '.$this->_propValues[static::$keyProperty]);
-				
-				}
-				else
-				{
-					$this->_propValues[$k] = $className::find($v,'WHERE `'. static::$schema[$k]['column'] .'` = '.$this->_propValues[static::$keyProperty]);
-				}
-				break;
-			case 'one':
-				$this->_propValues[$k] = $className::first($v,'WHERE `'. static::$schema[$k]['column'] .'` = '.$this->_propValues[static::$keyProperty]);
-				break;
+			$this->findComposite($k,$v,'');
+		}
+	}
+	
+	public function findComposite($comp, $prop, $suffix)
+	{
+		$suffix = trim($suffix);
+		if (strtoupper(substr($suffix,0,5)) == 'WHERE')
+		{
+			$suffix = 'AND '.substr($suffix,6);
+		}
+		$className = static::$schema[$comp]['class'];
+		switch (static::$schema[$comp]['comp']) {
+		case 'many':
+			if (isset(static::$schema[$comp]['junction']))
+			{
+				$this->_propValues[$comp] = $className::find($prop,
+														  'LEFT JOIN `'.static::$schema[$comp]['junction'].
+														  '` ON (`'.$className::$tableName.'`.`'.$className::$keyProperty.'` = `'.static::$schema[$comp]['junction'].'`.`'.static::$schema[$comp]['column'][1].'`)'.
+														  ' WHERE `'.static::$schema[$comp]['junction'].'`.`'. static::$schema[$comp]['column'][0] .'` = '.$this->_propValues[static::$keyProperty].' '.$suffix);
+			
 			}
+			else
+			{
+				$this->_propValues[$comp] = $className::find($prop,'WHERE `'. static::$schema[$comp]['column'] .'` = '.$this->_propValues[static::$keyProperty].' '.$suffix);
+			}
+			break;
+		case 'one':
+			$this->_propValues[$comp] = $className::first($prop,'WHERE `'. static::$schema[$comp]['column'] .'` = '.$this->_propValues[static::$keyProperty].' '.$suffix);
+			break;
 		}
 	}
 	
@@ -344,7 +354,10 @@ class ActiveRecord
 			'int' => 'intval',
 			'double' => 'floatval',
 			'string' => 'strval',
-			'text' => 'strval'
+			'text' => 'strval',
+			'bool' => function($data){
+				return $data ? 1 : 0;
+			}
 		);
 		
 		if (isset($processFunc[static::$schema[$prop]['class']]))

@@ -8,10 +8,29 @@
 			dropZone: params.drop,
 			formData: $(that).find('form').first().serializeArray(),
 			paramName: 'source',
-			fail: function(e, data){console.log(data);},
-			send: function(e, data){console.log("sending");that.find('input[type=submit]').attr('disabled','disabled');},
-			always: function(e, data){console.log("done");that.find('input[type=submit]').removeAttr('disabled');},
-			done: function(e, data){
+			fail: function(e, data){
+				if (params.uploadStatus)
+				{
+					params.uploadStatus.html('Failed to upload file');
+				}
+			},
+			send: function(e, data){
+				if (params.uploadStatus)
+				{
+					params.uploadStatus.show().html('Uploading... Please Wait');
+				}
+				that.find('input[type=submit]').attr('disabled','disabled');
+			},
+			always: function(e, data)
+			{
+				if (params.uploadStatus)
+				{
+					params.uploadStatus.hide().html('');
+				}
+				that.find('input[type=submit]').removeAttr('disabled');
+			},
+			done: function(e, data)
+			{
 				if (data.result.error)
 				{
 					alert(data.result.error);

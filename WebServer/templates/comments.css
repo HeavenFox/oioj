@@ -1,0 +1,53 @@
+.comment_container
+{
+	margin: 5px;
+}
+
+.comment_poster
+{
+	float:left;
+	width: 90px;
+	text-align: center;
+}
+
+.comment_main
+{
+	margin-left: 90px;
+	margin-right: 0;
+	background-color: #efefef;
+	padding: 7px;
+	border: 1px solid transparent;
+	border-radius: 5px;
+}
+
+
+.threaded_comment
+{
+	margin-left: 30px;
+}
+
+#postcomment
+{
+	margin: 10px;
+}
+
+#postcomment textarea
+{
+	width: 400px;
+	height: 150px;
+	margin-top: 5px;
+}
+
+.comment_action
+{
+	margin-top: 12px;
+}
+
+.none
+{
+	text-align: center;
+	padding: 15px;
+	font-style: italic;
+	font-size: 20px;
+	color: #dfdfdf;
+}

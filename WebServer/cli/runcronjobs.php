@@ -12,7 +12,7 @@ if ($_SERVER['argc'] != 2)
 
 set_time_limit(0);
 
-require '../init.php';
+require dirname(__FILE__).'/../init.php';
 import('OIOJ');
 
 OIOJ::InitDatabase();

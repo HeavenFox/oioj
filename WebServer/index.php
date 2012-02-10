@@ -12,7 +12,18 @@ $availableModules = loadData('AvailableModules');
 $autoloadModules = loadData('AutoloadModules');
 
 OIOJ::InitTemplate();
-OIOJ::InitDatabase();
+
+try
+{
+	OIOJ::InitDatabase();
+}
+catch (Exception $e)
+{
+	// DB error shall not be 
+	OIOJ::$template->assign('message', 'Database Server Downtime. Please check back later.');
+	OIOJ::$template->display('error.tpl');
+	die();
+}
 
 foreach ($autoloadModules as $module)
 {
@@ -35,7 +46,15 @@ $module = new $mod;
 try
 {
 	$module->run();
-}catch (Exception $e)
+}/*
+catch (PDOException $e)
+{
+	// DB error shall not be displayed
+	error_log($e->getMessage().var_export(debug_backtrace(),true));
+	OIOJ::$template->assign('message', 'Database Error');
+	OIOJ::$template->display('error.tpl');
+}*/
+catch (Exception $e)
 {
 	// Catch-all
 	if (IO::GET('ajax'))

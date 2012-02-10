@@ -1,5 +1,5 @@
 <?php
-// {pager cur=3 max=10 adj=4 url="index.php?page=%d" form="index.php?" var="page"}
+// {pager cur=3 max=10 adj=4 url="index.php?page=%d" form="index.php?" var="page" script=""}
 function smarty_function_pager($params, Smarty_Internal_Template $smarty)
 {
 	$def = array('cur' => 1, 'max' => 1, 'adj' => 3, 'var' => 'page');
@@ -32,7 +32,7 @@ function smarty_function_pager($params, Smarty_Internal_Template $smarty)
 		
 		if ($val != $params['cur'])
 		{
-			$html .= '<a href="'.sprintf($params['url'],$val).'">';
+			$html .= '<a href="'.(isset($params['url']) ? sprintf($params['url'],$val) : 'javascript:;').'"'.(isset($params['script']) ? ' onclick="'.sprintf($params['script'],$val).'"' : '').'>';
 		}
 		$html .= $val;
 		if ($val != $params['cur'])
@@ -61,9 +61,9 @@ function smarty_function_pager($params, Smarty_Internal_Template $smarty)
 	}
 	
 	$html .= '</ul>';
-	if (isset($params['form']))
+	if (isset($params['form']) || isset($params['script']))
 	{
-		$html .= '<form action="'.$params['form'].'" method="POST"><input type="number" name="'.$params['var'].'" min="1" max="'.$params['max'].'" step="1" style="width: 55px" /><input type="submit" value="Go" /></form></div>';
+		$html .= '<form'.(isset($params['form']) ? 'action="'.$params['form'].'" method="POST"' : '').(isset($params['script']) ? ' onsubmit="'.sprintf($params['script'],'parseInt(this.'.$params['var'].'.value)').';return false;"' : '').'><input type="number" name="'.$params['var'].'" min="1" max="'.$params['max'].'" step="1" style="width: 55px" /><input type="submit" value="Go" /></form></div>';
 	}
 	return $html;
 }

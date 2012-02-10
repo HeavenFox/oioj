@@ -6,6 +6,7 @@ $PermissionHierarchy = array(
 	'add_contest' => 'edit_contest',
 	'contest_cp' => 'admin_cp',
 	'manage_judgeserver' => 'admin_cp',
-	'edit_tags' => 'edit_problem'
+	'edit_tags' => 'edit_problem',
+	'submit_problem_comment' => 'submit_comment'
 );
 ?>

@@ -53,6 +53,7 @@ $(function(){
 		limitConcurrentUploads: 3,
 		done: function(e,data)
 		{
+			$('#attachments-progress').hide();
 			$.each(data.result, function(idx,file){
 				$('#uploaded_attachments').append(
 					$('<li />')
@@ -69,7 +70,10 @@ $(function(){
 			});
 		}
 	}
-	);
+	).bind('fileuploadprogressall', function (e, data)
+	{
+		$('#attachments-progress').show().text('Uploading...'+(100* data.loaded / data.total)+'%');
+	});
 	
 	$('#tag_input').autocomplete({
 		source: 'index.php?mod=problemlist&act=tagcomplete&ajax=1',
@@ -116,7 +120,8 @@ $(function(){
 		<legend>Attachments</legend>
 		<small>To upload an image for use, use editor's "insert image" icon<br />Tip: you can upload multiple files at once</small>
 		<input type='file' name='attach[]' multiple="multiple" />
-		<ul id='uploaded_attachments'></ul>
+		<div id="attachments-progress"></div>
+		<ul id='uploaded_attachments' class='hidden'></ul>
 	</fieldset>
 	<fieldset id='tags'>
 		<legend>Tags</legend>

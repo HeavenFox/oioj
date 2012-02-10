@@ -22,6 +22,12 @@ class RecordsModule
 	private function setSingleRecordVars()
 	{
 		$this->record = $record = $this->getSingleRecord();
+		
+		if (!$record)
+		{
+			throw new InputException('Invalid record');
+		}
+		
 		OIOJ::$template->assign('id',$record->id);
 		OIOJ::$template->assign('server_name',$record->server->name ? $record->server->name : 'None');
 		OIOJ::$template->assign('status',$record->getReadableStatus());
@@ -37,11 +43,20 @@ class RecordsModule
 			}
 			OIOJ::$template->assign('cases',$cases);
 		}
+		
+		if ($record->status == JudgeRecord::STATUS_WAITING)
+		{
+			OIOJ::$template->assign('numwaiting',JudgeRecord::first(array('count'),'WHERE `timestamp` <= '.$record->timestamp)->count);
+		}
+		else if ($record->status == JudgeRecord::STATUS_DISPATCHED)
+		{
+			OIOJ::$template->assign('numsharing',JudgeRecord::first(array('count'),'WHERE `status` = '.JudgeRecord::STATUS_DISPATCHED.' AND `server` = '.$record->server->id)->count);
+		}
 	}
 	
 	private function getSingleRecord()
 	{
-		return JudgeRecord::first(array('id','status','cases','score','server' => array('name')),IO::GET('id',0,'intval'));
+		return JudgeRecord::first(array('id','status','cases','score','server' => array('id','name'),'timestamp'),IO::GET('id',0,'intval'));
 	}
 	
 	public function formatCaseResult($li)
@@ -91,7 +106,7 @@ class RecordsModule
 		$maxPage = 1;
 		
 		$selector = new RecordSelector('JudgeRecord');
-			$records = $selector->findAtPage($pageNum, $perPage, $maxPage, array('id','status','cases','lang','timestamp','score','problem' => array('id','title'),'user' => array('id','username'),'server' => array('name')));
+			$records = $selector->findAtPage($pageNum, $perPage, $maxPage, array('id','status','cases','lang','timestamp','score','problem' => array('id','title'),'user' => array('id','username'),'server' => array('name')),'ORDER BY `timestamp` DESC');
 			
 			$statusStr = array('Waiting','Dispatched','Accepted','Compile Error','Rejected');
 			

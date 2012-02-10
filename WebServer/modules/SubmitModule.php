@@ -4,6 +4,7 @@ import('JudgeServer');
 
 class SubmitModule
 {
+	const MAX_FILE_SIZE = 20971520;
 	public function run()
 	{
 		if (!User::GetCurrent()->ableTo('submit_solution'))
@@ -28,6 +29,10 @@ class SubmitModule
 		
 		if (!($record->code = IO::POST('code')))
 		{
+			if ($_FILES['source']['size'] > self::MAX_FILE_SIZE)
+			{
+				throw new Exception('File too big. We only accept files smaller than '.round(self::MAX_FILE_SIZE/1024).'KB');
+			}
 			$record->code = file_get_contents($_FILES['source']['tmp_name']);
 			unlink($_FILES['source']['tmp_name']);
 		}

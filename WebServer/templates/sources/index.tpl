@@ -13,7 +13,8 @@ $(function(){
 	$("#submitsoln").submitsoln_prob({
 		drop: $('#dropzone'),
 		inClass: 'in',
-		hoverClass: 'hover'
+		hoverClass: 'hover',
+		uploadStatus: $('#submit_status')
 	});
 });
 </script>
@@ -66,8 +67,8 @@ $(function(){
 <h2>Quick Submit</h2>
 <p>Submit by choosing source file or dragging your solution to the dropbox. Please indicate problem ID and use proper extension. Example: 1895.cpp, P3421.pas</p>
 <p>Or, you can paste your code to <a href='index.php?mod=submit'>Submission Form</a></p>
-<form>
-<input id="submitsoln" type="file" name="source" />
+<form method="post" action="index.php?mod=submit&amp;solution=1" enctype="multipart/form-data" id="submitsoln">
+<input type="file" name="source" /><input type="submit" value="Submit" /><span id='submit_status'></span>
 </form>
 </div>
 <div id="dropzone"></div>

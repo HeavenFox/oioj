@@ -128,9 +128,7 @@ void JudgeRecord::compile()
 
 void JudgeRecord::judge()
 {
-
 	loadProblemSchema();
-
     compile();
     if (compiler->success)
     {

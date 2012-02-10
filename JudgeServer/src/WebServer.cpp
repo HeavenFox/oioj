@@ -37,6 +37,8 @@ void WebServer::pushResult(JudgeRecord *record)
 	int recordID = record->recordID;
 	int status = RECORDSTATUS_ACCEPTED;
 	
+	syslog(LOG_INFO,"Pushing record %d to web server", recordID);
+	
 	char generalState[256];
 	
 	for (vector<TestCase>::iterator it = record->cases.begin();it != record->cases.end();it++)
@@ -67,7 +69,7 @@ void WebServer::pushResult(JudgeRecord *record)
 
 	if (sock < 0)
 	{
-		perror("Create");
+		syslog(LOG_ERR,"Error creating socket connection to web server");
 	}
 
 	sockaddr_in sock_address;
@@ -80,7 +82,7 @@ void WebServer::pushResult(JudgeRecord *record)
 	{
 		phost = (struct hostent*)gethostbyname(Configuration::WebServer.c_str());
 		if(phost == NULL){
-			perror("gethostbyname");
+			syslog(LOG_ERR,"Error parsing server");
 		}
 		sock_address.sin_addr.s_addr =((struct in_addr*)phost->h_addr)->s_addr;
 	}
@@ -90,4 +92,5 @@ void WebServer::pushResult(JudgeRecord *record)
 
 	send(sock,finalRequest,strlen(finalRequest),0);
 	close(sock);
+	syslog(LOG_INFO,"record %d pushed", recordID);
 }
