@@ -1,5 +1,4 @@
 <?php
-require_once ROOT . DIRECTORY_SEPARATOR . 'config.php';
 /**
  * Database Manager
  * HeavenFox Base Library

@@ -166,7 +166,7 @@ GROUP BY  `key`';
 	public function getPermissionNumber($key)
 	{
 		$this->obtainAcl();
-		$hierarchy = loadData('PermissionHierarchy');
+		$hierarchy = loadVar('PermissionHierarchy');
 		$cur = $key;
 		
 		while (!isset($this->acl[$cur]) || $this->acl[$cur] == 0)

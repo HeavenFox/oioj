@@ -199,7 +199,7 @@ class AdminManageUserModule
 		}
 		
 		
-		$names = loadData('PermissionKeyNames');
+		$names = loadVar('PermissionKeyNames');
 		
 		foreach ($table as $k => $v)
 		{
@@ -280,9 +280,9 @@ class AdminManageUserModule
 	private function generatePermissionTree()
 	{
 		// Arrange into tree
-		$names = loadData('PermissionKeyNames');
+		$names = loadVar('PermissionKeyNames');
 		
-		$hier = loadData('PermissionHierarchy');
+		$hier = loadVar('PermissionHierarchy');
 		
 		$roots = array();
 		

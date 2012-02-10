@@ -6,10 +6,10 @@ import('IO');
 import('Settings');
 
 // These modules are legimate
-$availableModules = loadData('AvailableModules');
+$availableModules = loadVar('AvailableModules');
 
 // These modules should be autoloaded
-$autoloadModules = loadData('AutoloadModules');
+$autoloadModules = loadVar('AutoloadModules');
 
 OIOJ::InitTemplate();
 

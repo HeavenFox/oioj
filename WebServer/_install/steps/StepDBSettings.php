@@ -9,29 +9,28 @@ class StepDBSettings
 	{
 		$this->form = $this->getForm();
 		$this->form->gatherFromPOST();
-		$fileTemplate = <<<'EOF'
+		
+		// Database Configuration
+		$dbTemplate = <<<'EOF'
 <?php
 IN_OIOJ || die('Forbidden');
-class Config
-{
-	static $MySQL = array(
-		'driver' => 'pdo_mysql',
-		'host' => '{host}',
-		'port' => '{port}',
-		'username' => '{username}',
-		'password' => '{password}',
-		'database' => '{db}'
-	);
-}
+$DBParameters = array(
+	'driver' => 'pdo_mysql',
+	'host' => '{host}',
+	'port' => '{port}',
+	'username' => '{username}',
+	'password' => '{password}',
+	'database' => '{db}'
+);
 ?>
 EOF;
 		
 		foreach (array('host','db','username','password','port') as $v)
 		{
-			$fileTemplate = str_replace('{'.$v.'}',$this->form->get($v)->data,$fileTemplate);
+			$dbTemplate = str_replace('{'.$v.'}',$this->form->get($v)->data,$dbTemplate);
 		}
 		
-		file_put_contents(ROOT.'config.php',$fileTemplate);
+		file_put_contents(VAR_DIR.'DBParameters.php',$dbTemplate);
 		
 		import('database.Database');
 		import('OIOJ');

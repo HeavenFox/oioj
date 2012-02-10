@@ -3,6 +3,7 @@ define('IN_OIOJ', 1);
 define('ROOT',dirname(__FILE__).DIRECTORY_SEPARATOR);
 define('MODULE_DIR',ROOT.'modules'.DIRECTORY_SEPARATOR);
 define('LIB_DIR',ROOT.'lib'.DIRECTORY_SEPARATOR);
+define('VAR_DIR',ROOT.'vars'.DIRECTORY_SEPARATOR);
 
 define('OIOJ_VERSION', 90);
 define('OIOJ_READABLE_VERSION','v1.0.0 Beta');
@@ -31,9 +32,9 @@ function import($package)
     require_once ROOT . 'classes' . DIRECTORY_SEPARATOR . $url . '.php';
 }
 
-function loadData($data)
+function loadVar($data)
 {
-	require ROOT. 'data/'.$data.'.php';
+	include VAR_DIR.$data.'.php';
 	return $$data;
 }
 
@@ -54,10 +55,4 @@ function parseProtocol($str)
 	return $t;
 }
 
-// Add fallback mechanism
-/*
-define('SMARTY_SPL_AUTOLOAD',1);
-spl_autoload_register(function($className){
-	import($className);
-});*/
 ?>

@@ -33,8 +33,19 @@ class StepSystemCheck
 		}
 		$this->html .= '</tr>';
 		
-		$this->html .= '<tr><td>config.php</td>';
-		if (is_writable(ROOT.'config.php'))
+		$this->html .= '<tr><td>vars/DBParameters.php</td>';
+		if (is_writable(VAR_DIR.'DBParameters.php'))
+		{
+			$this->html .= '<td class="pass">Writable</td>';
+		}else
+		{
+			$this->html .= '<td class="fail">Not Writable. Please chmod to 777</td>';
+			$pass = false;
+		}
+		$this->html .= '</tr>';
+		
+		$this->html .= '<tr><td>vars/CookieSecret.php</td>';
+		if (is_writable(VAR_DIR.'CookieSecret.php'))
 		{
 			$this->html .= '<td class="pass">Writable</td>';
 		}else

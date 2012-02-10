@@ -21,7 +21,7 @@ class OIOJ
 	public static function InitDatabase()
 	{
 		import('database.Database');
-		Database::Get(Config::$MySQL);
+		Database::Get(loadVar('DBParameters'));
 	}
 	
 	public static function Redirect($message, $redirect = null)
