@@ -1,6 +1,6 @@
 function removeTag(pid,tid,obj)
 {
-	$.get('index.php?mod=admin_problem&act=removetag&tid='+tid+'&pid='+pid,function(data)
+	$.post('index.php?mod=admin_problem&act=removetag',{'tid': tid, 'pid': pid}, function(data)
 	{
 		$(obj).parent().remove();
 	});

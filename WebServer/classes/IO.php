@@ -31,6 +31,11 @@ class IO
 		setcookie($prop,$val,time()+$expire);
 	}
 	
+	public static function SetSecureCookie($prop, $val, $expire)
+	{
+		
+	}
+	
 	public static function DestroySession($prop = null)
 	{
 		if ($prop)

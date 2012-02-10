@@ -48,7 +48,7 @@ class AdminManageProblemModule
 	
 	public function removeTag()
 	{
-		Database::Get()->exec('DELETE FROM `oj_problem_tags` WHERE `tid` = '.IO::GET('tid',0,'intval').' AND `pid` = '.IO::GET('pid',0,'intval'));
+		Database::Get()->exec('DELETE FROM `oj_problem_tags` WHERE `tid` = '.IO::POST('tid',0,'intval').' AND `pid` = '.IO::POST('pid',0,'intval'));
 	}
 	
 	public function addTag()
