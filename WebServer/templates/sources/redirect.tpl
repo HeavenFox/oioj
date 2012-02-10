@@ -11,7 +11,7 @@ setTimeout(function(){
 <div id="box">
 <h1>Redirecting...</h1>
 <div id="message">
-<p>{$message}</p>
+<p>{$message|escape}</p>
 <p id="link"><a href="{$redirect|escape}">Click here if you're not automatically redirected...</a></p>
 </div>
 </div>

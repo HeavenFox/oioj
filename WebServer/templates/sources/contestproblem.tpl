@@ -32,7 +32,7 @@ $(function(){
 {$smarty.block.parent}
 <div class="sidebar-box">
 	<h2>Contest Info</h2>
-	<p>{$c->title}</p>
+	<p>{$c->title|escape}</p>
 	<a href="index.php?mod=contest&amp;id={$c->id}">Back to Contest Home Page</a>
 </div>
 {/block}

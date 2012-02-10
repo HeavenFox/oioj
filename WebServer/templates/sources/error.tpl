@@ -30,7 +30,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 {block name="body"}
 <div id="error_box">
 <h1>Error</h1>
-{$message}
+{$message|escape}
 </div>
 {/block}
 {block name="current_user_info"}

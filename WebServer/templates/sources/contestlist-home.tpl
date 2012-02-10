@@ -15,7 +15,7 @@
 {if $open_contests}
 {foreach $open_contests as $c}
 <tr>
-  <td>{$c->id}</td><td><a href="index.php?mod=contest&amp;id={$c->id}">{$c->title}</a></td><td>{$c->user->username}</td><td>{if $c->regDeadline > 0}{$c->regDeadline|datetime_format}{else}N/A{/if}</td><td>{if $c->beginTime > 0}{$c->beginTime|datetime_format}{else}N/A{/if}</td><td>{if $c->endTime > 0}{$c->endTime|datetime_format}{else}N/A{/if}</td><td>{$c->duration|duration_format}</td>
+  <td>{$c->id}</td><td><a href="index.php?mod=contest&amp;id={$c->id}">{$c->title|escape}</a></td><td>{$c->user->username|escape}</td><td>{if $c->regDeadline > 0}{$c->regDeadline|datetime_format}{else}N/A{/if}</td><td>{if $c->beginTime > 0}{$c->beginTime|datetime_format}{else}N/A{/if}</td><td>{if $c->endTime > 0}{$c->endTime|datetime_format}{else}N/A{/if}</td><td>{$c->duration|duration_format}</td>
 </tr>
 {/foreach}
 {else}
@@ -38,7 +38,7 @@
 {if $inprogress_contests}
 {foreach $inprogress_contests as $c}
 <tr>
-  <td>{$c->id}</td><td><a href="index.php?mod=contest&amp;id={$c->id}">{$c->title}</a></td><td>{$c->user->username}</td><td>{if $c->beginTime > 0}{$c->beginTime|datetime_format}{else}N/A{/if}</td><td>{if $c->beginTime > 0}{$c->endTime|datetime_format}{else}N/A{/if}</td><td>{$c->duration|duration_format}</td>
+  <td>{$c->id}</td><td><a href="index.php?mod=contest&amp;id={$c->id}">{$c->title|escape}</a></td><td>{$c->user->username|escape}</td><td>{if $c->beginTime > 0}{$c->beginTime|datetime_format}{else}N/A{/if}</td><td>{if $c->beginTime > 0}{$c->endTime|datetime_format}{else}N/A{/if}</td><td>{$c->duration|duration_format}</td>
 </tr>
 {/foreach}
 {else}
@@ -61,7 +61,7 @@
 {if $ready_contests}
 {foreach $ready_contests as $c}
 <tr>
-  <td>{$c->id}</td><td><a href="index.php?mod=contest&amp;id={$c->id}">{$c->title}</a></td><td>{$c->user->username}</td><td>{if $c->beginTime > 0}{$c->beginTime|datetime_format}{else}N/A{/if}</td><td>{if $c->beginTime > 0}{$c->endTime|datetime_format}{else}N/A{/if}</td><td>{$c->duration|duration_format}</td>
+  <td>{$c->id}</td><td><a href="index.php?mod=contest&amp;id={$c->id}">{$c->title|escape}</a></td><td>{$c->user->username|escape}</td><td>{if $c->beginTime > 0}{$c->beginTime|datetime_format}{else}N/A{/if}</td><td>{if $c->beginTime > 0}{$c->endTime|datetime_format}{else}N/A{/if}</td><td>{$c->duration|duration_format}</td>
 </tr>
 {/foreach}
 {else}
@@ -84,7 +84,7 @@
 {if $future_contests}
 {foreach $future_contests as $c}
 <tr>
-  <td>{$c->id}</td><td><a href="index.php?mod=contest&amp;id={$c->id}">{$c->title}</a></td><td>{$c->user->username}</td><td>{if $c->regBegin > 0}{$c->regBegin|datetime_format}{else}N/A{/if}</td><td>{if $c->regDeadline > 0}{$c->regDeadline|datetime_format}{else}N/A{/if}</td><td>{if $c->beginTime > 0}{$c->beginTime|datetime_format}{else}N/A{/if}</td><td>{if $c->beginTime > 0}{$c->endTime|datetime_format}{else}N/A{/if}</td><td>{$c->duration|duration_format}</td>
+  <td>{$c->id}</td><td><a href="index.php?mod=contest&amp;id={$c->id}">{$c->title|escape}</a></td><td>{$c->user->username|escape}</td><td>{if $c->regBegin > 0}{$c->regBegin|datetime_format}{else}N/A{/if}</td><td>{if $c->regDeadline > 0}{$c->regDeadline|datetime_format}{else}N/A{/if}</td><td>{if $c->beginTime > 0}{$c->beginTime|datetime_format}{else}N/A{/if}</td><td>{if $c->beginTime > 0}{$c->endTime|datetime_format}{else}N/A{/if}</td><td>{$c->duration|duration_format}</td>
 </tr>
 {/foreach}
 {else}
@@ -107,7 +107,7 @@
 {if $past_contests}
 {foreach $past_contests as $c}
 <tr>
-  <td>{$c->id}</td><td><a href="index.php?mod=contest&amp;id={$c->id}">{$c->title}</a></td><td>{$c->user->username}</td><td>{if $c->beginTime > 0}{$c->beginTime|datetime_format}{else}N/A{/if}</td><td>{if $c->beginTime > 0}{$c->endTime|datetime_format}{else}N/A{/if}</td><td>{$c->duration|duration_format}</td>
+  <td>{$c->id}</td><td><a href="index.php?mod=contest&amp;id={$c->id}">{$c->title|escape}</a></td><td>{$c->user->username|escape}</td><td>{if $c->beginTime > 0}{$c->beginTime|datetime_format}{else}N/A{/if}</td><td>{if $c->beginTime > 0}{$c->endTime|datetime_format}{else}N/A{/if}</td><td>{$c->duration|duration_format}</td>
 </tr>
 {/foreach}
 {else}

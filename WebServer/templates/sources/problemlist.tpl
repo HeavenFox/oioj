@@ -80,7 +80,7 @@ function tagQuerySubmit()
 		<div id='popular_tags_list'>
 		Popular Tags: 
 		{foreach $tags as $tag}
-		<span class='tag' data-tid='{$tag->id}'><a href='index.php?mod=problemlist&amp;tag={$tag->id}'>{$tag->tag}</a></span>
+		<span class='tag' data-tid='{$tag->id}'><a href='index.php?mod=problemlist&amp;tag={$tag->id}'>{$tag->tag|escape}</a></span>
 		{/foreach}
 		</div>
 		<div id='popular_tags_search'>
@@ -100,7 +100,7 @@ function tagQuerySubmit()
 <tbody>
 {foreach $problems as $problem}
 <tr class="{cycle values="odd,even"}">
-<td>{$problem->id}</td><td><a href="index.php?mod=problem&amp;id={$problem->id}">{$problem->title}</a> {if $problem->listing == 0}(Hidden){/if} {if $problem->dispatched == 0}(To be dispatched){/if}</td><td>{$problem->accepted}/{$problem->submission}
+<td>{$problem->id}</td><td><a href="index.php?mod=problem&amp;id={$problem->id}">{$problem->title|escape}</a> {if $problem->listing == 0}(Hidden){/if} {if $problem->dispatched == 0}(To be dispatched){/if}</td><td>{$problem->accepted}/{$problem->submission}
 {if $problem->submission > 0}
  ({($problem->accepted/$problem->submission*100)|string_format:"%.1f"}%)
 {/if}</td>

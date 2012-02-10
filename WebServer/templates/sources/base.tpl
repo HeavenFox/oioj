@@ -20,14 +20,14 @@
 <div id="logo"><a href="index.php"><img src='templates/images/header.png' alt='OIOJ Instructional Online Judge' /></a></div>
 <div id="navbar"><ul><li><a href="index.php?mod=problemlist">Problems</a></li><li><a href="index.php?mod=records">Records</a></li><li><a href="index.php?mod=contestlist">Arena</a></li></ul></div>
 </div>
-{if isset($global_message)}<div id="global_message">{$global_message}<div id='global_message_close'><a href='#' onclick="$('#global_message').addClass('hidden');return false;">x</a></div></div>{/if}
+{if isset($global_message)}<div id="global_message">{$global_message|escape}<div id='global_message_close'><a href='#' onclick="$('#global_message').addClass('hidden');return false;">x</a></div></div>{/if}
 <div id="container"><div id="infobar"><div id="breadcrumb"><a href='index.php'>Home</a>
 {if isset($breadcrumb)}
 {foreach $breadcrumb as $k => $v}
- » {if $v}<a href='{$v|escape}'>{/if}{$k}{if $v}</a>{/if}
+ » {if $v}<a href='{$v|escape}'>{/if}{$k|escape}{if $v}</a>{/if}
 {/foreach}
 {/if}
-</div>{block name="current_user_info"}<div id="userinfo">Welcome, {$current_user->username}
+</div>{block name="current_user_info"}<div id="userinfo">Welcome, {$current_user->username|escape}
 {if $current_user->id != 0}
 {ifable to="admin_cp"}<a href='index.php?mod=admin_home'>Admin CP</a> - {endif} <a href='index.php?mod=user&amp;act=editprofile'>User Center</a> - <a href='index.php?mod=user&amp;act=logout'>Log out</a>
 {else}

@@ -50,12 +50,12 @@ $(function(){
 <div class="sidebar-content">
 <ul>
 	<li>ID: {$problem->id}</li>
-	{if $problem->user->username}<li>Submitter: {$problem->user->username}</li>{/if}
-	<li>Input: {if $problem->input == "/SCREEN/"}Screen{else}{$problem->input}{/if}</li>
-	<li>Output: {if $problem->output == "/SCREEN/"}Screen{else}{$problem->output}{/if}</li>
+	{if $problem->user->username}<li>Submitter: {$problem->user->username|escape}</li>{/if}
+	<li>Input: {if $problem->input == "/SCREEN/"}Screen{else}{$problem->input|escape}{/if}</li>
+	<li>Output: {if $problem->output == "/SCREEN/"}Screen{else}{$problem->output|escape}{/if}</li>
 	<li>Submission: {$problem->submission}</li>
 	<li>Accepted: {$problem->accepted}</li>
-	{if $problem->source}<li>Source: {$problem->source}</li>{/if}
+	{if $problem->source}<li>Source: {$problem->source|escape}</li>{/if}
 </ul>
 </div>
 </div>
@@ -66,7 +66,7 @@ $(function(){
 <div id='taglist'>
 {if $problem->tags}
 {foreach $problem->tags as $tag}
-<span class="tag">{$tag->tag}
+<span class="tag">{$tag->tag|escape}
 {ifable to="edit_tags"}
 <a href="javascript:;" onclick="removeTag({$problem->id},{$tag->id},this);">[x]</a>
 {endif}
@@ -88,7 +88,7 @@ $(function(){
 <div class="sidebar-content">
 <ul>
 {foreach $problem->attachments as $a}
-<li><a href="index.php?mod=problem&act=attach&aid={$a->id}">{$a->filename}</a></li>
+<li><a href="index.php?mod=problem&act=attach&aid={$a->id}">{$a->filename|escape}</a></li>
 {/foreach}
 </ul>
 </div>

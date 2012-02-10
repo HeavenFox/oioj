@@ -22,7 +22,7 @@
 <tbody>
 	{foreach $c->problems as $problem}
 	<tr>
-		<td>{if $c->status > Contest::STATUS_WAITING}<a href="index.php?mod=contestproblem&amp;cid={$c->id}&amp;id={$problem->id}">{/if}{$problem->title}{if $c->status > Contest::STATUS_WAITING}</a>{/if}</td><td>{$problem->input}</td><td>{$problem->output}</td>
+		<td>{if $c->status > Contest::STATUS_WAITING}<a href="index.php?mod=contestproblem&amp;cid={$c->id}&amp;id={$problem->id}">{/if}{$problem->title|escape}{if $c->status > Contest::STATUS_WAITING}</a>{/if}</td><td>{$problem->input|escape}</td><td>{$problem->output|escape}</td>
 	</tr>
 	{/foreach}
 </tbody>
