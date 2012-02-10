@@ -5,3 +5,4 @@ WebServer/.settings/
 JudgeServer/.cproject
 JudgeServer/.project
 *.komodoproject
+WebServer/_install/installer.lock
