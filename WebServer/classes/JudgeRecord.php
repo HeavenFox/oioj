@@ -20,7 +20,7 @@ class JudgeRecord extends ActiveRecord
 		'server' => array('class' => 'JudgeServer', 'comp' => 'one', 'column' => 'server'),
 		'lang' => array('class' => 'string'),
 		'user' => array('class' => 'User', 'comp' => 'one', 'column' => 'uid'),
-		'cases' => array('class' => 'string', 'setter' => 'serialize', 'getter' => 'unserialize'),
+		'cases' => array('class' => 'string', 'serializer' => 'serialize', 'unserializer' => 'unserialize'),
 		'code' => array('class' => 'text'),
 		'score' => array('class' => 'int'),
 		'timestamp' => array('class' => 'int'),

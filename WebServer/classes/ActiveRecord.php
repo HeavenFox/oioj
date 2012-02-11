@@ -288,7 +288,7 @@ class ActiveRecord
 		{
 			$className = static::$schema[$param];
 			$value = new $className($value);
-		} else if (!isset(static::$schema[$param]['getter']))
+		} else if (!isset(static::$schema[$param]['unserializer']))
 		{
 			$value = $this->toPropertyType($param, $value);
 		}
@@ -340,9 +340,9 @@ class ActiveRecord
 	
 	public function _preprocessGet($param)
 	{
-		if (isset(static::$schema[$param]['setter']))
+		if (isset(static::$schema[$param]['serializer']))
 		{
-			$call = static::$schema[$param]['setter'];
+			$call = static::$schema[$param]['serializer'];
 			return $call($this->_propValues[$param]);
 		}
 		return $this->_propValues[$param];
@@ -372,9 +372,9 @@ class ActiveRecord
 	{
 		$value = $this->toPropertyType($param, $value);
 		
-		if (isset(static::$schema[$param]['getter']))
+		if (isset(static::$schema[$param]['unserializer']))
 		{
-			$call = static::$schema[$param]['getter'];
+			$call = static::$schema[$param]['unserializer'];
 			$this->_propValues[$param] = $call($value);
 		}
 		else

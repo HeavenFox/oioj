@@ -8,7 +8,7 @@ class Cronjob extends ActiveRecord
 		'id' => array('class' => 'int'),
 		'class' => array('class' => 'string'),
 		'method' => array('class' => 'string'),
-		'arguments' => array('class' => 'string', 'setter' => 'serialize', 'getter' => 'unserialize'),
+		'arguments' => array('class' => 'string', 'serializer' => 'serialize', 'unserializer' => 'unserialize'),
 		'reference' => array('class' => 'int'),
 		'next' => array('class' => 'timestamp'),
 		'qos' => array('class' => 'int'),
