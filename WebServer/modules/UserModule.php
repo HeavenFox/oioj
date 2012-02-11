@@ -50,6 +50,14 @@ class UserModule
 		$form = new SmartyForm('register','index.php?mod=user&act=register_submit');
 		
 		$form->add(new SF_TextField('id','username','label','Username','minLength',3,'maxLength',16));
+		
+		$form->get('username')->addValidator(function($v){
+			if (preg_match('/[<>\/\\\\$\|]/',$v))
+			{
+				throw new InputException('Please do not use special character');
+			}
+		});
+		
 		$form->add(new SF_Password('id','password','label','Password','minLength',6));
 		$form->add(new SF_Password('id','password_confirm','label','Again'));
 		$form->add(new SF_EMail('id','email','label','Email'));
