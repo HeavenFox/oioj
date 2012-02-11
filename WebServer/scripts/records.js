@@ -4,5 +4,5 @@
 
 function showCaseInfo(id)
 {
-	$('#caseinfo-'+id).show(1000);
+	$('#caseinfo-'+id).toggle(500);
 }

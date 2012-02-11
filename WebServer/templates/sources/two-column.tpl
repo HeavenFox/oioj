@@ -4,7 +4,7 @@
 <script type='text/javascript'>
 $(function(){
 	$('#column-right .sidebar-box h2 a').bind("click",function(event){
-		$(this).parent().next().toggle(500);
+		$(this).parent().next().slideToggle(500);
 		$(this).toggleClass('collapsed');
 	});
 });
