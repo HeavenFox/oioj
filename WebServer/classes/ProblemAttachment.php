@@ -1,4 +1,5 @@
 <?php
+import('Attachment');
 class ProblemAttachment extends ActiveRecord
 {
 	static $schema = array(
