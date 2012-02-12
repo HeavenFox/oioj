@@ -2,12 +2,12 @@
 
 inline char base64chr(char c)
 {
-    if (c == '+')return 62;
-    if (c == '/')return 63;
-    if (c >= 'A' && c <= 'Z')return c-'A';
-    if (c >= 'a' && c <= 'z')return 26+c-'a';
-    if (c >= '0' && c <= '9')return 52+c-'0';
-    return -1;
+	if (c == '+')return 62;
+	if (c == '/')return 63;
+	if (c >= 'A' && c <= 'Z')return c-'A';
+	if (c >= 'a' && c <= 'z')return 26+c-'a';
+	if (c >= '0' && c <= '9')return 52+c-'0';
+	return -1;
 }
 
 void cp(const char* old, const char* target)

@@ -2,7 +2,7 @@
  * Dependency.h
  *
  *  Created on: Sep 17, 2011
- *      Author: zhujingsi
+ *	  Author: zhujingsi
  */
 
 #ifndef _DEPENDENCY_H_
@@ -14,10 +14,10 @@ using namespace std;
 
 class Dependency {
 public:
-    string filename;
-    int type;
+	string filename;
+	int type;
 
-    void addSchema(sqlite3 *db, int problemID);
+	void addSchema(sqlite3 *db, int problemID);
 };
 
 

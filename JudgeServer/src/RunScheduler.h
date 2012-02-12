@@ -27,34 +27,34 @@ using namespace std;
 extern int msgQueue;
 
 class RunScheduler {
-    int nCPU;
-    int concurrency;
-    int waitlistCapacity;
-    
-    int *cpus;
-    queue<JudgeRecord*> waitlist;
-    
-    int runningJobs;
-    
-    void runTask(JudgeRecord *record);
-    
+	int nCPU;
+	int concurrency;
+	int waitlistCapacity;
+	
+	int *cpus;
+	queue<JudgeRecord*> waitlist;
+	
+	int runningJobs;
+	
+	void runTask(JudgeRecord *record);
+	
 public:
-    RunScheduler(int _nCPU, int _concurrency, int _waitlistCapacity);
-    
-    ~RunScheduler()
-    {
-    	delete cpus;
-    }
+	RunScheduler(int _nCPU, int _concurrency, int _waitlistCapacity);
+	
+	~RunScheduler()
+	{
+		delete cpus;
+	}
 
-    int arrangeCPU();
-    
-    int arrangeTask(JudgeRecord* record);
-    
-    void removeTask(int cpuid);
-    
-    bool serverBusy();
+	int arrangeCPU();
+	
+	int arrangeTask(JudgeRecord* record);
+	
+	void removeTask(int cpuid);
+	
+	bool serverBusy();
 
-    int serverWorkload();
+	int serverWorkload();
 };
 
 #endif

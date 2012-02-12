@@ -58,76 +58,76 @@ int main (int argc, const char * argv[])
 	
 	openlog("oiojd",LOG_PID,LOG_DAEMON);
 	syslog(LOG_INFO, "OIOJ Judge Daemon Starting");
-    
-    Configuration::ReadConfiguration();
+	
+	Configuration::ReadConfiguration();
 
-    msgQueue = msgget(IPC_PRIVATE, 0700);
+	msgQueue = msgget(IPC_PRIVATE, 0700);
 
-    // Create socket
-    int sock = socket(AF_INET, SOCK_STREAM, 0);
-    
-    if (sock < 0)
-    {
-        syslog(LOG_ERR,"Error creating socket connection");
+	// Create socket
+	int sock = socket(AF_INET, SOCK_STREAM, 0);
+	
+	if (sock < 0)
+	{
+		syslog(LOG_ERR,"Error creating socket connection");
 		exit(1);
-    }
+	}
 
-    sockaddr_in sock_address, client_sock_addr;
-    socklen_t client_sock_addr_len;
-    memset((void*)&sock_address, 0, sizeof(sockaddr_in));
-    
-    sock_address.sin_family = AF_INET;
-    sock_address.sin_addr.s_addr = INADDR_ANY;
-    sock_address.sin_port = htons(Configuration::PortNumber);
-    
-    if (bind(sock, (struct sockaddr*)&sock_address, sizeof(sockaddr_in)) < 0)
-    {
-        syslog(LOG_ERR,"Error binding");
+	sockaddr_in sock_address, client_sock_addr;
+	socklen_t client_sock_addr_len;
+	memset((void*)&sock_address, 0, sizeof(sockaddr_in));
+	
+	sock_address.sin_family = AF_INET;
+	sock_address.sin_addr.s_addr = INADDR_ANY;
+	sock_address.sin_port = htons(Configuration::PortNumber);
+	
+	if (bind(sock, (struct sockaddr*)&sock_address, sizeof(sockaddr_in)) < 0)
+	{
+		syslog(LOG_ERR,"Error binding");
 		exit(1);
-    }
-    
+	}
 	
-    listen(sock, 5);
 	
-    syslog(LOG_INFO,"Listening port %d", Configuration::PortNumber);
+	listen(sock, 5);
 	
-    scheduler = new RunScheduler(Configuration::CPUCount, Configuration::ConcurrentJobs, Configuration::WaitlistSize);
-    
-    timeval timeout;
+	syslog(LOG_INFO,"Listening port %d", Configuration::PortNumber);
+	
+	scheduler = new RunScheduler(Configuration::CPUCount, Configuration::ConcurrentJobs, Configuration::WaitlistSize);
+	
+	timeval timeout;
 
-    fd_set fds;
+	fd_set fds;
 
-    signal(SIGCHLD, SIG_IGN);
-    
-    while (true)
-    {
-    	FD_ZERO(&fds);
-    	FD_SET(sock,&fds);
-    	timeout.tv_sec = 5;
-    	timeout.tv_usec = 0;
-    	int client_sock;
-    	struct msgEval msg;
+	signal(SIGCHLD, SIG_IGN);
+	
+	while (true)
+	{
+		FD_ZERO(&fds);
+		FD_SET(sock,&fds);
+		timeout.tv_sec = 5;
+		timeout.tv_usec = 0;
+		int client_sock;
+		struct msgEval msg;
 
-    	int selResult = select(sock+1,&fds,&fds,NULL,&timeout);
+		int selResult = select(sock+1,&fds,&fds,NULL,&timeout);
 
-    	if (selResult == -1)
-    	{
+		if (selResult == -1)
+		{
 			syslog(LOG_ERR, "Error selecting file descriptor");
-    		continue;
-    	}
+			continue;
+		}
 
-    	// Check message queue
-    	while (msgrcv(msgQueue,&msg,sizeof(msg),0,IPC_NOWAIT) >= 0)
-    	{
-    		scheduler->removeTask(msg.cpuid);
-    	}
+		// Check message queue
+		while (msgrcv(msgQueue,&msg,sizeof(msg),0,IPC_NOWAIT) >= 0)
+		{
+			scheduler->removeTask(msg.cpuid);
+		}
 		
 		if (selResult == 0)
-    	{
-    		continue;
-    	}
+		{
+			continue;
+		}
 
-    	client_sock = accept(sock, (struct sockaddr*)&client_sock_addr, &client_sock_addr_len);
+		client_sock = accept(sock, (struct sockaddr*)&client_sock_addr, &client_sock_addr_len);
 
 		syslog(LOG_INFO, "Request received");
 		
@@ -207,11 +207,11 @@ int main (int argc, const char * argv[])
 			send(client_sock,response,strlen(response),0);
 		}
 		syslog(LOG_INFO, "Request processed");
-        close(client_sock);
-    }
-    
-    close(sock);
-    
-    return 0;
+		close(client_sock);
+	}
+	
+	close(sock);
+	
+	return 0;
 }
 

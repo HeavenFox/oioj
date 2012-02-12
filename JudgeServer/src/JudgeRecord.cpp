@@ -10,60 +10,60 @@
 
 bool JudgeRecord::prepareRecord(string s)
 {
-    istringstream sin(s);
-    string line;
-    while (getline(sin,line))
-    {
-        if (line.size() == 0)continue;
-        trim(line);
-        istringstream lin(line);
-        string op;
-        lin>>op>>ws;
-        if (op.compare("ProblemID") == 0)
-        {
-            lin>>problemID;
+	istringstream sin(s);
+	string line;
+	while (getline(sin,line))
+	{
+		if (line.size() == 0)continue;
+		trim(line);
+		istringstream lin(line);
+		string op;
+		lin>>op>>ws;
+		if (op.compare("ProblemID") == 0)
+		{
+			lin>>problemID;
 
-            continue;
-        }
-        if (op.compare("RecordID") == 0)
-        {
-            lin>>recordID;
+			continue;
+		}
+		if (op.compare("RecordID") == 0)
+		{
+			lin>>recordID;
 
-            continue;
-        }
-        string param;
-        getline(lin, param);
+			continue;
+		}
+		string param;
+		getline(lin, param);
 
-        if (op.compare("Token") == 0)
-        {
-        	if (param.compare(Configuration::Token))
-        	{
-        		return false;
-        	}
-        	continue;
-        }
-        if (op.compare("Lang") == 0)
-        {
-            language = param;
-            continue;
-        }
-        if (op.compare("FilePath") == 0)
-        {
-            deduceVariable();
-            
-            rename(param.c_str(), submissionPath.c_str());
-            
-            continue;
-        }
-        if (op.compare("Submission") == 0)
-        {
-        	deduceVariable();
+		if (op.compare("Token") == 0)
+		{
+			if (param.compare(Configuration::Token))
+			{
+				return false;
+			}
+			continue;
+		}
+		if (op.compare("Lang") == 0)
+		{
+			language = param;
+			continue;
+		}
+		if (op.compare("FilePath") == 0)
+		{
+			deduceVariable();
+			
+			rename(param.c_str(), submissionPath.c_str());
+			
+			continue;
+		}
+		if (op.compare("Submission") == 0)
+		{
+			deduceVariable();
 
-        	writeBase64(submissionPath,param);
+			writeBase64(submissionPath,param);
 
-        }
-    }
-    return true;
+		}
+	}
+	return true;
 }
 
 void JudgeRecord::deduceVariable()
@@ -105,50 +105,50 @@ void JudgeRecord::compile()
 		cp(source,dest);
 	}
 
-    if (language.compare("cpp") == 0)
-    {
-        compiler = dynamic_cast<Compiler*>(new Compiler_CPP);
-    }
-    else if (language.compare("c") == 0)
-    {
-        compiler = dynamic_cast<Compiler*>(new Compiler_C);
-    }
-    else if (language.compare("pas") == 0)
-    {
-        compiler = dynamic_cast<Compiler*>(new Compiler_PAS);
-    }else
-    {
-        throw 1;
-    }
+	if (language.compare("cpp") == 0)
+	{
+		compiler = dynamic_cast<Compiler*>(new Compiler_CPP);
+	}
+	else if (language.compare("c") == 0)
+	{
+		compiler = dynamic_cast<Compiler*>(new Compiler_C);
+	}
+	else if (language.compare("pas") == 0)
+	{
+		compiler = dynamic_cast<Compiler*>(new Compiler_PAS);
+	}else
+	{
+		throw 1;
+	}
 
-    // TODO compiler time limit
-    compiler->compile(submissionPath, binaryPath, -1);
+	// TODO compiler time limit
+	compiler->compile(submissionPath, binaryPath, -1);
 
 }
 
 void JudgeRecord::judge()
 {
 	loadProblemSchema();
-    compile();
-    if (compiler->success)
-    {
-    	for (vector<TestCase>::iterator it=cases.begin(); it != cases.end(); it++)
-    	{
-    		(*it).run();
-    		(*it).compare();
-    		(*it).cleanup();
-    	}
-    }
-    else
-    {
-    	status = RECORDSTATUS_CE;
-    }
-    char working[512];
-    strcpy(working,workingDirectory.c_str());
-    if (vfork() == 0)
-    {
-    	execl("/bin/rm","rm","-rf",working,NULL);
-    }
+	compile();
+	if (compiler->success)
+	{
+		for (vector<TestCase>::iterator it=cases.begin(); it != cases.end(); it++)
+		{
+			(*it).run();
+			(*it).compare();
+			(*it).cleanup();
+		}
+	}
+	else
+	{
+		status = RECORDSTATUS_CE;
+	}
+	char working[512];
+	strcpy(working,workingDirectory.c_str());
+	if (vfork() == 0)
+	{
+		execl("/bin/rm","rm","-rf",working,NULL);
+	}
 }
 
 void JudgeRecord::loadProblemSchema()

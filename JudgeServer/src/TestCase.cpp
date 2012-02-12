@@ -49,7 +49,7 @@ void TestCase::run()
 	// Prepare pipe for IPC
 	int pd[2];
 	pipe(pd);
-    
+	
 	pid_t cld = fork();
 	if (cld == 0)
 	{
@@ -325,7 +325,7 @@ void TestCase::compare()
 
 			char scorestr[4];
 			sprintf(scorestr,"%d",score);
-                        pid_t cld = vfork();
+						pid_t cld = vfork();
 			if (cld == 0)
 			{
 				// Run file
@@ -360,109 +360,109 @@ void TestCase::cleanup()
 void TestCase::initCallAllowance()
 {
 	memset(callAllowance,20,sizeof(callAllowance));
-    callAllowance[SYS_setuid] =
-    callAllowance[SYS_getuid] =
-    callAllowance[SYS_geteuid] =
-    callAllowance[SYS_setreuid] =
-    callAllowance[SYS_setfsuid] =
-    callAllowance[SYS_setresuid] =
-    callAllowance[SYS_getresuid] =
-    callAllowance[SYS_getuid32] =
-    callAllowance[SYS_geteuid32] =
-    callAllowance[SYS_setreuid32] =
-    callAllowance[SYS_setresuid32] =
-    callAllowance[SYS_getresuid32] =
-    callAllowance[SYS_setuid32] =
-    callAllowance[SYS_setfsuid32] =
+	callAllowance[SYS_setuid] =
+	callAllowance[SYS_getuid] =
+	callAllowance[SYS_geteuid] =
+	callAllowance[SYS_setreuid] =
+	callAllowance[SYS_setfsuid] =
+	callAllowance[SYS_setresuid] =
+	callAllowance[SYS_getresuid] =
+	callAllowance[SYS_getuid32] =
+	callAllowance[SYS_geteuid32] =
+	callAllowance[SYS_setreuid32] =
+	callAllowance[SYS_setresuid32] =
+	callAllowance[SYS_getresuid32] =
+	callAllowance[SYS_setuid32] =
+	callAllowance[SYS_setfsuid32] =
 
-    callAllowance[SYS_setgid] =
-    callAllowance[SYS_getgid] =
-    callAllowance[SYS_getegid] =
-    callAllowance[SYS_setpgid] =
-    callAllowance[SYS_setregid] =
-    callAllowance[SYS_getpgid] =
-    callAllowance[SYS_setfsgid] =
-    callAllowance[SYS_setresgid] =
-    callAllowance[SYS_getresgid] =
-    callAllowance[SYS_getgid32] =
-    callAllowance[SYS_getegid32] =
-    callAllowance[SYS_setregid32] =
-    callAllowance[SYS_setresgid32] =
-    callAllowance[SYS_getresgid32] =
-    callAllowance[SYS_setgid32] =
-    callAllowance[SYS_setfsgid32] =
+	callAllowance[SYS_setgid] =
+	callAllowance[SYS_getgid] =
+	callAllowance[SYS_getegid] =
+	callAllowance[SYS_setpgid] =
+	callAllowance[SYS_setregid] =
+	callAllowance[SYS_getpgid] =
+	callAllowance[SYS_setfsgid] =
+	callAllowance[SYS_setresgid] =
+	callAllowance[SYS_getresgid] =
+	callAllowance[SYS_getgid32] =
+	callAllowance[SYS_getegid32] =
+	callAllowance[SYS_setregid32] =
+	callAllowance[SYS_setresgid32] =
+	callAllowance[SYS_getresgid32] =
+	callAllowance[SYS_setgid32] =
+	callAllowance[SYS_setfsgid32] =
 
-    callAllowance[SYS_setgroups] =
-
-
-    callAllowance[SYS_unlink] =
-    callAllowance[SYS_mkdir] =
-    callAllowance[SYS_rmdir] =
-    callAllowance[SYS_rename] =
-    callAllowance[SYS_chdir] =
-    callAllowance[SYS_chmod] =
-    callAllowance[SYS_chown] =
-    callAllowance[SYS_chroot] =
-    callAllowance[SYS_mount] =
-    callAllowance[SYS_umount] =
-    callAllowance[SYS_umount2] =
-    callAllowance[SYS_mknod] =
-    callAllowance[SYS_select] =
-    callAllowance[SYS_creat] =
-
-    callAllowance[SYS_fork] =
-    callAllowance[SYS_clone] =
-    callAllowance[SYS_ptrace] =
-    callAllowance[SYS_vfork] =
-    callAllowance[SYS_wait4] =
-    callAllowance[SYS_getpid] =
-    callAllowance[SYS_getpgrp] =
-    callAllowance[SYS_kill] =
-    callAllowance[SYS_vhangup] =
-    callAllowance[SYS_vserver] =
-    callAllowance[SYS_tkill] =
-    callAllowance[SYS_pause] =
-    0;
-
-    callAllowance[SYS__sysctl]=0;
-    //callAllowance[SYS_access]=0;
-    //callAllowance[SYS_close]=0;
-
-    callAllowance[SYS_create_module]=0;
-    callAllowance[SYS_delete_module]=0;
+	callAllowance[SYS_setgroups] =
 
 
-    //callAllowance[SYS_open]=0;
+	callAllowance[SYS_unlink] =
+	callAllowance[SYS_mkdir] =
+	callAllowance[SYS_rmdir] =
+	callAllowance[SYS_rename] =
+	callAllowance[SYS_chdir] =
+	callAllowance[SYS_chmod] =
+	callAllowance[SYS_chown] =
+	callAllowance[SYS_chroot] =
+	callAllowance[SYS_mount] =
+	callAllowance[SYS_umount] =
+	callAllowance[SYS_umount2] =
+	callAllowance[SYS_mknod] =
+	callAllowance[SYS_select] =
+	callAllowance[SYS_creat] =
 
-    callAllowance[SYS_reboot]=0;
+	callAllowance[SYS_fork] =
+	callAllowance[SYS_clone] =
+	callAllowance[SYS_ptrace] =
+	callAllowance[SYS_vfork] =
+	callAllowance[SYS_wait4] =
+	callAllowance[SYS_getpid] =
+	callAllowance[SYS_getpgrp] =
+	callAllowance[SYS_kill] =
+	callAllowance[SYS_vhangup] =
+	callAllowance[SYS_vserver] =
+	callAllowance[SYS_tkill] =
+	callAllowance[SYS_pause] =
+	0;
 
-    callAllowance[SYS_restart_syscall]=0;
+	callAllowance[SYS__sysctl]=0;
+	//callAllowance[SYS_access]=0;
+	//callAllowance[SYS_close]=0;
 
-    callAllowance[SYS_setitimer]=0;
+	callAllowance[SYS_create_module]=0;
+	callAllowance[SYS_delete_module]=0;
 
-    callAllowance[SYS_sethostname]=0;
-    callAllowance[SYS_setrlimit]=0;
 
-    callAllowance[SYS_settimeofday]=0;
+	//callAllowance[SYS_open]=0;
 
-    callAllowance[SYS_clock_nanosleep]=0;
-    callAllowance[SYS_nanosleep]=0;
-    //callAllowance[SYS_arch_prctl]=0;
-    //callAllowance[SYS_write]=0;
-    //callAllowance[SYS_writev]=0;
+	callAllowance[SYS_reboot]=0;
 
-    #ifndef __i386__
-    callAllowance[SYS_accept]=0;
-    callAllowance[SYS_bind]=0;
-    callAllowance[SYS_connect]=0;
-    callAllowance[SYS_listen]=0;
-    callAllowance[SYS_socket]=0;
-    #else
-    callAllowance[SYS_signal]=0;
-    callAllowance[SYS_waitpid]=0;
-    callAllowance[SYS_nice]=0;
-    callAllowance[SYS_waitpid]=0;
-    #endif
+	callAllowance[SYS_restart_syscall]=0;
+
+	callAllowance[SYS_setitimer]=0;
+
+	callAllowance[SYS_sethostname]=0;
+	callAllowance[SYS_setrlimit]=0;
+
+	callAllowance[SYS_settimeofday]=0;
+
+	callAllowance[SYS_clock_nanosleep]=0;
+	callAllowance[SYS_nanosleep]=0;
+	//callAllowance[SYS_arch_prctl]=0;
+	//callAllowance[SYS_write]=0;
+	//callAllowance[SYS_writev]=0;
+
+	#ifndef __i386__
+	callAllowance[SYS_accept]=0;
+	callAllowance[SYS_bind]=0;
+	callAllowance[SYS_connect]=0;
+	callAllowance[SYS_listen]=0;
+	callAllowance[SYS_socket]=0;
+	#else
+	callAllowance[SYS_signal]=0;
+	callAllowance[SYS_waitpid]=0;
+	callAllowance[SYS_nice]=0;
+	callAllowance[SYS_waitpid]=0;
+	#endif
 	callAllowance[SYS_execve] = 1;
 }
 

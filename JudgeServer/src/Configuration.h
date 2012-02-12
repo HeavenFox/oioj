@@ -17,24 +17,24 @@ using namespace std;
 
 class Configuration {
 public:
-    static int PortNumber;
-    static int AgentUID;
-    static int ConcurrentJobs;
-    static int CPUCount;
-    static double CompilerTimeLimit;
-    static double TimeMultipler;
-    static int WaitlistSize;
-    static string WorkingDirPrefix;
-    static string DataDirPrefix;
-    static string TempDirPrefix;
-    static string ProblemSchemaDB;
-    
-    static string Token;
+	static int PortNumber;
+	static int AgentUID;
+	static int ConcurrentJobs;
+	static int CPUCount;
+	static double CompilerTimeLimit;
+	static double TimeMultipler;
+	static int WaitlistSize;
+	static string WorkingDirPrefix;
+	static string DataDirPrefix;
+	static string TempDirPrefix;
+	static string ProblemSchemaDB;
+	
+	static string Token;
 
-    static string WebServer;
-    static string WebServerCallbackScript;
+	static string WebServer;
+	static string WebServerCallbackScript;
 
-    static void ReadConfiguration();
+	static void ReadConfiguration();
 };
 
 #endif

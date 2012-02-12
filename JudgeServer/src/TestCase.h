@@ -39,37 +39,37 @@ class JudgeRecord;
 class TestCase
 {
 public:
-    int caseID;
-    int score;
-    double timeLimit,actualTime;
-    int memoryLimit;
-    int bytesActualMemory;
-    int problemID;
-    
-    string input;
-    string answer;
-    
-    JudgeRecord *record;
-    
-    int result;
-    int resultExtended;
-    
-    void run();
-    
-    void compare();
+	int caseID;
+	int score;
+	double timeLimit,actualTime;
+	int memoryLimit;
+	int bytesActualMemory;
+	int problemID;
+	
+	string input;
+	string answer;
+	
+	JudgeRecord *record;
+	
+	int result;
+	int resultExtended;
+	
+	void run();
+	
+	void compare();
 
-    void loadSchema();
+	void loadSchema();
 
-    void addSchema(sqlite3* db);
+	void addSchema(sqlite3* db);
 
-    void cleanup();
+	void cleanup();
 
 private:
-    short callAllowance[512];
+	short callAllowance[512];
 
-    char inputDataPath[256];
-    char outputDataPath[256];
+	char inputDataPath[256];
+	char outputDataPath[256];
 
-    void initCallAllowance();
+	void initCallAllowance();
 };
 #endif

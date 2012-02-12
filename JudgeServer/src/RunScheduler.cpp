@@ -10,14 +10,14 @@
 
 RunScheduler::RunScheduler(int _nCPU, int _concurrency, int _waitlistCapacity)
 {
-    nCPU = _nCPU;
-    concurrency = _concurrency;
-    waitlistCapacity = _waitlistCapacity;
-        
-    cpus = new int[nCPU];
-        
-    runningJobs = 0;
-        
+	nCPU = _nCPU;
+	concurrency = _concurrency;
+	waitlistCapacity = _waitlistCapacity;
+		
+	cpus = new int[nCPU];
+		
+	runningJobs = 0;
+		
 }
 
 int RunScheduler::arrangeTask(JudgeRecord* record)

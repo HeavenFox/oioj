@@ -54,56 +54,56 @@ class TestCase;
 class JudgeRecord
 {
 private:
-    void compile();
-    
-    void loadProblemSchema();
-    
-    inline char base64chr(char c);
-    
-    Compiler *compiler;
-    
-    bool deducedVariable;
+	void compile();
+	
+	void loadProblemSchema();
+	
+	inline char base64chr(char c);
+	
+	Compiler *compiler;
+	
+	bool deducedVariable;
 
-    void deduceVariable();
+	void deduceVariable();
 
 public:
-    int problemID;
-    int recordID;
-    
-    string language;
-    
-    string compare;
-    vector<Dependency> dependencies;
-    
-    string workingDirectory;
-    
-    string dataDirectory;
-    
-    string submissionPath;
-    
-    string input;
-    string output;
-    
-    string binaryPath;
-    
-    int type;
-    
-    short status;
+	int problemID;
+	int recordID;
+	
+	string language;
+	
+	string compare;
+	vector<Dependency> dependencies;
+	
+	string workingDirectory;
+	
+	string dataDirectory;
+	
+	string submissionPath;
+	
+	string input;
+	string output;
+	
+	string binaryPath;
+	
+	int type;
+	
+	short status;
 
-    short cpu;
+	short cpu;
 
-    vector<TestCase> cases;
-    
-    JudgeRecord()
-    {
-    	deducedVariable = false;
-    }
-    
-    bool prepareRecord(string s);
-    
-    void setProblemSchema(string s);
-    
-    void judge();
+	vector<TestCase> cases;
+	
+	JudgeRecord()
+	{
+		deducedVariable = false;
+	}
+	
+	bool prepareRecord(string s);
+	
+	void setProblemSchema(string s);
+	
+	void judge();
 
 };
 #endif

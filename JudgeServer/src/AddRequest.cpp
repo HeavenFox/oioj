@@ -64,8 +64,8 @@ void AddRequest::processRequest(string &s)
 		*/
 		string format;
 		sin>>format;
-                ostringstream path;
-                path<<Configuration::TempDirPrefix<<p.id<<"."<<format;
+				ostringstream path;
+				path<<Configuration::TempDirPrefix<<p.id<<"."<<format;
 		ostringstream outputdir;
 		outputdir<<Configuration::DataDirPrefix<<p.id<<'/';
 		

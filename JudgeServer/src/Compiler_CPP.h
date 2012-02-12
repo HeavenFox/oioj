@@ -16,7 +16,7 @@ using namespace std;
 class Compiler_CPP : public Compiler
 {
 private:
-    string generateCommand(const string &input, const string &output);
+	string generateCommand(const string &input, const string &output);
 };
 
 #endif
