@@ -1,11 +1,12 @@
 <?php
 require_once 'init.php';
 
+// Require basic classes
 import('OIOJ');
 import('IO');
 import('Settings');
 
-// These modules are legimate
+// These modules are legitimate
 $availableModules = loadVar('AvailableModules');
 
 // These modules should be autoloaded
@@ -16,6 +17,11 @@ OIOJ::InitTemplate();
 try
 {
 	OIOJ::InitDatabase();
+}
+catch (DBNotConfiguredException $e)
+{
+	header('Location: _install/index.php');
+	die();
 }
 catch (Exception $e)
 {

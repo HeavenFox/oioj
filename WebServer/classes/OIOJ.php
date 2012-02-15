@@ -21,7 +21,12 @@ class OIOJ
 	public static function InitDatabase()
 	{
 		import('database.Database');
-		Database::Get(loadVar('DBParameters'));
+		$params = @loadVar('DBParameters');
+		if (!$params)
+		{
+			throw new DBNotConfiguredException();
+		}
+		Database::Get($params);
 	}
 	
 	public static function Redirect($message, $redirect = null)
@@ -72,6 +77,11 @@ class PermissionException extends Exception
 class InputException extends Exception
 {
 	
+}
+
+
+class DBNotConfiguredException extends Exception
+{
 }
 
 ?>
