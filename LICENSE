@@ -1,0 +1,16 @@
+OIOJ Online Judge System
+Copyright (c) 2011-2012 Zhu Jingsi. All Rights Reserved.
+
+Third Party Libraries Used
+
+Mathjax (c) Mathjax
+Licensed under MIT License
+
+jQuery (c) The jQuery Project
+Licensed under MIT License
+
+Smarty (c) New Digital Group, Inc
+Licensed under GNU Lesser General Public License (LGPL)
+
+reCAPTCHA Library (c) 2007 reCAPTCHA
+License term specified in WebServer/lib/recaptcha.php

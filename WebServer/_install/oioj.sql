@@ -247,15 +247,14 @@ CREATE TABLE `oj_settings` (
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
 INSERT INTO `oj_settings` (`id`, `key`, `value`) VALUES
-(1, 'local_judgeserver_data_dir', 'D:\\oiojtemp'),
-(2, 'tmp_dir', 'D:\\oiojtemp'),
-(3, 'token', 'nVM)[6Zm@5wBU@My>uQ(tU76Z=6:.d}Mx>8cZ44K!Wyd<Hu*aSn{3~vg,~pM>tmf'),
+(1, 'local_judgeserver_data_dir', ''),
+(2, 'tmp_dir', ''),
+(3, 'token', ''),
 (4, 'backup_token', ''),
-(5, 'recaptcha_public', '6Lf85MgSAAAAAJ6wTy4saHVye28O19cvTBw1eRzE'),
-(6, 'recaptcha_private', '6Lf85MgSAAAAALSrX3MkcTibjmv8vOMDTtjxLvWK'),
+(5, 'recaptcha_public', ''),
+(6, 'recaptcha_private', ''),
 (7, 'default_timezone', 'Asia/Shanghai'),
-(8, 'user_default_tags', '1'),
-(9, 'data_archive_dir', 'D:\\oiojtemp\\');
+(8, 'data_archive_dir', '');
 
 CREATE TABLE `oj_tags` (
   `id` int(11) NOT NULL AUTO_INCREMENT,

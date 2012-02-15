@@ -1,0 +1,23 @@
+INSTALLING OIOJ
+
+Table of Contents
+========================
+ 1. Server Requirements
+ 2. Web Server
+ 3. Judge Server
+
+
+1. Server Requirement
+========================
+  OIOJ consists of two parts: Web Server, which users interact with, and Judge Server, which processes judge requests.
+  Web Server is intended for LAMP/LNMP environment, although Windows or Mac OS X should be fine and was tested. PHP 5.3 or higher is required, as the code made heavy use of static late binding feature. magic_quotes_gpc and display_error should be turned off. It is strongly recommended to use MySQL 5.0 or higher.
+  Judge Server is written on Linux, tested on Ubuntu and CentOS. Mac OS X is not supported, though FreeBSD might be (this will be investigated further). It can be used with or without root privilege, although we recommend it to use chroot feature. In that case, you should create a new account with minimal privilege for users' program to run under.
+
+2. Web Server
+=========================
+  Web Server is relatively easy to install. by uploading the entire directory to your desired folder and point your browser there, the installer starts automatically and will guide you through the process. However, freshly-installed OIOJ is just barely usable. You should log on to Admin CP to adjust initial settings.
+
+3. Judge Server
+=========================
+  First, you should compile the program. gcc is sufficient for this purpose. Currently no makefile is provided, so you need to do it yourself. Sqlite requires pthread and dl libraries. If you desire, you can add the binary to init.d
+  oioj.conf should be copied to /etc/oioj/. Then edit it to meet your need. A skeleton problem schema database is also provided and should be copied to the location you specify.
