@@ -21,6 +21,7 @@
 #include <sys/ptrace.h>
 #include <sys/syscall.h>
 #include <sys/stat.h>
+#include <syslog.h>
 
 #include "sqlite3.h"
 #include "Configuration.h"

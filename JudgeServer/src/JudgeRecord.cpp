@@ -63,6 +63,9 @@ bool JudgeRecord::prepareRecord(string s)
 
 		}
 	}
+	
+	syslog(LOG_INFO, "Record ID: %d", recordID);
+	
 	return true;
 }
 
@@ -118,12 +121,15 @@ void JudgeRecord::compile()
 		compiler = dynamic_cast<Compiler*>(new Compiler_PAS);
 	}else
 	{
-		throw 1;
+		syslog(LOG_INFO, "unknown language");
+		compiler = new Compiler;
+		compiler->success = false;
+		return;
 	}
 
 	// TODO compiler time limit
 	compiler->compile(submissionPath, binaryPath, -1);
-
+	syslog(LOG_INFO, "compiled");
 }
 
 void JudgeRecord::judge()

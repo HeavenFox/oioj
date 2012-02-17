@@ -44,16 +44,7 @@ int msgQueue;
 int main (int argc, const char * argv[])
 {
 	// Daemonize
-	if (fork())
-	{
-		exit(0);
-	}
-	
-	setsid();
-	chdir("/");
-	
-	umask(0);
-	
+	daemon(0,0);
 	// Finish daemonizing
 	
 	openlog("oiojd",LOG_PID,LOG_DAEMON);
