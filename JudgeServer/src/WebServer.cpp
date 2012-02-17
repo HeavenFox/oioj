@@ -39,7 +39,7 @@ void WebServer::pushResult(JudgeRecord *record)
 	
 	syslog(LOG_INFO,"Pushing record %d to web server", recordID);
 	
-	char generalState[256];
+	char generalState[1024];
 	
 	for (vector<TestCase>::iterator it = record->cases.begin();it != record->cases.end();it++)
 	{
@@ -62,8 +62,9 @@ void WebServer::pushResult(JudgeRecord *record)
 		postString.append(urlencode(thiscase));
 	}
 
-	char finalRequest[1500];
-	sprintf(finalRequest, "POST %s HTTP/1.1\r\nContent-Type: application/x-www-form-urlencoded\r\nUser-Agent: OIOJJudgeServer/1.0\r\nHost: %s\r\nContent-Length: %d\r\nConnection: Keep-Alive\r\nCache-Control: no-cache\r\n\r\n%s",Configuration::WebServerCallbackScript.c_str(),Configuration::WebServer.c_str(),postString.size(),postString.c_str());
+	ostringstream finalRequest;
+	
+	finalRequest<<"POST "<<Configuration::WebServerCallbackScript<<" HTTP/1.1\r\nContent-Type: application/x-www-form-urlencoded\r\nUser-Agent: OIOJJudgeServer/1.0\r\nHost: "<<Configuration::WebServer<<"\r\nContent-Length: "<<postString.size()<<"\r\nConnection: Keep-Alive\r\nCache-Control: no-cache\r\n\r\n"<<postString;
 	// Create socket
 	int sock = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -94,7 +95,7 @@ void WebServer::pushResult(JudgeRecord *record)
 	}
 	else
 	{
-		send(sock,finalRequest,strlen(finalRequest),0);
+		send(sock,finalRequest.str().c_str(),finalRequest.str().size(),0);
 		close(sock);
 	}
 	syslog(LOG_INFO,"record %d pushed", recordID);
