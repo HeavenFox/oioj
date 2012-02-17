@@ -16,6 +16,7 @@
 #include <sys/ipc.h>
 #include <sys/msg.h>
 #include "msgEval.h"
+#include <syslog.h>
 
 #define SERVERCODE_SUCCESS 0
 #define SERVERCODE_WAITLISTED 1

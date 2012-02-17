@@ -255,8 +255,8 @@ void TestCase::compare()
 			{
 				score = 0;
 				result = TESTRESULT_WA;
-				return;
-			}
+			}else
+			{
 			
 			FILE *answerData = fopen(answerPath,"r");
 			for (;;)
@@ -316,6 +316,7 @@ void TestCase::compare()
 			}
 			fclose(userOutput);
 			fclose(answerData);
+			}
 		}
 		else
 		{
@@ -356,6 +357,7 @@ void TestCase::compare()
 	{
 		score = 0;
 	}
+	syslog(LOG_INFO,"Record #%d, data #%d compared. Result: %d, Score: %d",record->recordID, caseID, result, score);
 }
 
 void TestCase::cleanup()

@@ -67,12 +67,16 @@ void RunScheduler::runTask(JudgeRecord *record)
 	if (pid == 0)
 	{
 		record->judge();
-		WebServer server;
-		server.pushResult(record);
+		
+		syslog(LOG_INFO,"Record #%d judged. Releasing CPU...",record->recordID);
+		
 		struct msgEval msg;
 		msg.mtype = 1;
 		msg.cpuid = mini;
 		msgsnd(msgQueue,&msg,sizeof(msgEval),0);
+		
+		WebServer server;
+		server.pushResult(record);
 		delete record;
 
 		exit(0);
