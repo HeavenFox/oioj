@@ -82,15 +82,20 @@ void WebServer::pushResult(JudgeRecord *record)
 	{
 		phost = (struct hostent*)gethostbyname(Configuration::WebServer.c_str());
 		if(phost == NULL){
-			syslog(LOG_ERR,"Error parsing server");
+			syslog(LOG_ERR,"Error parsing server: %d", errno);
 		}
 		sock_address.sin_addr.s_addr =((struct in_addr*)phost->h_addr)->s_addr;
 	}
 	sock_address.sin_port = htons(80);
 
-	connect(sock,(struct sockaddr*)&sock_address,sizeof(struct sockaddr));
-
-	send(sock,finalRequest,strlen(finalRequest),0);
-	close(sock);
+	if (connect(sock,(struct sockaddr*)&sock_address,sizeof(struct sockaddr)) < 0)
+	{
+		syslog(LOG_ERR,"Unable to connect to server: %d", errno);
+	}
+	else
+	{
+		send(sock,finalRequest,strlen(finalRequest),0);
+		close(sock);
+	}
 	syslog(LOG_INFO,"record %d pushed", recordID);
 }

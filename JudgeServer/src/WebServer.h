@@ -14,6 +14,7 @@
 #include <netdb.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <errno.h>
 #include <netinet/in.h>
 #include "JudgeRecord.h"
 
