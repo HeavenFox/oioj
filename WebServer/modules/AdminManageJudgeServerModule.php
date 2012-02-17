@@ -22,6 +22,9 @@ class AdminManageJudgeServerModule
 		case 'stats':
 			$this->stats();
 			break;
+		case 'sync':
+			$this->sync();
+			break;
 		case 'ping':
 			$this->ping();
 			break;
@@ -81,6 +84,28 @@ class AdminManageJudgeServerModule
 			{
 				echo "<p>Server {$obj->name} (#{$obj->id})</p>\n";
 				echo "<p>Workload: {$result['Workload']}</p>";
+			}
+			else
+			{
+				echo '<p>Unable to contact server. It seems offline. You may try to ping the server.</p>';
+			}
+			
+		}
+	}
+	
+	public function sync()
+	{
+		$obj = JudgeServer::first(array('id','name','workload','ip','port'),'WHERE `id`='.IO::GET('id',0,'intval'));
+		if ($obj)
+		{
+			$result = $obj->dispatch("STATS\n");
+			if ($result)
+			{
+				$obj->workload = intval($result['Workload']);
+				$obj->update();
+				echo "<p>Server {$obj->name} (#{$obj->id})</p>\n";
+				echo "<p>Present Workload: {$obj->workload}</p>";
+				echo "<p>Updated to: {$result['Workload']}</p>";
 			}
 			else
 			{

@@ -17,7 +17,7 @@ $(function(){
 </thead>
 <tbody>
 {foreach $servers as $s}
-<tr><td>{if $s->online}<span style='color: green'>Y</span>{else}<span style='color: red'>N</span>{/if}</td><td>{$s->id}</td><td>{$s->name}</td><td>{$s->ip}:{$s->port}</td><td>{$s->workload}</td><td>{$s->maxWorkload}</td><td>{$s->ftpUsername}</td><td><a href='index.php?mod=admin_judgeserver&amp;act=edit&amp;id={$s->id}'>[Edit]</a> <a href="index.php?mod=admin_judgeserver&amp;act=stats&amp;id={$s->id}" class="fancylink">[Status]</a> <a href="index.php?mod=admin_judgeserver&amp;act=ping&amp;id={$s->id}" class="fancylink">[Ping]</a></td></tr>
+<tr><td>{if $s->online}<span style='color: green'>Y</span>{else}<span style='color: red'>N</span>{/if}</td><td>{$s->id}</td><td>{$s->name}</td><td>{$s->ip}:{$s->port}</td><td>{$s->workload}</td><td>{$s->maxWorkload}</td><td>{$s->ftpUsername}</td><td><a href='index.php?mod=admin_judgeserver&amp;act=edit&amp;id={$s->id}'>[Edit]</a> <a href="index.php?mod=admin_judgeserver&amp;act=stats&amp;id={$s->id}" class="fancylink">[Status]</a> <a href="index.php?mod=admin_judgeserver&amp;act=sync&amp;id={$s->id}" class="fancylink">[Sync]</a> <a href="index.php?mod=admin_judgeserver&amp;act=ping&amp;id={$s->id}" class="fancylink">[Ping]</a></td></tr>
 {/foreach}
 </tbody>
 </table>
