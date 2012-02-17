@@ -240,7 +240,6 @@ void TestCase::run()
 void TestCase::compare()
 {
 	// no comp needed
-
 	if (result == TESTRESULT_INDETERMINE)
 	{
 		char answerPath[256];
@@ -251,6 +250,14 @@ void TestCase::compare()
 		if (fulltext || record->compare.compare(COMPARE_OMITSPACE) == 0)
 		{
 			FILE *userOutput = fopen(outputDataPath,"r");
+			
+			if (!userOutput)
+			{
+				score = 0;
+				result = TESTRESULT_WA;
+				return;
+			}
+			
 			FILE *answerData = fopen(answerPath,"r");
 			for (;;)
 			{
@@ -325,7 +332,7 @@ void TestCase::compare()
 
 			char scorestr[4];
 			sprintf(scorestr,"%d",score);
-						pid_t cld = vfork();
+			pid_t cld = vfork();
 			if (cld == 0)
 			{
 				// Run file

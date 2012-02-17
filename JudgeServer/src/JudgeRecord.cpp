@@ -122,8 +122,8 @@ void JudgeRecord::compile()
 	}else
 	{
 		syslog(LOG_INFO, "unknown language");
-		compiler = new Compiler;
-		compiler->success = false;
+		compiler = NULL;
+		
 		return;
 	}
 
@@ -136,7 +136,7 @@ void JudgeRecord::judge()
 {
 	loadProblemSchema();
 	compile();
-	if (compiler->success)
+	if (compiler && compiler->success)
 	{
 		for (vector<TestCase>::iterator it=cases.begin(); it != cases.end(); it++)
 		{

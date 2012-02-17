@@ -45,6 +45,7 @@ int main (int argc, const char * argv[])
 {
 	// Daemonize
 	daemon(0,0);
+	umask(0);
 	// Finish daemonizing
 	
 	openlog("oiojd",LOG_PID,LOG_DAEMON);
