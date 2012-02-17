@@ -151,7 +151,7 @@ class AdminManageProblemModule
 		
 		if (!$form->get('editing')->data)
 		{
-			User::GetCurrent()->assertAble('edit_problem');
+			User::GetCurrent()->assertAble('add_problem');
 			$prob->user = User::GetCurrent();
 			$prob->dispatched = 0;
 			/*
