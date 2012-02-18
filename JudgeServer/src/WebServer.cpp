@@ -61,10 +61,13 @@ void WebServer::pushResult(JudgeRecord *record)
 		postString.append("&cases%5B%5D=");
 		postString.append(urlencode(thiscase));
 	}
-
-	ostringstream finalRequest;
 	
-	finalRequest<<"POST "<<Configuration::WebServerCallbackScript<<" HTTP/1.1\r\nContent-Type: application/x-www-form-urlencoded\r\nUser-Agent: OIOJJudgeServer/1.0\r\nHost: "<<Configuration::WebServer<<"\r\nContent-Length: "<<postString.size()<<"\r\nConnection: Keep-Alive\r\nCache-Control: no-cache\r\n\r\n"<<postString;
+	postString.append("\r\n");
+
+	ostringstream requestHeader;
+	
+	
+	requestHeader<<"POST "<<Configuration::WebServerCallbackScript<<" HTTP/1.1\r\nContent-Type: application/x-www-form-urlencoded\r\nUser-Agent: OIOJJudgeServer/1.0\r\nHost: "<<Configuration::WebServer<<"\r\nContent-Length: "<<postString.size()<<"\r\n\r\n";
 	// Create socket
 	int sock = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -88,6 +91,8 @@ void WebServer::pushResult(JudgeRecord *record)
 		sock_address.sin_addr.s_addr =((struct in_addr*)phost->h_addr)->s_addr;
 	}
 	sock_address.sin_port = htons(80);
+	
+	const int bufferSize = 512;
 
 	if (connect(sock,(struct sockaddr*)&sock_address,sizeof(struct sockaddr)) < 0)
 	{
@@ -95,7 +100,24 @@ void WebServer::pushResult(JudgeRecord *record)
 	}
 	else
 	{
-		send(sock,finalRequest.str().c_str(),finalRequest.str().size(),0);
+		send(sock,requestHeader.str().c_str(),requestHeader.str().size(),0);
+		send(sock,postString.c_str(),postString.size(),0);
+		/*
+		const char* reqPtr = finalRequest.str().c_str();
+		int remaining = finalRequest.str().size();
+		while (remaining > 0)
+		{
+			
+			int nextFrame = min(remaining,bufferSize);
+			char chunk[bufferSize + 2];
+			memcpy(chunk,reqPtr,nextFrame);
+			chunk[nextFrame] = '\0';
+			syslog(LOG_INFO, "chunk: %s", chunk);
+			int sent = (int)send(sock,reqPtr,nextFrame,(nextFrame < remaining ? MSG_MORE : 0));
+			reqPtr += sent;
+			remaining -= sent;
+		}*/
+		
 		close(sock);
 	}
 	syslog(LOG_INFO,"record %d pushed", recordID);
