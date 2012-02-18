@@ -241,19 +241,20 @@ class AdminManageProblemModule
 			$tags = array();
 			$tag_ids = IO::POST('tag_tid');
 			$tag_tag = IO::POST('tag_tag');
-			for ($i=0;$i < count($tag_ids);$i++)
+			if ($tag_ids && cound($tag_ids))
 			{
-				if ($tid = intval($tag_ids[$i]))
+				for ($i=0;$i < count($tag_ids);$i++)
 				{
-					$tags[] = $tid;
-				}else
-				{
-					$tags[] = $tag_tag[$i];
+					if ($tid = intval($tag_ids[$i]))
+					{
+						$tags[] = $tid;
+					}else
+					{
+						$tags[] = $tag_tag[$i];
+					}
 				}
+				$prob->addTags($tags);
 			}
-			$prob->addTags($tags);
-			
-			
 			
 			$prob->queueForDispatch();
 			

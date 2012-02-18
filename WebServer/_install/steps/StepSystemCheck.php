@@ -34,7 +34,7 @@ class StepSystemCheck
 		$this->html .= '</tr>';
 		
 		$this->html .= '<tr><td>vars/DBParameters.php</td>';
-		if (is_writable(VAR_DIR.'DBParameters.php'))
+		if (is_writable(VAR_DIR) || (file_exists(VAR_DIR.'DBParameters.php') && is_writable(VAR_DIR.'DBParameters.php')))
 		{
 			$this->html .= '<td class="pass">Writable</td>';
 		}else
@@ -45,7 +45,7 @@ class StepSystemCheck
 		$this->html .= '</tr>';
 		
 		$this->html .= '<tr><td>vars/CookieSecret.php</td>';
-		if (is_writable(VAR_DIR.'CookieSecret.php'))
+		if (is_writable(VAR_DIR) || (file_exists(VAR_DIR.'CookieSecret.php') && is_writable(VAR_DIR.'CookieSecret.php')))
 		{
 			$this->html .= '<td class="pass">Writable</td>';
 		}else
