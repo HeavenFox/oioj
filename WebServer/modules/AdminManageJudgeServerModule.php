@@ -101,10 +101,10 @@ class AdminManageJudgeServerModule
 			$result = $obj->dispatch("STATS\n");
 			if ($result)
 			{
-				$obj->workload = intval($result['Workload']);
-				$obj->update();
 				echo "<p>Server {$obj->name} (#{$obj->id})</p>\n";
 				echo "<p>Present Workload: {$obj->workload}</p>";
+				$obj->workload = intval($result['Workload']);
+				$obj->update();
 				echo "<p>Updated to: {$result['Workload']}</p>";
 			}
 			else
