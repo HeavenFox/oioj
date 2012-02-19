@@ -5,7 +5,6 @@
 <link rel="stylesheet" href="scripts/jquery-ui-css/ui-lightness/jquery-ui-1.8.16.custom.css" />
 <script type='text/javascript'>
 $(function(){
-	$('#prefs').accordion();
 	$.datepicker.setDefaults({
 		"dateFormat":"yy-mm-dd"
 	});
@@ -14,7 +13,10 @@ $(function(){
 </script>
 {/block}
 {block name="column-left"}
-<h2>Add Contest</h2>
+<div id='title_bar'>
+<div class="titles">
+<h1>Add Contest</h1>
+</div>
 <form action="index.php?mod=admin_contest&amp;act=save" method="post">
 <div id="prefs">
 <h3><a href='#'>Contest Basics</a></h3>
