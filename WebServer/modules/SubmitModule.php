@@ -61,6 +61,18 @@ class SubmitModule
 			throw new Exception('Unsupported language. Check if file extension is correct');
 		}
 		
+		$problem = Problem::first(array('dispatched','user'=>array('id'),'listing'), 'WHERE '.Problem::Column('id').' = '.$problemID);
+		
+		if (!$problem)
+		{
+			throw new Exception('Problem does not exist');
+		}
+		
+		if ($problem->dispatched <= 0 || !$problem->checkPermission(User::GetCurrent()))
+		{
+			throw new Exception('You cannot submit solution to this problem');
+		}
+		
 		$lang = $map[$lang];
 		
 		$record->setTokens();

@@ -216,5 +216,10 @@ class Problem extends TaggedRecord
 			$c->submit();
 		}
 	}
+	
+	public function checkPermission(User $user)
+	{
+		return $user->ableTo('view_problem') && (($this->listing > 0 && $this->dispatched > 0) || $user->id == $this->user->id || $user->ableTo('edit_problem') || $user->ableTo('view_problem_'.$this->id));
+	}
 }
 ?>
