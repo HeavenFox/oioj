@@ -80,10 +80,10 @@ class Contest extends ActiveRecord
 		return null;
 	}
 	
-	public function addOption($option, $value)
+	public function setOption($option, $value)
 	{
 		$db = Database::Get();
-		$stmt = $db->prepare('INSERT INTO `oj_contest_options` (`cid`,`key`,`value`) VALUES (?,?,?)');
+		$stmt = $db->prepare('REPLACE INTO `oj_contest_options` (`cid`,`key`,`value`) VALUES (?,?,?)');
 		$stmt->execute(array($this->id,$option,$value));
 	}
 	

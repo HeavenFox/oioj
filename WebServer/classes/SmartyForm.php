@@ -308,8 +308,11 @@ class SmartyForm
 		{
 			foreach ($this->recordAssoc as $k => $v)
 			{
-				$prop = $v[1];
-				$this->activeRecords[$v[0]]->$prop = $this->elements[$k]->data;
+				if ($this->elements[$k]->data !== null)
+				{
+					$prop = $v[1];
+					$this->activeRecords[$v[0]]->$prop = $this->elements[$k]->data;
+				}
 			}
 		}
 		
@@ -331,6 +334,11 @@ abstract class SF_Element
 	 * @var SmartyForm
 	 */
 	public $form;
+	
+	/**
+	 * @var bool
+	 */
+	public $multiple;
 	
 	public $data = null;
 	
@@ -475,12 +483,14 @@ abstract class SF_Element
 			{
 				$this->attributes[$k] = $v;
 			}
-		} else
+		}
+		else
 		{
 			if ($value === null)
 			{
 				unset($this->attributes[$key]);
-			}else
+			}
+			else
 			{
 				$this->attributes[$key] = $value;
 			}
@@ -490,6 +500,7 @@ abstract class SF_Element
 	protected function generateAtrributes()
 	{
 		$attr = '';
+		
 		foreach ($this->attributes as $k => $v)
 		{
 			$attr .= (' '.$k.'="'.htmlspecialchars($v).'"');
@@ -500,7 +511,7 @@ abstract class SF_Element
 	protected function setDefaultAttributes()
 	{
 		$this->attributes['id'] = $this->getHTMLID();
-		$this->attributes['name'] = $this->id;
+		$this->attributes['name'] = $this->id . ($this->multiple ? '[]' : '');
 		if ($this->data)
 			$this->attributes['value'] = $this->data;
 	}
@@ -598,10 +609,13 @@ class SF_Number extends SF_TextBased
 	public $max;
 	public $step = 1;
 	
-	public function __construct()
+	protected function setDefaultAttributes()
 	{
-		call_user_func_array('parent::__construct',func_get_args());
+		parent::setDefaultAttributes();
 		$this->attributes['type'] = 'number';
+		$this->attributes['min'] = $this->min;
+		$this->attributes['max'] = $this->max;
+		$this->attributes['step'] = $this->step;
 	}
 	
 	public function gatherFromPOST()
@@ -617,15 +631,6 @@ class SF_Number extends SF_TextBased
 		{
 			throw new InputException("The value must lie between {$this->min} and {$this->max}");
 		}
-	}
-	
-	public function html()
-	{
-		$this->attributes['min'] = $this->min;
-		$this->attributes['max'] = $this->max;
-		$this->attributes['step'] = $this->step;
-		
-		return parent::html();
 	}
 }
 
@@ -655,10 +660,59 @@ class SF_Date extends SF_TextBased
 
 class SF_DateTime extends SF_Date
 {
-	protected function setDefaultAttributes()
+	
+	private function makeExtraElements()
 	{
-		parent::setDefaultAttributes();
-		$this->attributes['type'] = 'datetime';
+		return array(new SF_Number('id',$this->id . '-h','min',0,'max',23,'step',1,'size',2,'form',$this->form), 
+					new SF_Number('id',$this->id . '-m','min',0,'max',59,'step',1,'size',2,'form',$this->form),
+					new SF_Number('id',$this->id . '-s','min',0,'max',59,'step',1,'size',2,'form',$this->form));
+	}
+	
+	public function html()
+	{
+		$extras = $this->makeExtraElements();
+		
+		$this->attributes['size'] = '12';
+		return parent::html() . $extras[0]->html() . ':' . $extras[1]->html() . ':' . $extras[2]->html();
+	}
+	
+	public function gatherFromPOST()
+	{
+		$data = IO::POST($this->id,null);
+		if ($data !== null)
+		{
+			$this->data = strtotime(IO::POST($this->id).' '.IO::POST($this->id.'-h').':'.IO::POST($this->id.'-m').':'.IO::POST($this->id.'-s'));
+		}
+	}
+}
+
+class SF_Duration extends SF_Element
+{
+	
+	private function makeExtraElements()
+	{
+		$elements = array(new SF_Number('id',$this->id . '-h','min',0,'step',1,'form',$this->form,'data',$this->data !== null ? floor($this->data / 3600) : null), 
+					new SF_Number('id',$this->id . '-m','min',0,'max',59,'step',1,'form',$this->form,'data',$this->data !== null ? floor(($this->data % 3600)/60) : null),
+					new SF_Number('id',$this->id . '-s','min',0,'max',59,'step',1,'form',$this->form,'data',$this->data !== null ? $this->data % 60 : null));
+		foreach ($elements as $v)
+		{
+			$v->setAttribute('size',2);
+		}
+		return $elements;
+	}
+	
+	public function html()
+	{
+		$extras = $this->makeExtraElements();
+		
+		return $extras[0]->html() . ':' . $extras[1]->html() . ':' . $extras[2]->html();
+	}
+	
+	public function gatherFromPOST()
+	{
+		$extras = $this->makeExtraElements();
+		
+		$this->data = $extras[0]->data * 3600 + $extras[1]->data * 60 + $extras[2]->data;
 	}
 }
 
@@ -689,6 +743,15 @@ class SF_CheckboxGroup extends SF_GroupElement
 class SF_Select extends SF_Element
 {
 	protected $options;
+	
+	public function setDefaultAttributes()
+	{
+		parent::setDefaultAttributes();
+		if ($this->multiple)
+		{
+			$this->attributes['multiple'] = 'multiple';
+		}
+	}
 	
 	public function html()
 	{
