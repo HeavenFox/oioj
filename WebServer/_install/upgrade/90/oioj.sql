@@ -7,3 +7,15 @@ CREATE TABLE `oj_problem_comments` (
   `timestamp` int(11) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+
+
+ALTER TABLE  `oj_contest_options` DROP FOREIGN KEY  `oj_contest_options_ibfk_1` ;
+ALTER TABLE  `oj_contest_options` DROP INDEX  `cid`
+ALTER TABLE  `oioj`.`oj_contest_options` ADD UNIQUE (
+`cid` ,
+`key`
+)
+
+ALTER TABLE  `oj_contest_options` ADD FOREIGN KEY (  `cid` ) REFERENCES  `oioj`.`oj_contests` (
+`id`
+) ON DELETE CASCADE ON UPDATE CASCADE ;
