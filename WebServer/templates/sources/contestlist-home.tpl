@@ -2,6 +2,19 @@
 {block name="html_head" append}
 <link rel='stylesheet' href='templates/list.css' />
 <link rel="stylesheet" href="templates/contestlist-home.css" />
+<script type='text/javascript'>
+var curTime = {time()};
+window.setInterval(function(){
+	curTime++;
+},1000);
+$(function(){
+	window.setInterval(function(){
+		var now = new Date(curTime*1000);
+		$('#systime_date').text(now.toLocaleDateString());
+		$('#systime_time').text(now.toLocaleTimeString());
+	},1000);
+});
+</script>
 {/block}
 {block name="column-left"}
 <h2>Open Contests</h2>
@@ -121,4 +134,11 @@
 </table>
 {/block}
 {block name="column-right"}
+<div class="sidebar-box">
+<h2>System Time</h2>
+<div class="sidebar-content">
+<div id='systime_date'></div>
+<div id='systime_time'></div>
+</div>
+</div>
 {/block}
