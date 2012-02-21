@@ -35,14 +35,6 @@ class Contest extends ActiveRecord
 	
 	public function startContest()
 	{
-		/*
-		$this->getComposite(array('problems' => array('id')));
-		foreach ($this->problems as $p)
-		{
-			$p->listing = 1;
-			$p->submit();
-		}
-		*/
 		$this->status = self::STATUS_INPROGRESS;
 		$this->beginTime = time();
 		$this->submit();
@@ -203,61 +195,78 @@ class Contest extends ActiveRecord
 		return false;
 	}
 	
+	private function getSessionCachedValue($key, $sanitizer, $generator)
+	{
+		if (($sess = IO::Session($key,null,$sanitizer)) === null)
+		{
+			$val = $generator();
+			IO::SetSession($key, $val);
+		}
+		else
+		{
+			return $sess;
+		}
+	}
+	
 	/**
 	 * Check enrollment status of a user
 	 */
-	public function checkEnrollment($user)
+	public function checkEnrollment($user, $caching = true)
 	{
 		$registered = false;
+		$contest = $this;
 		if ($user->id != 0)
 		{
-			if (($sess = IO::Session('contest-registered-'.$this->id,-1)) == -1)
+			$generator = function() use ($contest, $user)
 			{
 				$db = Database::Get();
-				$stmt = $db->query('SELECT count(*) FROM `oj_contest_register` WHERE `cid` = '.$this->id.' AND `uid` = '.$user->id)->fetch();
+				$stmt = $db->query('SELECT count(*) FROM `oj_contest_register` WHERE `cid` = '.$contest->id.' AND `uid` = '.$user->id)->fetch();
 				if ($stmt[0] > 0)
 				{
-					$registered = true;
+					return 1;
 				}else
 				{
-					$registered = false;
+					return 0;
 				}
-				IO::SetSession('contest-registered-'.$this->id,$registered);
-			}
-			else
-			{
-				$registered = $sess;
-			}
-			
+			};
+			$registered = $caching ? ($this->getSessionCachedValue('contest-registered-'.$this->id,'intval',$generator) > 0) : $generator();
 		}
 		return $registered;
 	}
 	
 	/**
 	 * Check if user has started working on a contest
+	 * 
 	 * @return mixed false if has not begin, time started otherwise
 	 */
-	public function checkStarted($user)
+	public function checkStarted($user, $caching = true)
 	{
 		$beginTime = false;
+		$contest = $this;
 		if ($user->id != 0)
 		{
-			if (($sess = IO::Session('contest-began-'.$this->id,false,'intval')) === false)
+			$generator = function() use ($contest, $user)
 			{
 				$db = Database::Get();
-				$stmt = $db->query('SELECT `started` FROM `oj_contest_register` WHERE `cid` = '.$this->id.' AND `uid` = '.$user->id)->fetch();
+				$stmt = $db->query('SELECT `started` FROM `oj_contest_register` WHERE `cid` = '.$contest->id.' AND `uid` = '.$user->id)->fetch();
 				if (!is_null($stmt[0]))
 				{
-					$beginTime = intval($stmt[0]);
-					IO::SetSession('contest-began-'.$this->id,$beginTime);
+					return intval($stmt[0]);
 				}
-			}
-			else
-			{
-				$beginTime = intval($sess);
-			}
+				return false;
+			};
+			$beginTime = $caching ? $this->getSessionCachedValue('contest-began-'.$this->id,'intval',$generator) : $generator();
 		}
 		return $beginTime;
+	}
+	
+	public function registerUser(User $user)
+	{
+		$db = Database::Get();
+		
+		$db->exec('INSERT INTO `oj_contest_register` (cid,uid) VALUES ('.$this->id.','.$user->id.')');
+		
+		IO::SetSession('contest-registered-'.$this->id,1);
 	}
 	
 	/**

@@ -17,6 +17,7 @@ $(function(){
 <div class="titles">
 <h1>Add Contest</h1>
 </div>
+</div>
 <form action="index.php?mod=admin_contest&amp;act=save" method="post">
 <div id="prefs">
 <h3><a href='#'>Contest Basics</a></h3>
