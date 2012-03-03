@@ -50,8 +50,6 @@ int main (int argc, const char * argv[])
 	
 	openlog("oiojd",LOG_PID,LOG_DAEMON);
 	syslog(LOG_INFO, "OIOJ Judge Daemon Starting");
-	
-	Configuration::ReadConfiguration();
 
 	msgQueue = msgget(IPC_PRIVATE, 0700);
 
@@ -68,9 +66,11 @@ int main (int argc, const char * argv[])
 	socklen_t client_sock_addr_len;
 	memset((void*)&sock_address, 0, sizeof(sockaddr_in));
 	
+	ConfigFile* config = Configuration::Get();
+	
 	sock_address.sin_family = AF_INET;
 	sock_address.sin_addr.s_addr = INADDR_ANY;
-	sock_address.sin_port = htons(Configuration::PortNumber);
+	sock_address.sin_port = htons(config->read<int>("port"));
 	
 	if (bind(sock, (struct sockaddr*)&sock_address, sizeof(sockaddr_in)) < 0)
 	{
@@ -81,9 +81,9 @@ int main (int argc, const char * argv[])
 	
 	listen(sock, 5);
 	
-	syslog(LOG_INFO,"Listening port %d", Configuration::PortNumber);
+	syslog(LOG_INFO,"Listening for incoming connection at %d...",config->read<int>("port"));
 	
-	scheduler = new RunScheduler(Configuration::CPUCount, Configuration::ConcurrentJobs, Configuration::WaitlistSize);
+	scheduler = new RunScheduler(config->read<int>("cpu_count"), config->read<int>("concurrent_jobs"), config->read<int>("waitlist_size"));
 	
 	timeval timeout;
 

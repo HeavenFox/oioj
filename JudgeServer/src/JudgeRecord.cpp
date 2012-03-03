@@ -34,14 +34,6 @@ bool JudgeRecord::prepareRecord(string s)
 		string param;
 		getline(lin, param);
 
-		if (op.compare("Token") == 0)
-		{
-			if (param.compare(Configuration::Token))
-			{
-				return false;
-			}
-			continue;
-		}
 		if (op.compare("Lang") == 0)
 		{
 			language = param;
@@ -74,13 +66,16 @@ void JudgeRecord::deduceVariable()
 	if (!deducedVariable)
 	{
 		deducedVariable = true;
+		
+		ConfigFile *config = Configuration::Get();
+		
 		ostringstream sout1;
-		sout1<<Configuration::DataDirPrefix<<problemID<<'/';
+		sout1<<config->read<string>("data_dir_prefix")<<problemID<<'/';
 		dataDirectory = sout1.str();
 
 		// Prepare for proper path
 		ostringstream sout;
-		sout<<Configuration::WorkingDirPrefix<<recordID<<'/';
+		sout<<config->read<string>("working_dir_prefix")<<recordID<<'/';
 		workingDirectory = sout.str();
 		sout<<recordID;
 		binaryPath = sout.str();
@@ -160,7 +155,7 @@ void JudgeRecord::judge()
 void JudgeRecord::loadProblemSchema()
 {
 	sqlite3 *schemaDB;
-	sqlite3_open(Configuration::ProblemSchemaDB.c_str(), &schemaDB);
+	sqlite3_open(Configuration::Get()->read<string>("problem_schema_db").c_str(), &schemaDB);
 	sqlite3_stmt *stmt;
 	char query[] = "SELECT type,compare,input,output FROM problems WHERE `id` = ?";
 	sqlite3_prepare_v2(schemaDB, query, sizeof(query), &stmt, NULL);

@@ -49,7 +49,9 @@ void WebServer::pushResult(JudgeRecord *record)
 		}
 	}
 	
-	sprintf(generalState, "RecordID %d\nStatus %d\nToken %s\n", recordID, status, Configuration::Token.c_str());
+	ConfigFile* config = Configuration::Get();
+	
+	sprintf(generalState, "RecordID %d\nStatus %d\nToken %s\n", recordID, status, config->read<string>("token").c_str());
 
 	string postString("general=");
 	postString.append(urlencode(generalState));
@@ -67,7 +69,7 @@ void WebServer::pushResult(JudgeRecord *record)
 	ostringstream requestHeader;
 	
 	
-	requestHeader<<"POST "<<Configuration::WebServerCallbackScript<<" HTTP/1.1\r\nContent-Type: application/x-www-form-urlencoded\r\nUser-Agent: OIOJJudgeServer/1.0\r\nHost: "<<Configuration::WebServer<<"\r\nContent-Length: "<<postString.size()<<"\r\n\r\n";
+	requestHeader<<"POST "<<config->read<string>("webserver_callback")<<" HTTP/1.1\r\nContent-Type: application/x-www-form-urlencoded\r\nUser-Agent: OIOJJudgeServer/1.0\r\nHost: "<<config->read<string>("webserver_address")<<"\r\nContent-Length: "<<postString.size()<<"\r\n\r\n";
 	// Create socket
 	int sock = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -81,10 +83,10 @@ void WebServer::pushResult(JudgeRecord *record)
 	memset((void*)&sock_address, 0, sizeof(sockaddr_in));
 
 	sock_address.sin_family = AF_INET;
-	sock_address.sin_addr.s_addr = inet_addr(Configuration::WebServer.c_str());
+	sock_address.sin_addr.s_addr = inet_addr(config->read<string>("webserver_address").c_str());
 	if (sock_address.sin_addr.s_addr == INADDR_NONE)
 	{
-		phost = (struct hostent*)gethostbyname(Configuration::WebServer.c_str());
+		phost = (struct hostent*)gethostbyname(config->read<string>("webserver_address").c_str());
 		if(phost == NULL){
 			syslog(LOG_ERR,"Error parsing server: %d", errno);
 		}

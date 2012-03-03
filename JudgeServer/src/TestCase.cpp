@@ -69,12 +69,12 @@ void TestCase::run()
 		{
 			chroot(record->workingDirectory.c_str());
 			// relinquish root privilege
-			setuid(Configuration::AgentUID);
+			setuid(Configuration::Get()->read<int>("agent_uid"));
 		}
 
 		char binaryName[128];
 		sprintf(binaryName, "%d", record->recordID);
-		double convertedTimeLimit = timeLimit * Configuration::TimeMultipler;
+		double convertedTimeLimit = timeLimit * Configuration::Get()->read<double>("time_multiplier");
 		pid_t pid = fork();
 		if (pid == 0)
 		{
@@ -322,7 +322,7 @@ void TestCase::compare()
 		{
 			// Prepare special judge path
 			char specialJudge[512];
-			strcpy(specialJudge,Configuration::DataDirPrefix.c_str());
+			strcpy(specialJudge,Configuration::Get()->read<string>("data_dir_prefix").c_str());
 			strcat(specialJudge, record->compare.c_str());
 			char specialJudgeBin[128];
 			strcpy(specialJudgeBin, record->compare.c_str());
