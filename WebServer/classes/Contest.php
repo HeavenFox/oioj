@@ -313,13 +313,13 @@ class Contest extends ActiveRecord
 			$rec->add();
 			
 			$rec->dispatch($servers = $this->getOption('judge_servers') ? array_map(explode(',',$servers),function($c){return new JudgeServer(intval($c));}) : null);
-			
 		case  'save':
 			$db = Database::Get();
 			$stmt = $db->prepare("INSERT INTO `oj_contest_submissions` (cid,uid,pid,code,lang,timestamp,rid) VALUES (?,?,?,?,?,?,".(isset($rec) ? $rec->id : 'NULL').")");
 			$stmt->execute(array($this->id,$user->id,$problem->id,$code,$lang,time()));
-			break;
+			return isset($rec) ? $rec : true;
 		}
+		return false;
 	}
 }
 ?>

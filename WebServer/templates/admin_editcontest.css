@@ -1,0 +1,21 @@
+#column-left table
+{
+	margin: 5px;
+}
+
+
+
+
+#column-left table td
+{
+	border: 1px solid #e0e0e0;
+	padding: 2px;
+}
+
+#column-left table thead td
+{
+	background-color: #f0f0f0;
+	font-weight: bold;
+	padding: 5px;
+	color: #5b5b5b;
+}

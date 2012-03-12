@@ -26,29 +26,29 @@ $(function(){
 </thead>
 <tbody>
 <tr><td>{slabel id="title"}</td><td>{sinput id="title"}</td></tr>
-<tr><td>Description</td><td>{sinput id="description"}</td></tr>
-<tr><td>Scheduled Start Time</td><td>{sinput id="starttime" onchange="p=document.getElementById('sf_contest_starttime');if (!p.value)p.value=this.value;"}<br /><small>Note: This is for information only. Unless directed, contest will not automatically start at this time.</small></td></tr>
-<tr><td>Scheduled End Time</td><td>{sinput id="endtime"}</td></tr>
-<tr><td>Duration</td><td>{sinput id="duration"}<br /><small>This does not have to match end minus start. User can begin anytime during that window and have this much time to finish.</small></td></tr>
-<tr><td>Support Early Hand-in</td><td>{sinput id="early_handin"}<small>User will be able to stop working anytime, after which submission is disabled. Useful for ranking by time spent.</td></tr>
-<tr><td>Automatically start at scheduled time</td><td>{sinput id="auto_start"}</td></tr>
+<tr><td>{slabel id="description"}</td><td>{sinput id="description"}</td></tr>
+<tr><td>{slabel id="starttime"}</td><td>{sinput id="starttime" onchange="p=document.getElementById('sf_contest_starttime');if (!p.value)p.value=this.value;"}<br /><small>Note: This is for information only. Unless directed, contest will not automatically start at this time.</small></td></tr>
+<tr><td>{slabel id="endtime"}</td><td>{sinput id="endtime"}</td></tr>
+<tr><td>{slabel id="duration"}</td><td>{sinput id="duration"}<br /><small>This does not have to match end minus start. User can begin anytime during that window and have this much time to finish.</small></td></tr>
+<tr><td>{slabel id="early_handin"}</td><td>{sinput id="early_handin"}<small>User will be able to stop working anytime, after which submission is disabled. Useful for ranking by time spent.</td></tr>
+<tr><td>{slabel id="auto_start"}</td><td>{sinput id="auto_start"}</td></tr>
 </tbody>
 <thead>
 <tr><td colspan="2">Registration &amp; Problems</td></tr>
 </thead>
 <tbody>
-<tr><td>Publicity Level</td><td>
+<tr><td>{slabel id="publicity"}</td><td>
 {sinput id="publicity"}
 </td></tr>
 
-<tr><td>Registration Begins</td><td>
+<tr><td>{slabel id="regstart"}</td><td>
 {sinput id="regstart"}
 </td></tr>
-<tr><td>Registration Ends</td><td>
+<tr><td>{slabel id="regend"}</td><td>
 {sinput id="regend"}
 </td></tr>
 
-<tr><td>Display titles before contest starts</td><td>{sinput id="display_problem_title_before_start"}</td></tr>
+<tr><td>{slabel id="display_problem_title_before_start"}</td><td>{sinput id="display_problem_title_before_start"}</td></tr>
 <tr><td>Problems</td><td><ul id="problems-list"></ul><input type="number" name="add-problem" id="add-problem" /><input type="button" onclick="addProblem();" value='Add' /><span id="add-problem-indicator" style='display: none;'>Fetching problem info...</span><br /><small>Please put the ID of problems here. Add problems first if you haven't</small></td></tr>
 </tbody>
 <thead>
@@ -73,15 +73,8 @@ $(function(){
 <li>total_score: Total score.</li></ul></p>
 <p>Sample: Standard ACM ranking<br />Criterion 1: num_right, descending<br />Criterion 2: 20*60*num_wrong+duration, ascending</p>
 </td></tr>
-<tr><td>Ranking Parameters to Display</td><td>
-<select name="display_params[]" multiple="multiple">
-<option value="total_score">Total Score</option>
-<option value="num_right">Num of Correct Submission</option>
-<option value="num_wrong">Num of Wrong Submission</option>
-<option value="duration">Time Used Before Hand-in</option>
-<option value="total_time">Sum of Elapsed Time When Submitted</option>
-<option value="max_time">Elapsed Time When Last Submitted</option>
-</select>
+<tr><td>{slabel id="display_params"}</td><td>
+{sinput id="display_params"}
 <br /><small>Note: the parameters you select MUST appear in ranking criteria calculation</small>
 </td></tr>
 </tbody>

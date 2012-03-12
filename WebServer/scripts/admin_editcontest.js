@@ -7,19 +7,34 @@ function addProblem()
 		if (data.error){alert(data.error);}
 		else
 		{
-			$('#problems-list').append("<li>" + data.title + "<input type='hidden' name='problems[]' value='"+pid+"' /></li>");
+			addProblemToList(data.title, pid);
 		}
 	});
 	
 }
 
+function addProblemToList(title, pid)
+{
+	$('#problems-list').append("<li>" + title + "<input type='hidden' name='problems[]' value='"+pid+"' />"+removeListItemHTML()+"</li>");
+}
+
 function addCriterion()
 {
-	$('#criteria-list').append(
-	"<li><input name='criteria[]' value='"+$('#add-criterion').val()+"' /><select name='criteria-order[]'>"+
-		"<option value='a'"+(document.getElementById('add-criterion-order').selectedIndex == 0 ? ' selected' : '')+">ascending</option>"+
-		"<option value='d'"+(document.getElementById('add-criterion-order').selectedIndex == 1 ? ' selected' : '')+">descending</option>"+
-		"</select></li>"
-	);
+	addCriterionToList($('#add-criterion').val(), document.getElementById('add-criterion-order').selectedIndex == 0 ? 'asc' : 'desc');
 	$('#add-criterion').val("");
+}
+
+function addCriterionToList(val, order)
+{
+	$('#criteria-list').append(
+	"<li><input name='criteria[]' value='"+val+"' /><select name='criteria-order[]'>"+
+		"<option value='a'"+(order == 'asc' ? ' selected' : '')+">ascending</option>"+
+		"<option value='d'"+(order == 'desc' ? ' selected' : '')+">descending</option>"+
+		"</select>" + removeListItemHTML() + "</li>"
+	);
+}
+
+function removeListItemHTML()
+{
+	return '<input type="button" value="x" onclick="$(this).parent().remove()"/>';
 }

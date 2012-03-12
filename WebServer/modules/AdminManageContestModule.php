@@ -19,8 +19,12 @@ class AdminManageContestModule
 		case 'save':
 			$this->saveContest();
 			break;
-		default:
+		case 'add':
 			$this->addContest();
+			break;
+		case 'edit':
+			$this->editContest();
+			break;
 		}
 		
 		
@@ -29,6 +33,7 @@ class AdminManageContestModule
 	private function generateContestForm($record = null)
 	{
 		$form = new SmartyForm('contest', 'index.php?mod=admin_contest&act=save');
+		$form->add(new SF_Hidden('id'));
 		$form->add(new SF_TextField('id','title','label','Title'));
 		$form->add(new SF_TextArea('id','description','label','Description'));
 		$form->add(new SF_DateTime('id','starttime','label','Scheduled Start Time'));
@@ -72,6 +77,8 @@ class AdminManageContestModule
 		return $form;
 	}
 	
+	private $basicSettingsFromAssoc = array('early_handin','after_submit','display_problem_title_before_start','display_preliminary_ranking','display_ranking');
+	
 	private function getProblemTitle($id)
 	{
 		$p = Problem::first(array('title'),$id);
@@ -98,13 +105,15 @@ class AdminManageContestModule
 		return strtotime(IO::POST($name.'-date').' '.IO::POST($name.'-h').':'.IO::POST($name.'-m').':'.IO::POST($name.'-s'));
 	}
 	
-	public function generateForm()
-	{
-		$form = new SmartyForm();
-	}
-	
 	public function saveContest()
 	{
+		$c = new Contest();
+		$form = $this->generateContestForm($c);
+		
+		$form->gatherFromPOST();
+		
+		$isNew = !$form->get('id')->data;
+		
 		// Ranking Criteria
 		$criteria = IO::POST('criteria');
 		$criteria_order = IO::POST('criteria-order');
@@ -119,31 +128,18 @@ class AdminManageContestModule
 			$criteria[$k] = $criteria_order[$k].$v;
 		}
 		
-		
-		$c = new Contest();
-		
-		
-		$c->user = User::GetCurrent();
-		
-		$c->duration = intval(IO::POST('duration-h'))*3600+intval(IO::POST('duration-m'))*60+intval(IO::POST('duration-s'));
-		
-		$c->status = Contest::STATUS_WAITING;
-		
+		if ($isNew)
+		{
+			$c->user = User::GetCurrent();
+			$c->status = Contest::STATUS_WAITING;
+		}
 		
 		$c->submit();
 		
-		$cbCallback = function($val)
+		foreach ($this->basicSettingsFromAssoc as $v)
 		{
-			return 1;
-		};
-		
-		$c->setOption('early_handin',IO::POST('early_handin',0,$cbCallback));
-		$c->setOption('after_submit',IO::POST('after_submit','save'));
-		$c->setOption('display_problem_title_before_start',IO::POST('display_problem_title_before_start',0,$cbCallback));
-		$c->setOption('display_preliminary_ranking',IO::POST('display_preliminary_ranking',0,$cbCallback));
-		$c->setOption('display_ranking',IO::POST('display_ranking',0,$cbCallback));
-		
-		
+			$c->setOption($v,$form->get($v)->data);
+		}
 		
 		$c->setOption('ranking_criteria',implode(';',$criteria));
 		$c->setOption('ranking_display_params',implode(';',IO::POST('display_params')));
@@ -190,7 +186,6 @@ class AdminManageContestModule
 	
 	public function editContest()
 	{
-		$contest = 
 		OIOJ::$template->assign('contestform',$this->generateContestForm());
 		OIOJ::$template->display('admin_editcontest.tpl');
 	}
