@@ -8,84 +8,52 @@
 
 #include "JudgeRecord.h"
 
-bool JudgeRecord::prepareRecord(string s)
+void JudgeRecord::parse(xml_node<> *request)
 {
-	istringstream sin(s);
-	string line;
-	while (getline(sin,line))
+	// TODO Error Handling
+	xml_node<> *problemNode = request->first_node("problem");
+	sscanf(problemNode->first_attribute("id")->value(),"%d",&problemID);
+	
+	xml_node<> *recordNode = request->first_node("record");
+	sscanf(recordNode->first_attribute("id")->value(),"%d",&recordID);
+	
+	xml_node<> *submissionNode = request->first_node("submission");
+	xml_attribute<> *languageAttribute = submissionNode->first_attribute("lang");
+	if (languageAttribute)
 	{
-		if (line.size() == 0)continue;
-		trim(line);
-		istringstream lin(line);
-		string op;
-		lin>>op>>ws;
-		if (op.compare("ProblemID") == 0)
-		{
-			lin>>problemID;
-
-			continue;
-		}
-		if (op.compare("RecordID") == 0)
-		{
-			lin>>recordID;
-
-			continue;
-		}
-		string param;
-		getline(lin, param);
-
-		if (op.compare("Lang") == 0)
-		{
-			language = param;
-			continue;
-		}
-		if (op.compare("FilePath") == 0)
-		{
-			deduceVariable();
-			
-			rename(param.c_str(), submissionPath.c_str());
-			
-			continue;
-		}
-		if (op.compare("Submission") == 0)
-		{
-			deduceVariable();
-
-			writeBase64(submissionPath,param);
-
-		}
+		language = string(languageAttribute->value());
 	}
 	
-	syslog(LOG_INFO, "Record ID: %d", recordID);
+	ConfigFile *config = Configuration::Get();
+		
+	ostringstream sout1;
+	sout1<<config->read<string>("data_dir_prefix")<<problemID<<'/';
+	dataDirectory = sout1.str();
+
+	ostringstream sout;
+	sout<<config->read<string>("working_dir_prefix")<<recordID<<'/';
+	workingDirectory = sout.str();
 	
-	return true;
-}
+	sout<<recordID;
+	binaryPath = sout.str();
+	sout<<'.'<<language;
+	submissionPath = sout.str();
 
-void JudgeRecord::deduceVariable()
-{
-	if (!deducedVariable)
+	mkdir(workingDirectory.c_str(), 0777);
+	
+	xml_attribute<> *pathAttribute = submissionNode->first_attribute("path");
+	
+	if (pathAttribute)
 	{
-		deducedVariable = true;
-		
-		ConfigFile *config = Configuration::Get();
-		
-		ostringstream sout1;
-		sout1<<config->read<string>("data_dir_prefix")<<problemID<<'/';
-		dataDirectory = sout1.str();
-
-		// Prepare for proper path
-		ostringstream sout;
-		sout<<config->read<string>("working_dir_prefix")<<recordID<<'/';
-		workingDirectory = sout.str();
-		sout<<recordID;
-		binaryPath = sout.str();
-		sout<<'.'<<language;
-		submissionPath = sout.str();
-
-		mkdir(workingDirectory.c_str(), 0777);
-
+		rename(pathAttribute->value(), submissionPath.c_str());
 	}
+	else
+	{
+		writeBase64(submissionPath.c_str(),submissionNode->value(),submissionNode->value_size());
+	}
+	
 }
+
 
 void JudgeRecord::compile()
 {
@@ -144,11 +112,10 @@ void JudgeRecord::judge()
 	{
 		status = RECORDSTATUS_CE;
 	}
-	char working[512];
-	strcpy(working,workingDirectory.c_str());
-	if (vfork() == 0)
+	
+	if (fork() == 0)
 	{
-		execl("/bin/rm","rm","-rf",working,NULL);
+		execl("/bin/rm","rm","-rf",workingDirectory.c_str(),NULL);
 	}
 }
 

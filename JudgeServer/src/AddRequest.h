@@ -16,11 +16,12 @@
 #include "TestCase.h"
 #include "Dependency.h"
 
+#include "Request.h"
 
-class AddRequest
+class AddRequest : public Request
 {
 public:
-	void processRequest(string &s);
+	virtual void parse(xml_node<> *request);
 };
 
 

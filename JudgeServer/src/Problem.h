@@ -22,7 +22,7 @@ public:
 	string input;
 	string output;
 
-	short type;
+	int type;
 
 	string compare;
 

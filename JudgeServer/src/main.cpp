@@ -130,75 +130,83 @@ int main (int argc, const char * argv[])
 		fread(&reqlength,sizeof(int),1,sockfile);
 		
 		// Discard too big requests
-		if (reqlength > 8*1024*1024)
+		if (reqlength < 8*1024*1024)
 		{
-			close(client_sock);
-			continue;
-		}
-		
-		const int command_size = 6;
-		char actioncmd[command_size+1];
-		fread(actioncmd,sizeof(char),command_size,sockfile);
-		actioncmd[command_size] = '\0';
-		
-		int action;
-		if (strcmp(actioncmd,"JUDGE\n") == 0)
-		{
-			action = REQUEST_EVAL;
-		}
-		else if (strcmp(actioncmd,"ADDPB\n") == 0)
-		{
-			action = REQUEST_ADD;
-		}
-		else if (strcmp(actioncmd,"STATS\n") == 0)
-		{
-			action = REQUEST_STATS;
+			char *buffer = new char[reqlength + 1];
+			fread(buffer,sizeof(char),reqlength,sockfile);
+			buffer[reqlength] = '\0';
+
+			syslog(LOG_INFO, "%s", buffer);
+
+			xml_document<> req;
+
+			req.parse<0>(buffer);
+
+			xml_node<> *rootnode = req.first_node();
+			
+			// Authenticate
+			xml_attribute<> *tokenNode = rootnode->first_attribute("token");
+			xml_attribute<> *backupTokenNode = rootnode->first_attribute("backup-token");
+			
+			const char* token = config->read<string>("token").c_str();
+			
+			if ((tokenNode && strcmp(tokenNode->value(), token) == 0) || (backupTokenNode && strcmp(backupTokenNode->value(), token) == 0))
+			{
+				xml_attribute<> *type = rootnode->first_attribute("type");
+
+				if (strcmp(type->value(),"judge") == 0)
+				{
+					syslog(LOG_INFO, "Request type: judge");
+					JudgeRecord *currentRecord = new JudgeRecord;
+
+					char response[512];
+					int code;
+
+					try
+					{
+						currentRecord->parse(rootnode);
+					}
+					catch(int e)
+					{
+						syslog(LOG_ERR, "Failed to parse problem.");
+						code = SERVERCODE_INTERNAL;
+						delete currentRecord;
+					}
+
+					code = scheduler->arrangeTask(currentRecord);
+					sprintf(response, "<response code=\"%d\" workload=\"%d\" />\n", code, scheduler->serverWorkload());
+					send(client_sock,response,strlen(response),0);
+				}
+				else if (strcmp(type->value(),"addproblem") == 0)
+				{
+					syslog(LOG_INFO, "Request type: add problem");
+					AddRequest req;
+					req.parse(rootnode);
+				}
+				else if (strcmp(type->value(),"status") == 0)
+				{
+					char response[512];
+					sprintf(response, "<response workload=\"%d\" />\n", scheduler->serverWorkload());
+					send(client_sock,response,strlen(response),0);
+				}
+				else
+				{
+					syslog(LOG_ERR,"unrecognized command: %s", type->value());
+					char response[512];
+					sprintf(response, "<response error=\"405\" />\n", scheduler->serverWorkload());
+					send(client_sock,response,strlen(response),0);
+				}
+			}
+
+			delete buffer;
+			syslog(LOG_INFO, "Request processed");
 		}
 		else
 		{
-			syslog(LOG_ERR,"unrecognized command: %s",actioncmd);
-			close(client_sock);
-			continue;
+			syslog(LOG_ERR, "Request too big: %d bytes, discarded", reqlength);
 		}
-
-		reqlength -= command_size;
-		char *buffer = new char[reqlength];
-		fread(buffer,sizeof(char),reqlength,sockfile);
-		string str(buffer,reqlength);
-		delete buffer;
 		
-		if (action == REQUEST_EVAL)
-		{
-			syslog(LOG_INFO, "Request type: judge");
-			JudgeRecord *currentRecord = new JudgeRecord;
-
-			char response[512];
-			int code;
-			if (!currentRecord->prepareRecord(str))
-			{
-				syslog(LOG_ERR, "Failed to parse problem. Request string %s", str.c_str());
-				code = SERVERCODE_INTERNAL;
-				delete currentRecord;
-			} else
-			{
-				code = scheduler->arrangeTask(currentRecord);
-			}
-			sprintf(response, "ServerCode %d\nWorkload %d\n\n", code, scheduler->serverWorkload());
-			send(client_sock,response,strlen(response),0);
-
-		} else if (action == REQUEST_ADD)
-		{
-			syslog(LOG_INFO, "Request type: add problem");
-			AddRequest req;
-			req.processRequest(str);
-		}
-		else if (action == REQUEST_STATS)
-		{
-			char response[512];
-			sprintf(response, "Workload %d\n", scheduler->serverWorkload());
-			send(client_sock,response,strlen(response),0);
-		}
-		syslog(LOG_INFO, "Request processed");
+		
 		close(client_sock);
 	}
 	

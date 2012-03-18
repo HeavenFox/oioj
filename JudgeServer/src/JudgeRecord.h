@@ -31,6 +31,7 @@
 #include "TestCase.h"
 #include "fileop.h"
 #include "Dependency.h"
+#include "Request.h"
 
 using namespace std;
 
@@ -52,7 +53,7 @@ using namespace std;
 class TestCase;
 
 
-class JudgeRecord
+class JudgeRecord : public Request
 {
 private:
 	void compile();
@@ -62,10 +63,6 @@ private:
 	inline char base64chr(char c);
 	
 	Compiler *compiler;
-	
-	bool deducedVariable;
-
-	void deduceVariable();
 
 public:
 	int problemID;
@@ -95,12 +92,7 @@ public:
 
 	vector<TestCase> cases;
 	
-	JudgeRecord()
-	{
-		deducedVariable = false;
-	}
-	
-	bool prepareRecord(string s);
+	virtual void parse(xml_node<> *request);
 	
 	void setProblemSchema(string s);
 	
