@@ -38,7 +38,7 @@ class ContestModule
 			throw new Exception('Please log in before you register for a contest');
 		}
 		
-		if ($this->registered)
+		if ($this->contest->checkEnrollment(User::GetCurrent(),false))
 		{
 			throw new Exception('You have registered for this contest');
 		}
@@ -65,13 +65,9 @@ class ContestModule
 			throw new Exception('Registration deadline has passed');
 		}
 		
-		$db = Database::Get();
-		
-		$db->exec('INSERT INTO `oj_contest_register` (cid,uid) VALUES ('.$this->contestId.','.User::GetCurrent()->id.')');
+		$this->contest->registerUser(User::GetCurrent());
 		
 		OIOJ::GlobalMessage('You have registered for this contest');
-		
-		IO::SetSession('contest-registered-'.$this->contestId,true);
 		
 		$this->registered = true;
 		

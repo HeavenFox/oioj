@@ -44,8 +44,10 @@ class JudgeRecord extends ActiveRecord
 		$db = Database::Get();
 		$db->beginTransaction();
 		$rec = JudgeRecord::first(array('id','lang','code','problem' => array('id')),'WHERE `status` = '.self::STATUS_WAITING.' ORDER BY `timestamp` ASC');
-		$rec->setTokens();
-		$rec->dispatch();
+		if ($rec)
+		{
+			$rec->dispatch();
+		}
 		$db->commit();
 	}
 	
@@ -56,7 +58,6 @@ class JudgeRecord extends ActiveRecord
 		$recs = JudgeRecord::find(array('id','lang','code','problem' => array('id')),'WHERE `status` = '.self::STATUS_WAITING.' ORDER BY `timestamp` ASC');
 		foreach ($recs as $rec)
 		{
-			$rec->setTokens();
 			if (!$rec->dispatch())
 			{
 				// Likely maximum capacity
@@ -72,69 +73,102 @@ class JudgeRecord extends ActiveRecord
 		parent::add();
 	}
 	
-	public function setTokens()
+	public function getTokens()
 	{
-		$this->tokens = array(Settings::Get('token'));
+		$tokens = array(Settings::Get('token'));
 		if (strlen($s = Settings::Get('backup_token')) > 0)
 		{
-			$this->tokens[] = $s;
+			$tokens[] = $s;
 		}
+		return $tokens;
 	}
 	
-	public function parseCallback($general, $cases)
+	public function parseCallback($xmlData)
 	{
-		$gen = parseProtocol($general);
-		$this->setTokens();
-		if (!in_array(trim($gen['Token']), $this->tokens))
+		$xml = new SimpleXMLElement($xmlData);
+		error_log(var_export((string)$xml['type'],true));
+		error_log(var_export((string)$xml['token'],true));
+		error_log(var_export($this->getTokens(),true));
+		if (!in_array((string)$xml[0]['token'], $this->getTokens()))
 		{
 			throw new Exception('Unauthorized access.');
 		}
 		
-		$this->id = intval($gen['RecordID']);
-		$this->status = intval($gen['Status']);
-		
-		array_map("parseProtocol", $cases);
+		$this->id = intval($xml->record[0]['id']);
+		$this->status = intval($xml->record[0]['status']);
 		
 		$this->score = 0;
-		foreach ($cases as $k => $c)
+		$cases = array();
+		
+		foreach ($xml->cases->{'case'} as $c)
 		{
-			$cases[$k] = parseProtocol($c);
-			$this->score += intval($cases[$k]['CaseScore']);
+			$curcase = array();
+			
+			$curcase['id'] = intval($c['id']);
+			$curcase['result'] = intval($c['result']);
+			$curcase['score'] = intval($c['score']);
+			$this->score += $curcase['score'];
+			$curcase['time'] = (string)$c['time'];
+			$curcase['memory'] = (string)$c['memory'];
+			if (isset($c['detail']))
+			{
+				$curcase['detail'] = (string)$c['detail'];
+			}
+			
+			$cases[] = $curcase;
 		}
 		
 		$this->cases = $cases;
 		
 		import('JudgeServer');
 		
-		$this->fetch(array('server' => array('id'),'problem'=>array('id')));
+		$this->fetch(array('server' => array('id'),'problem' => array('id')));
 		$this->server->addWorkload(-1);
 		$this->problem->updateSubmissionStats(1, $this->status == self::STATUS_ACCEPTED ? 1 : 0);
+		
+		$this->update();
 	}
 	
 	public function __toString()
 	{
 		$codeBase64 = base64_encode($this->code);
-		return "JUDGE\nProblemID {$this->problem->id}\nRecordID {$this->id}\nLang {$this->lang}\nSubmission {$codeBase64}\nToken {$this->usedToken}\n";
+		
+		$requestNode = new SimpleXMLElement('<request />');
+		$requestNode->addAttribute('type','judge');
+		$requestNode->addAttribute("token",Settings::Get("token"));
+		if (strlen(Settings::Get('backup_token')) > 0)
+		{
+			$requestNode->addAttribute("backup-token",Settings::Get("backup_token"));
+		}
+		
+		$requestNode->addAttribute("version","2.0");
+		
+		$problemNode = $requestNode->addChild('problem');
+		$problemNode->addAttribute("id",$this->problem->id);
+		
+		$recordNode = $requestNode->addChild('record');
+		$recordNode->addAttribute("id",$this->id);
+		
+		$submissionNode = $requestNode->addChild('submission', $codeBase64);
+		$submissionNode->addAttribute('lang', $this->lang);
+		$submissionNode->addAttribute('encoding','base64');
+		return $requestNode->asXML();
 	}
 	
 	public function dispatch($server = null)
 	{
 		if ($server instanceof JudgeServer)
 		{
-			foreach ($this->tokens as $token)
+			$result = $server->dispatch($this);
+			if ($result && $result['ServerCode'] <= 1)
 			{
-				$this->usedToken = $token;
-				$result = $server->dispatch($this);
-				if ($result && $result['ServerCode'] <= 1)
-				{
-					//$server->setWorkload(intval($result['Workload']));
-					$server->addWorkload(1);
-					$this->status = JudgeRecord::STATUS_DISPATCHED;
-					$this->server = $server;
-					
-					$this->submit();
-					return true;
-				}
+				//$server->setWorkload(intval($result['Workload']));
+				$server->addWorkload(1);
+				$this->status = JudgeRecord::STATUS_DISPATCHED;
+				$this->server = $server;
+				
+				$this->submit();
+				return true;
 			}
 			return false;
 		}

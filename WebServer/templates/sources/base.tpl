@@ -36,7 +36,7 @@
 </div>{/block}</div>
 
 <div id="body">{block name="body"}<!-- DEFAULT CONTENT -->{/block}</div>
-<div id="footer">{block name="footer"}Page Generated at: {date("Y-m-d H:m:s")} GMT{date("P")}<br />OIOJ Instructional Online Judge (c){$smarty.now|date_format:"%Y"} Zhu Jingsi. All Rights Reserved.{/block}</div>
+<div id="footer">{block name="footer"}Page Generated at: {date("Y-m-d H:i:s")} GMT{date("P")}<br />OIOJ Instructional Online Judge (c){$smarty.now|date_format:"%Y"} Zhu Jingsi. All Rights Reserved.{/block}</div>
 </div>
 
 </body>

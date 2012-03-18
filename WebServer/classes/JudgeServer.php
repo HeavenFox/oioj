@@ -4,7 +4,7 @@ class JudgeServer extends ActiveRecord
 {
 	static $tableName = 'oj_judgeservers';
 	
-	const RESPONSE_MAX_LENGTH = 512;
+	const RESPONSE_MAX_LENGTH = 1024;
 	
 	static $schema = array(
 		'id' => array('class' => 'int'),
@@ -21,23 +21,38 @@ class JudgeServer extends ActiveRecord
 	
 	public $cases;
 	
+	public static function GetTokens()
+	{
+		$tokens = array(Settings::Get('token'));
+		if (strlen($s = Settings::Get('backup_token')) > 0)
+		{
+			$tokens[] = $s;
+		}
+		return $tokens;
+	}
+	
 	public static function GetAvailableServers()
 	{
 		return self::find(array('id','name','ip','port','workload','maxWorkload'),'WHERE workload < maxWorkload AND `online` = 1 ORDER BY workload ASC');
 	}
 	
-	public function dispatch($task)
+	public function dispatch($task, $timeout = 10)
 	{
-		$fp = @fsockopen($this->ip,$this->port,$errno,$errstr,10);
+		$fp = @fsockopen($this->ip,$this->port,$errno,$errstr,$timeout);
 		if (!$fp)
 		{
 			return false;
 		}
 		$data = strval($task);
 		fwrite($fp,pack('I',strlen($data)).$data);
-		$res = parseProtocol(fread($fp,self::RESPONSE_MAX_LENGTH));
+		$res = fread($fp,self::RESPONSE_MAX_LENGTH);
 		fclose($fp);
-		return $res;
+		if (strlen(trim($res)) > 0)
+		{
+			return new SimpleXMLElement($res);
+		}
+		
+		return true;
 	}
 	
 	public function addWorkload($val = 1)

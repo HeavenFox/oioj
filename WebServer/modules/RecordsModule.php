@@ -63,20 +63,8 @@ class RecordsModule
 	{
 		$caseStr = array('Unknown','Time Limit Exceeded','Memory Limit Exceeded','Output Limit Exceeded','Forbidden System Call','Runtime Error','Wrong Answer','OK');
 		
-		$prefix = 'Case '.$li['CaseID'].': '.$caseStr[intval($li['CaseResult'])].'.'.' Score: '.$li['CaseScore'];
-						$timeMemory = ' Time: '.$li['CaseTime'].'s Memory: '.$li['CaseMemory'].'MB';
-						$str = '';
-						switch(intval($li['CaseResult']))
-						{
-							case 4:
-								$str = $prefix . ' Call Code: '.$li['CaseExtendedCode'].' '.$timeMemory;
-								break;
-							case 5:
-								$str = $prefix . ' Error Code: '.$li['CaseExtendedCode'] . ' ' . $timeMemory£»;
-								break;
-							default:
-								$str = $prefix . $timeMemory;
-						}
+		$str = 'Case '.$li['id'].': '.$caseStr[$li['result']].'.'.' Score: '.$li['score'] . (isset($li['detail']) ? (' Detail: '.$li['detail']):'') . ' Time: '.$li['time'].'s Memory: '.$li['memory'].'MB';
+		
 		return $str;
 	}
 	
