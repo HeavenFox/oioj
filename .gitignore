@@ -6,3 +6,5 @@ JudgeServer/.cproject
 JudgeServer/.project
 *.komodoproject
 WebServer/_install/installer.lock
+WebServer/vars/CookieSecret.php
+WebServer/vars/DBParameters.php

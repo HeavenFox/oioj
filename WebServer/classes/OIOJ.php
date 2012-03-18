@@ -67,7 +67,7 @@ class OIOJ
 class PermissionException extends Exception
 {
 	public $key;
-	public function __construct($key)
+	public function __construct($key = NULL)
 	{
 		$this->key = $key;
 		parent::__construct('Access Denied');

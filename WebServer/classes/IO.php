@@ -26,6 +26,11 @@ class IO
 		return self::GetArrayElement($_COOKIE, $prop, $defaultValue, $san);
 	}
 	
+	public static function StartSession()
+	{
+		session_start();
+	}
+	
 	public static function SetCookie($prop, $val, $expire)
 	{
 		setcookie($prop,$val,time()+$expire);

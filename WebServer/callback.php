@@ -15,8 +15,7 @@ import('JudgeRecord');
 $record = new JudgeRecord();
 
 try {
-	$record->parseCallback($_POST['general'],$_POST['cases']);
-	$record->submit();
+	$record->parseCallback($_POST['data']);
 } catch (Exception $e)
 {
 	die('Unauthorized access');
