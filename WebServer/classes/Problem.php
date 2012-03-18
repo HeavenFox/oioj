@@ -182,8 +182,6 @@ class Problem extends TaggedRecord
 	
 	private function generateDispatchString()
 	{
-		$str = "ADDPB\n";
-		$str .= "1\n{$this->id} {$this->type} {$this->compare} {$this->input} {$this->output}\n";
 		$str .= strval(count($this->testCases)) . "\n";
 		foreach ($this->testCases as $c)
 		{
@@ -193,7 +191,42 @@ class Problem extends TaggedRecord
 		$str .= "0\n";
 		$str .= "zip\n";
 		
-		return $str;
+		$requestNode = new SimpleXMLElement('<request />');
+		$requestNode->addAttribute('type','addproblem');
+		$requestNode->addAttribute("token",Settings::Get("token"));
+		if (strlen(Settings::Get('backup_token')) > 0)
+		{
+			$requestNode->addAttribute("backup_token",Settings::Get("backup_token"));
+		}
+		
+		$requestNode->addAttribute("version","2.0");
+		
+		$problemNode = $requestNode->addChild('problem');
+		$problemNode->addAttribute("id",$this->id);
+		$problemNode->addAttribute('type',$this->type);
+		$problemNode->addAttribute('compare',$this->compare);
+		$problemNode->addAttribute('input',$this->input);
+		$problemNode->addAttribute('output',$this->output);
+		
+		$casesNode = $requestNode->addChild('cases');
+		
+		foreach ($this->testCases as $c)
+		{
+			$cur = $casesNode->addChild('case');
+			$cur->addAttribute('id', $c->cid);
+			$cur->addAttribute('input', $c->input);
+			$cur->addAttribute('answer', $c->answer);
+			$cur->addAttribute('timelimit', $c->timelimit);
+			$cur->addAttribute('memorylimit', $c->memorylimit);
+			$cur->addAttribute('score', $c->score);
+		}
+		
+		// TODO dependencies
+		
+		$archiveNode = $requestNode->addChild('archive');
+		$archiveNode->addAttribute('filename', strval($this->id).'.zip');
+		
+		return $requestNode->asXML();
 	}
 	
 	/**

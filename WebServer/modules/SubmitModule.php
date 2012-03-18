@@ -23,7 +23,7 @@ class SubmitModule
 	
 	public function submitSolution()
 	{
-		error_reporting(0);
+		//error_reporting(0);
 		
 		$record = new JudgeRecord;
 		
@@ -74,8 +74,6 @@ class SubmitModule
 		}
 		
 		$lang = $map[$lang];
-		
-		$record->setTokens();
 		
 		$record->lang = $lang;
 		import('User');

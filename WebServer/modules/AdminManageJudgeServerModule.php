@@ -74,22 +74,43 @@ class AdminManageJudgeServerModule
 		OIOJ::Redirect('Judge Server Saved Successfully','index.php?mod=admin_judgeserver');
 	}
 	
+	private function requestStatus(JudgeServer $server)
+	{
+		$tokens = JudgeServer::GetTokens();
+		$requestStr = '<request type="status" token="' . htmlspecialchars($tokens[0]) .'"'.(isset($tokens[1]) ? (' backup-token="'.htmlspecialchars($tokens[1]).'"') : '').'></request>';
+		$result = $server->dispatch($requestStr);
+		
+		if ($result instanceof SimpleXMLElement)
+		{
+			$status['workload'] = intval($result[0]['workload']);
+			return $status;
+		}
+		else
+		{
+			return null;
+		}
+		
+	}
+	
 	public function stats()
 	{
 		$obj = JudgeServer::first(array('id','name','maxWorkload','ip','port'),'WHERE `id`='.IO::GET('id',0,'intval'));
 		if ($obj)
 		{
-			$result = $obj->dispatch("STATS\n");
+			$result = $this->requestStatus($obj);
 			if ($result)
 			{
 				echo "<p>Server {$obj->name} (#{$obj->id})</p>\n";
-				echo "<p>Workload: {$result['Workload']}</p>";
+				echo "<p>Workload: {$result['workload']}</p>";
 			}
 			else
 			{
 				echo '<p>Unable to contact server. It seems offline. You may try to ping the server.</p>';
 			}
-			
+		}
+		else
+		{
+			echo '<p>Server ID invalid.</p>';
 		}
 	}
 	
@@ -98,20 +119,23 @@ class AdminManageJudgeServerModule
 		$obj = JudgeServer::first(array('id','name','workload','ip','port'),'WHERE `id`='.IO::GET('id',0,'intval'));
 		if ($obj)
 		{
-			$result = $obj->dispatch("STATS\n");
+			$result = $this->requestStatus($obj);
 			if ($result)
 			{
 				echo "<p>Server {$obj->name} (#{$obj->id})</p>\n";
 				echo "<p>Present Workload: {$obj->workload}</p>";
-				$obj->workload = intval($result['Workload']);
+				$obj->workload = $result['workload'];
 				$obj->update();
-				echo "<p>Updated to: {$result['Workload']}</p>";
+				echo "<p>Updated to: {$result['workload']}</p>";
 			}
 			else
 			{
 				echo '<p>Unable to contact server. It seems offline. You may try to ping the server.</p>';
 			}
-			
+		}
+		else
+		{
+			echo '<p>Server ID invalid.</p>';
 		}
 	}
 	

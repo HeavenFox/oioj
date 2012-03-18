@@ -17,6 +17,10 @@
 #include <errno.h>
 #include <netinet/in.h>
 #include "JudgeRecord.h"
+#include "rapidxml.hpp"
+#include "rapidxml_print.hpp"
+
+using namespace rapidxml;
 
 class WebServer
 {

@@ -8,11 +8,13 @@
 
 #include "WebServer.h"
 
+#define BASE10_MAX_LENGTH 10
+#define BASE10_MAX_LENGTH_FLOAT 20
 
-string urlencode(char* str)
+string urlencode(const char* str)
 {
 	string s;
-	char *c = str;
+	const char *c = str;
 	while (*c != '\0')
 	{
 		if (((*c) >= 'a' && (*c) <= 'z') || ((*c) >= 'A' && (*c) <= 'Z') || ((*c) >= '0' && (*c) <= '9'))
@@ -39,7 +41,20 @@ void WebServer::pushResult(JudgeRecord *record)
 	
 	syslog(LOG_INFO,"Pushing record %d to web server", recordID);
 	
-	char generalState[1024];
+	xml_document<> doc;
+	xml_node<> *callbackNode = doc.allocate_node(node_element,"callback");
+	callbackNode->append_attribute(doc.allocate_attribute("version","2.0"));
+	callbackNode->append_attribute(doc.allocate_attribute("type","judge"));
+	
+	ConfigFile* config = Configuration::Get();
+	string token = config->read<string>("token");
+	callbackNode->append_attribute(doc.allocate_attribute("token",token.c_str()));
+	
+	xml_node<> *recordNode = doc.allocate_node(node_element,"record");
+	
+	char recordIDString[BASE10_MAX_LENGTH];
+	char statusString[BASE10_MAX_LENGTH];
+	sprintf(recordIDString,"%d",recordID);
 	
 	for (vector<TestCase>::iterator it = record->cases.begin();it != record->cases.end();it++)
 	{
@@ -49,25 +64,58 @@ void WebServer::pushResult(JudgeRecord *record)
 		}
 	}
 	
-	sprintf(generalState, "RecordID %d\nStatus %d\nToken %s\n", recordID, status, Configuration::Token.c_str());
-
-	string postString("general=");
-	postString.append(urlencode(generalState));
+	sprintf(statusString, "%d", status);
+	
+	recordNode->append_attribute(doc.allocate_attribute("id",recordIDString));
+	recordNode->append_attribute(doc.allocate_attribute("status",statusString));
+	callbackNode->append_node(recordNode);
+	
+	xml_node<> *casesNode = doc.allocate_node(node_element,"cases");
+	
 	for (vector<TestCase>::iterator it = record->cases.begin();it != record->cases.end();it++)
 	{
-		char thiscase[1024];
-
-		sprintf(thiscase, "CaseID %d\nCaseResult %d\nCaseExtendedCode %d\nCaseScore %d\nCaseTime %.2f\nCaseMemory %.2f\n", (*it).caseID, (*it).result, (*it).resultExtended, (*it).score, (*it).actualTime, ((double)(*it).bytesActualMemory)/1024.0/1024.0);
-		postString.append("&cases%5B%5D=");
-		postString.append(urlencode(thiscase));
+		xml_node<> *curCaseNode = doc.allocate_node(node_element, "case");
+		
+		char *caseID = doc.allocate_string(0,BASE10_MAX_LENGTH);
+		sprintf(caseID,"%d",(*it).caseID);
+		curCaseNode->append_attribute(doc.allocate_attribute("id",caseID));
+		
+		char *caseResult = doc.allocate_string(0,BASE10_MAX_LENGTH);
+		sprintf(caseResult,"%d",(*it).result);
+		curCaseNode->append_attribute(doc.allocate_attribute("result",caseResult));
+		
+		char *detail = doc.allocate_string((*it).detail.c_str());
+		curCaseNode->append_attribute(doc.allocate_attribute("detail",detail));
+		
+		char *caseScore = doc.allocate_string(0,BASE10_MAX_LENGTH);
+		sprintf(caseScore,"%d",(*it).score);
+		curCaseNode->append_attribute(doc.allocate_attribute("score",caseScore));
+		
+		char *caseTime = doc.allocate_string(0,BASE10_MAX_LENGTH_FLOAT);
+		sprintf(caseTime,"%.3lf",(*it).actualTime);
+		curCaseNode->append_attribute(doc.allocate_attribute("time",caseTime));
+		
+		char *caseMemory = doc.allocate_string(0,BASE10_MAX_LENGTH_FLOAT);
+		sprintf(caseMemory,"%.3lf",((double)(*it).bytesActualMemory)/1024.0/1024.0);
+		curCaseNode->append_attribute(doc.allocate_attribute("memory",caseMemory));
+		
+		casesNode->append_node(curCaseNode);
 	}
 	
-	postString.append("\r\n");
+	callbackNode->append_node(casesNode);
+	
+	doc.append_node(callbackNode);
+	
+	ostringstream xmlStream;
+	xmlStream<<doc;
+	
+	string postString("data=");
+	postString += urlencode("<?xml version=\"1.0\"?>\n");
+	postString += urlencode(xmlStream.str().c_str());
 
 	ostringstream requestHeader;
 	
-	
-	requestHeader<<"POST "<<Configuration::WebServerCallbackScript<<" HTTP/1.1\r\nContent-Type: application/x-www-form-urlencoded\r\nUser-Agent: OIOJJudgeServer/1.0\r\nHost: "<<Configuration::WebServer<<"\r\nContent-Length: "<<postString.size()<<"\r\n\r\n";
+	requestHeader<<"POST "<<config->read<string>("webserver_callback")<<" HTTP/1.1\r\nContent-Type: application/x-www-form-urlencoded\r\nUser-Agent: OIOJJudgeServer/1.0\r\nHost: "<<config->read<string>("webserver_address")<<"\r\nContent-Length: "<<postString.size()<<"\r\n\r\n";
 	// Create socket
 	int sock = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -81,10 +129,10 @@ void WebServer::pushResult(JudgeRecord *record)
 	memset((void*)&sock_address, 0, sizeof(sockaddr_in));
 
 	sock_address.sin_family = AF_INET;
-	sock_address.sin_addr.s_addr = inet_addr(Configuration::WebServer.c_str());
+	sock_address.sin_addr.s_addr = inet_addr(config->read<string>("webserver_address").c_str());
 	if (sock_address.sin_addr.s_addr == INADDR_NONE)
 	{
-		phost = (struct hostent*)gethostbyname(Configuration::WebServer.c_str());
+		phost = (struct hostent*)gethostbyname(config->read<string>("webserver_address").c_str());
 		if(phost == NULL){
 			syslog(LOG_ERR,"Error parsing server: %d", errno);
 		}
@@ -92,7 +140,7 @@ void WebServer::pushResult(JudgeRecord *record)
 	}
 	sock_address.sin_port = htons(80);
 	
-	const int bufferSize = 512;
+	//const int bufferSize = 512;
 
 	if (connect(sock,(struct sockaddr*)&sock_address,sizeof(struct sockaddr)) < 0)
 	{

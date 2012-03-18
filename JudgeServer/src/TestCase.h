@@ -53,6 +53,7 @@ public:
 	
 	int result;
 	int resultExtended;
+	string detail;
 	
 	void run();
 	
