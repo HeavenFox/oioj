@@ -46,13 +46,18 @@ class AdminManageContestModule
 		$form->add(new SF_DateTime('id','regstart','label','Registration Begins'));
 		$form->add(new SF_DateTime('id','regend','label','Registration Ends'));
 		$form->add(new SF_Checkbox('id','display_problem_title_before_start','label','Display titles before contest starts'));
-		// Problems: not supported by SmartyForm
 		
+		$form->add(new SF_TextField('id','problems','multiple',true));
+		
+		$form->add(new SF_Select('id','after_submit','label','After Submission','options',array('Save'=>'save','Judge'=>'judge')));
 		$form->add(new SF_Checkbox('id','auto_judge','label','Automatically send to judge servers'));
 		$form->add(new SF_Number('id','judge_hiatus','data',10));
 		$form->add(new SF_Checkbox('id','display_ranking','label','Display Ranking'));
 		$form->add(new SF_Checkbox('id','display_preliminary_ranking','label','... Before Judge Finishes'));
-		// Ranking Criteria: ditto
+		
+		$form->add(new SF_TextField('id','criteria','multiple',true));
+		$form->add(new SF_TextField('id','criteria-order','multiple',true));
+		
 		$form->add(new SF_Select('id','display_params','label','Ranking Parameters to Display','multiple',true,'options',array(
 			'Total Score' => 'total_score',
 			'Num of Correct Submission' => 'num_right',
@@ -61,6 +66,28 @@ class AdminManageContestModule
 			'Sum of Elapsed Time When Submitted' => 'total_time',
 			'Elapsed Time When Last Submitted' => 'max_time'
 		)));
+		$form->get('display_params')->addValidator(function($val){
+			$notpresent = array();
+			foreach ($val as $v)
+			{
+				$present = false;
+				foreach (IO::POST('criteria') as $c)
+				{
+					if (strpos($c, $v) !== null)
+					{
+						$present = true;
+					}
+				}
+				if (!$present)
+				{
+					$notpresent[] = $v;
+				}
+			}
+			if (count($notpresent) > 0)
+			{
+				throw new InputException("Parameter " . implode(', ', $notpresent) . " doesn't appear in criteria.");
+			}
+		});
 		
 		if ($record)
 		{
@@ -69,6 +96,7 @@ class AdminManageContestModule
 			$form->bind('description','contest');
 			$form->bind('starttime','contest','beginTime');
 			$form->bind('endtime','contest','endTime');
+			$form->bind('duration','contest','duration');
 			$form->bind('publicity','contest');
 			$form->bind('regstart','contest','regBegin');
 			$form->bind('regend','contest','regDeadline');
@@ -105,30 +133,66 @@ class AdminManageContestModule
 		return strtotime(IO::POST($name.'-date').' '.IO::POST($name.'-h').':'.IO::POST($name.'-m').':'.IO::POST($name.'-s'));
 	}
 	
+	private function gatherOptionsToForm(Contest $contest, SmartyForm $form)
+	{
+		foreach ($this->basicSettingsFromAssoc as $v)
+		{
+			$form->get($v)->data = $contest->getOption($v);
+		}
+		// Ranking criteria
+		$criteria_array = explode(';', $contest->getOption('ranking_criteria'));
+		
+		$form->get('display_params')->data = explode(';', $contest->getOption('ranking_display_params'));
+		
+	}
+	
+	private function saveOptionsToContest(SmartyForm $form, Contest $contest)
+	{
+		foreach ($this->basicSettingsFromAssoc as $v)
+		{
+			$contest->setOption($v,$form->get($v)->data);
+		}
+		// Ranking Criteria
+		$criteria = $form->get('criteria')->data;
+		$criteria_order = $form->get('criteria-order')->data;
+		foreach ($criteria as $k=>$v)
+		{
+			$criteria[$k] = $criteria_order[$k].$v;
+		}
+		$contest->setOption('ranking_criteria',implode(';',$criteria));
+		$contest->setOption('ranking_display_params',implode(';',$form->get('display_params')->data));
+	}
+	
 	public function saveContest()
 	{
-		$c = new Contest();
 		$form = $this->generateContestForm($c);
 		
 		$form->gatherFromPOST();
 		
-		$isNew = !$form->get('id')->data;
-		
-		// Ranking Criteria
-		$criteria = IO::POST('criteria');
-		$criteria_order = IO::POST('criteria-order');
+		$form->validate();
 		
 		if (!count($criteria))
 		{
 			throw new Exception('You must specify at least one ranking criterion');
 		}
 		
-		foreach ($criteria as $k=>$v)
+		if (!$form->valid)
 		{
-			$criteria[$k] = $criteria_order[$k].$v;
+			$this->showForm($form);
 		}
 		
-		if ($isNew)
+		$contestID = intval($form->get('id')->data);
+		
+		if ($contestID)
+		{
+			$c = new Contest($contestID);
+		}
+		else
+		{
+			$c = new Contest();
+		}
+		
+		if (!$contestID)
 		{
 			$c->user = User::GetCurrent();
 			$c->status = Contest::STATUS_WAITING;
@@ -136,14 +200,13 @@ class AdminManageContestModule
 		
 		$c->submit();
 		
-		foreach ($this->basicSettingsFromAssoc as $v)
+		$this->saveOptionsToContest($form, $c);
+		
+		
+		if ($contestID)
 		{
-			$c->setOption($v,$form->get($v)->data);
+			Database::Get()->exec('DELETE FROM `oj_contest_problems` WHERE `cid` = '.$contestID);
 		}
-		
-		$c->setOption('ranking_criteria',implode(';',$criteria));
-		$c->setOption('ranking_display_params',implode(';',IO::POST('display_params')));
-		
 		
 		$addAssocQuery = 'INSERT INTO `oj_contest_problems` (`cid`,`pid`) VALUES ';
 		$first = true;
@@ -180,13 +243,21 @@ class AdminManageContestModule
 	
 	public function addContest()
 	{
-		OIOJ::$template->assign('contestform',$this->generateContestForm());
-		OIOJ::$template->display('admin_editcontest.tpl');
+		$this->showForm($this->generateContestForm());
 	}
 	
 	public function editContest()
 	{
-		OIOJ::$template->assign('contestform',$this->generateContestForm());
+		$c = Contest::first(array('id','title','description','beginTime','endTime','regBegin','regDeadline','duration','publicity'), 'WHERE `id` = '.IO::GET('id',0,'intval'));
+		$form = $this->generateContestForm($c);
+		$form->gatherFromRecord();
+		$this->gatherOptionsToForm($c, $form);
+		$this->showForm($form);
+	}
+	
+	private function showForm($form)
+	{
+		OIOJ::$template->assign('contestform',$form);
 		OIOJ::$template->display('admin_editcontest.tpl');
 	}
 }

@@ -137,6 +137,7 @@ class SmartyForm
 			catch(InputException $e)
 			{
 				$v->triggerError($e);
+				$this->valid = false;
 			}
 		}
 		return $this->valid;
@@ -270,13 +271,17 @@ class SmartyForm
 	public function gatherFromRecord()
 	{
 		$this->fresh = false;
-		foreach ($this->recordFuncs as $objID => $v)
+		if ($this->recordFuncs)
 		{
-			foreach ($v['gatherer'] as $func)
+			foreach ($this->recordFuncs as $objID => $v)
 			{
-				$func($this, $this->activeRecords[$objID]);
+				foreach ($v['gatherer'] as $func)
+				{
+					$func($this, $this->activeRecords[$objID]);
+				}
 			}
 		}
+		
 		foreach ($this->recordAssoc as $k => $v)
 		{
 			$prop = $v[1];
@@ -512,7 +517,7 @@ abstract class SF_Element
 	{
 		$this->attributes['id'] = $this->getHTMLID();
 		$this->attributes['name'] = $this->id . ($this->multiple ? '[]' : '');
-		if ($this->data)
+		if ($this->data !== null)
 			$this->attributes['value'] = $this->data;
 	}
 	
@@ -650,35 +655,53 @@ SF_TimeZone::$htmlHeader = '<script type="text/javascript">
 
 class SF_Date extends SF_TextBased
 {
+	// Safari implements input[type="datetime"] in this format
+	const DATE_FORMAT = 'Y-m-d';
+	
 	protected function setDefaultAttributes()
 	{
 		parent::setDefaultAttributes();
 		$this->attributes['type'] = 'date';
+		
+		$this->attributes['size'] = '14';
+		
+		if ($this->data !== null)
+		{
+			$this->attributes['value'] = date(self::DATE_FORMAT, $this->data);
+		}
 	}
 }
 
 
 class SF_DateTime extends SF_Date
 {
-	
 	private function makeExtraElements()
 	{
-		return array(new SF_Number('id',$this->id . '-h','min',0,'max',23,'step',1,'size',2,'form',$this->form), 
-					new SF_Number('id',$this->id . '-m','min',0,'max',59,'step',1,'size',2,'form',$this->form),
-					new SF_Number('id',$this->id . '-s','min',0,'max',59,'step',1,'size',2,'form',$this->form));
+		$elements = array(new SF_Number('id',$this->id . '-h','min',0,'max',23,'step',1,'form',$this->form), 
+					new SF_Number('id',$this->id . '-m','min',0,'max',59,'step',1,'form',$this->form),
+					new SF_Number('id',$this->id . '-s','min',0,'max',59,'step',1,'form',$this->form));
+		foreach ($elements as $v)
+		{
+			$v->setAttribute('size',3);
+		}
+		return $elements;
 	}
 	
 	public function html()
 	{
 		$extras = $this->makeExtraElements();
-		
-		$this->attributes['size'] = '12';
+		preg_match('/([0-9]+):([0-9]+):([0-9]+)/',date('H:i:s',$this->data),$matches);
+		for ($i=0;$i<3;$i++)
+		{
+			$extras[$i]->data = intval($matches[$i+1]);
+		}
 		return parent::html() . $extras[0]->html() . ':' . $extras[1]->html() . ':' . $extras[2]->html();
 	}
 	
 	public function gatherFromPOST()
 	{
 		$data = IO::POST($this->id,null);
+		
 		if ($data !== null)
 		{
 			$this->data = strtotime(IO::POST($this->id).' '.IO::POST($this->id.'-h').':'.IO::POST($this->id.'-m').':'.IO::POST($this->id.'-s'));
@@ -688,7 +711,6 @@ class SF_DateTime extends SF_Date
 
 class SF_Duration extends SF_Element
 {
-	
 	private function makeExtraElements()
 	{
 		$elements = array(new SF_Number('id',$this->id . '-h','min',0,'step',1,'form',$this->form,'data',$this->data !== null ? floor($this->data / 3600) : null), 
@@ -696,7 +718,7 @@ class SF_Duration extends SF_Element
 					new SF_Number('id',$this->id . '-s','min',0,'max',59,'step',1,'form',$this->form,'data',$this->data !== null ? $this->data % 60 : null));
 		foreach ($elements as $v)
 		{
-			$v->setAttribute('size',2);
+			$v->setAttribute('size',3);
 		}
 		return $elements;
 	}
@@ -760,7 +782,7 @@ class SF_Select extends SF_Element
 		$html = '<select' . $this->generateAtrributes() . ">\n";
 		foreach ($this->options as $label => $value)
 		{
-			$html .= '<option value="'.htmlspecialchars($value).'"'.($value == $this->data ? ' selected="selected"':'').'>'.htmlspecialchars($label).'</option>';
+			$html .= '<option value="'.htmlspecialchars($value).'"'.(($this->multiple && is_array($this->data) ? in_array($value, $this->data) : $value == $this->data) ? ' selected="selected"' : '').'>'.htmlspecialchars($label).'</option>';
 		}
 		$html .= "\n</select>";
 		return $html;

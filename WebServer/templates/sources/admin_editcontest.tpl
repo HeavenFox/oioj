@@ -55,11 +55,8 @@ $(function(){
 <tr><td colspan="2">Judging &amp; Ranking</td></tr>
 </thead>
 <tbody>
-<tr><td>After Submission</td><td>
-<select name="after_submit">
-<option value="save">Save</option>
-<option value="judge">Judge</option>
-</select>
+<tr><td>{slabel id="after_submit"}</td><td>
+{sinput id="after_submit"}
 </td></tr>
 <tr><td>Automatically send to judge servers</td><td>{sinput id="auto_judge"} {sinput id='judge_hiatus'} minutes after contest ends<br /><small>You may need some time to deal with unexpected situations.</small></td></tr>
 <tr><td>Display Ranking</td><td>{sinput id="display_ranking"}... Before Judge Finishes{sinput id="display_preliminary_ranking"}</td></tr>
